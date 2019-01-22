@@ -6,6 +6,9 @@ import 'package:course_gnome/model/Course.dart';
 import 'package:course_gnome/model/UtilityClasses.dart';
 
 class SearchObject {
+
+  int offset = 0;
+
   String name;
   String departmentAcronym;
 
@@ -13,8 +16,8 @@ class SearchObject {
 }
 
 class CourseResults {
-  int total;
-  List<Course> results;
+  int total = 0;
+  List<Course> results = [];
 
   CourseResults({this.total, this.results});
 

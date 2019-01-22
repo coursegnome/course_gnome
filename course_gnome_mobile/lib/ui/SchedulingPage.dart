@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:course_gnome/model/Calendar.dart';
 import 'package:course_gnome/model/Course.dart';
 import 'package:course_gnome/model/UtilityClasses.dart';
+import 'package:course_gnome/controller/SchedulingPageController.dart';
 import 'package:course_gnome/services/Networking.dart';
 
 import 'package:course_gnome_mobile/ui/SearchPage.dart';
@@ -19,9 +20,10 @@ class SchedulingPage extends StatefulWidget {
 class _SchedulingPageState extends State<SchedulingPage>
     with TickerProviderStateMixin {
   // Scheduling logic
-  var _calendars = Calendars();
-  var _ready = false;
-  bool _inSplitView;
+  final _controller = SchedulingPageController();
+//  var _calendars = Calendars();
+//  var _ready = false;
+//  bool _inSplitView;
   PageController _pageController = PageController(keepPage: true);
   TabController _tabController;
   TextEditingController _calendarNameController = TextEditingController();
@@ -75,12 +77,12 @@ class _SchedulingPageState extends State<SchedulingPage>
     });
   }
 
-  var _offset = 0;
+//  var _offset = 0;
 
   // search object
-  var _oldSearchObject = SearchObject();
-  var _searchObject = SearchObject();
-  var _courseResults = CourseResults(total: 0, results: []);
+//  var _oldSearchObject = SearchObject();
+//  var _searchObject = SearchObject();
+//  var _courseResults = CourseResults(total: 0, results: []);
 
   _search(String name) async {
     if (name.isEmpty) {

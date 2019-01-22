@@ -1,28 +1,17 @@
-import 'package:flutter/material.dart';
-
-class CGColor {
-  Color light, med, dark;
-
-  CGColor(int light, int med, int dark) {
-    this.light = Color(light);
-    this.med = Color(med);
-    this.dark = Color(dark);
-  }
-}
-
 class CGColors {
-  static final cgred = const Color(0xFFD50110);
-  static final lightGray = const Color(0xffFAFAFA);
 
-  static final red = CGColor(0xffFCE6EA, 0xffD74660, 0xff96263A);
-  static final orange = CGColor(0xffFDEADC, 0xffE4813D, 0xffA05320);
-  static final gold = CGColor(0xffFDF0D4, 0xffE1AC3D, 0xff9E7520);
-  static final green = CGColor(0xffE3F6EC, 0xff30B36E, 0xff157A45);
-  static final turquoise = CGColor(0xffDAF4F2, 0xff21AEA8, 0xff0A7671);
-  static final lightblue = CGColor(0xffD8ECF7, 0xff298BC7, 0xff1D618B);
-  static final darkblue = CGColor(0xffDAE3F7, 0xff335EC3, 0xff244289);
-  static final purple = CGColor(0xffE9DFF6, 0xff7C4DBE, 0xff573685);
-  static final gray = CGColor(0xffDEE2E8, 0xff455C78, 0xff304154);
+  static final cgred = 'D50110';
+  static final lightGray = 'FAFAFA';
+
+  static final red = const ['FCE6EA', 'D74660', '96263A'];
+  static final orange = const ['FDEADC', 'E4813D', 'A05320'];
+  static final gold = const ['FDF0D4', 'E1AC3D', '9E7520'];
+  static final green = const ['E3F6EC', '30B36E', '157A45'];
+  static final turquoise = const ['DAF4F2', '21AEA8', '0A7671'];
+  static final lightblue = const ['D8ECF7', '298BC7', '1D618B'];
+  static final darkblue = const ['DAE3F7', '335EC3', '244289'];
+  static final purple = const ['E9DFF6', '7C4DBE', '573685'];
+  static final gray = const ['DEE2E8', '455C78', '304154'];
 
   static final array = [
     red,
@@ -35,6 +24,7 @@ class CGColors {
     purple,
     gray
   ];
+
 }
 
 class Helper {
@@ -47,15 +37,11 @@ class Breakpoints {
   static int sm = 400;
   static int md = 600;
   static int lg = 813;
+}
 
-//  static int split = 800;
-//
-//  final width;
-//  Breakpoints({this.width});
-//
-//  final int sm = (200/width);
-
-
+class TimeOfDay {
+  final int hour, minute;
+  TimeOfDay({this.hour, this.minute});
 }
 
 class Departments {

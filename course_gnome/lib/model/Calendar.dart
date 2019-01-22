@@ -1,12 +1,8 @@
-import 'package:flutter/material.dart';
 import 'dart:collection';
-import 'dart:math';
 import 'dart:convert';
 
-import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:course_gnome/model/UtilityClasses.dart';
 import 'package:course_gnome/model/Course.dart';
-import 'package:course_gnome/utilities/Utilities.dart';
 
 class Calendars {
   static const String initialCalName = "My Calendar";
@@ -73,7 +69,7 @@ class Calendar {
   String name;
   HashSet<String> ids;
   List<List<ClassBlock>> blocksByDay;
-  VoidCallback calendarUpdated;
+  Function calendarUpdated;
 
   Calendar(calendarUpdated, name) {
     this.calendarUpdated = calendarUpdated;

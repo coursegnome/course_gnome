@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'package:course_gnome/ui/SearchPage.dart';
-import 'ui/LoginPage.dart';
-import 'ui/SchedulingPage.dart';
-import 'utilities/Utilities.dart';
+import 'package:course_gnome_mobile/ui/SearchPage.dart';
+import 'package:course_gnome_mobile/ui/LoginPage.dart';
+import 'package:course_gnome_mobile/ui/SchedulingPage.dart';
+import 'package:course_gnome_mobile/utilities/UtilitiesClasses.dart';
 
 void main() => runApp(MyApp());
 
@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primaryColor: CGColors.cgred,
+        primaryColor: CGColor.cgred,
         fontFamily: 'Lato',
       ),
       home: SchedulingPage(),

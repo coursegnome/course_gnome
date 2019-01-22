@@ -1,4 +1,4 @@
-name: course_gnome
+name: course_gnome_web
 description: A web app that uses AngularDart Components
 # version: 1.0.0
 # homepage: https://www.example.com
@@ -10,6 +10,8 @@ environment:
 dependencies:
   angular: ^5.2.0
   angular_components: ^0.11.0
+  course_gnome:
+    path: ../course_gnome
 
 dev_dependencies:
   angular_test: ^2.2.0

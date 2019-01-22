@@ -3,15 +3,15 @@ import 'package:flutter/services.dart';
 
 import 'package:url_launcher/url_launcher.dart';
 
-import 'package:course_gnome/ui/CalendarPage.dart';
-import 'package:course_gnome/ui/ProfilePage.dart';
-import 'package:course_gnome/ui/custom/CGExpansionTile.dart';
-
 import 'package:course_gnome/model/Calendar.dart';
 import 'package:course_gnome/model/Course.dart';
+import 'package:course_gnome/model/UtilityClasses.dart';
+import 'package:course_gnome/services/Networking.dart';
 
-import 'package:course_gnome/utilities/Utilities.dart';
-import 'package:course_gnome/utilities/Networking.dart';
+import 'package:course_gnome_mobile/ui/CalendarPage.dart';
+import 'package:course_gnome_mobile/ui/ProfilePage.dart';
+import 'package:course_gnome_mobile/ui/custom/CGExpansionTile.dart';
+import 'package:course_gnome_mobile/utilities/UtilitiesClasses.dart';
 
 class SearchPage extends StatefulWidget {
   final Calendars calendars;
@@ -135,7 +135,7 @@ class _SearchPageState extends State<SearchPage> {
                     toggleOffering: widget.toggleOffering,
                     course: widget.courseResults.results[i],
                     borderRadius: _borderRadius,
-                    color: CGColors.array[i % CGColors.array.length],
+                    color: TriColor(CGColors.array[i % CGColors.array.length]),
                   );
                 },
                 addAutomaticKeepAlives: true,
@@ -206,7 +206,7 @@ class _SearchPageState extends State<SearchPage> {
         Icons.expand_more,
         color: Colors.white,
       ),
-      color: CGColors.cgred,
+      color: CGColor.cgred,
       label: Text(
         'Load More',
         style: TextStyle(
@@ -225,7 +225,7 @@ class _SearchPageState extends State<SearchPage> {
           padding: EdgeInsets.all(12.0),
           child: CircularProgressIndicator(
             valueColor: AlwaysStoppedAnimation(
-              CGColors.cgred,
+              CGColor.cgred,
             ),
           ),
         ),
@@ -269,7 +269,7 @@ class _CalendarCounterState extends State<CalendarCounter> {
                         ? BoxDecoration(
                             shape: BoxShape.circle,
                             color: Colors.white,
-                            border: Border.all(color: CGColors.cgred, width: 4))
+                            border: Border.all(color: CGColor.cgred, width: 4))
                         : null,
                     width: 28,
                     height: 28,
@@ -286,7 +286,7 @@ class _CalendarCounterState extends State<CalendarCounter> {
                                 .toString(),
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                color: CGColors.cgred),
+                                color: CGColor.cgred),
                           )
                         : Container(),
                   )
@@ -310,7 +310,7 @@ class Filters extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(10),
-      color: CGColors.cgred,
+      color: CGColor.cgred,
       child: Column(
 //            mainAxisSize: MainAxisSize.min,
         children: <Widget>[
@@ -387,7 +387,7 @@ class CourseCard extends StatelessWidget {
   final Calendar currentCalendar;
   final Course course;
   final double borderRadius;
-  final CGColor color;
+  final TriColor color;
 
   CourseCard({
     this.toggleOffering,
@@ -611,7 +611,7 @@ class ClassTimeRow extends StatelessWidget {
 }
 
 class ExtraInfoContainer extends StatelessWidget {
-  final CGColor color;
+  final TriColor color;
   final Offering offering;
   final Course course;
 
@@ -658,7 +658,7 @@ class ExtraInfoContainer extends StatelessWidget {
         offering.linkedOfferings != null
             ? Container(
                 padding: EdgeInsets.fromLTRB(15, 10, 15, 5),
-                color: CGColors.lightGray,
+                color: CGColor.lightGray,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[

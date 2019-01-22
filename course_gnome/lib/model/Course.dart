@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:course_gnome/model/UtilityClasses.dart';
 
 class Course {
   String departmentAcronym,

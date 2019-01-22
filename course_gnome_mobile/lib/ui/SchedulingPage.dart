@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-import 'package:course_gnome/ui/SearchPage.dart';
-import 'package:course_gnome/ui/CalendarPage.dart';
-
 import 'package:course_gnome/model/Calendar.dart';
 import 'package:course_gnome/model/Course.dart';
+import 'package:course_gnome/model/UtilityClasses.dart';
+import 'package:course_gnome/services/Networking.dart';
 
-import 'package:course_gnome/utilities/Utilities.dart';
-import 'package:course_gnome/utilities/Networking.dart';
+import 'package:course_gnome_mobile/ui/SearchPage.dart';
+import 'package:course_gnome_mobile/ui/CalendarPage.dart';
+import 'package:course_gnome_mobile/utilities/UtilitiesClasses.dart';
 
 class SchedulingPage extends StatefulWidget {
   @override

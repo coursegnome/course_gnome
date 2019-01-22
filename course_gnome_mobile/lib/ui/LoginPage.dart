@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
 import 'package:firebase_core/firebase_core.dart';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 
-import 'package:course_gnome/utilities/Utilities.dart';
-import 'package:course_gnome/ui/SearchPage.dart';
+import 'package:course_gnome/model/UtilityClasses.dart';
+
+import 'package:course_gnome_mobile/ui/SearchPage.dart';
 
 class LoginPage extends StatefulWidget {
   final FirebaseAuth _auth = FirebaseAuth.instance;

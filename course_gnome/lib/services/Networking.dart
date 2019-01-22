@@ -1,8 +1,9 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
 
-import 'package:cloud_functions/cloud_functions.dart';
+import 'package:http/http.dart' as http;
 
 import 'package:course_gnome/model/Course.dart';
+import 'package:course_gnome/model/UtilityClasses.dart';
 
 class SearchObject {
   String name;
@@ -91,28 +92,21 @@ class Networking {
     );
   }
 
+  static const getCoursesURL = 'https://us-central1-course-gnome.cloudfunctions.net/getCourses';
+
   static Future<CourseResults> getCourses(
       SearchObject searchObject, int offset) async {
     try {
-//      final dynamic resp = await CloudFunctions.instance.call(
-//        functionName: 'getCourses',
-//        parameters: <String, dynamic>{
-//          'name': searchObject.name,
-//          'limit': 10,
-//          'offset': offset,
-//        },
-//      );
-//      final coursesJson = resp['courses'];
+      final Map<String, dynamic> params = {
+        'name': searchObject.name,
+        'limit': 10,
+        'offset': offset,
+      };
+      final resp = http.post(getCoursesURL, body: params);
+//      final coursesJson = resp.body['courses'];
 //      final courses = jsonDecode(coursesJson);
-//      return CourseResults(results: _parseCourses(courses), total: resp['count']);
-
+//      return CourseResults(results: _parseCourses(courses), total: resp.body['count']);
       return CourseResults(results: _parseCourses(dummyJson), total: 9);
-    } on CloudFunctionsException catch (e) {
-      print('caught firebase functions exception');
-      print(e.code);
-      print(e.message);
-      print(e.details);
-      return null;
     } catch (e) {
       print('caught generic exception');
       print(e);

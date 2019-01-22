@@ -4,6 +4,8 @@ import 'dart:async';
 
 import 'package:course_gnome/model/Calendar.dart';
 
+import 'package:course_gnome_mobile/utilities/UtilitiesClasses.dart';
+
 class CalendarPage extends StatefulWidget {
   final Calendars _calendars;
   final TextEditingController _calendarNameController;
@@ -527,12 +529,15 @@ class _ClassBlockWidgetState extends State<ClassBlockWidget> {
   @override
   Widget build(BuildContext context) {
     final height = widget.classBlock.height * widget.hourHeight;
+    final color = FlutterTriColor(widget.classBlock.color);
+    print(widget.classBlock.color.light);
+    print(FlutterTriColor(widget.classBlock.color).light);
     return Opacity(
       opacity: widget.hover ? 0.5 : 1,
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
-          color: widget.classBlock.color.light.withOpacity(0.75),
+          color: color.light.withOpacity(0.75),
         ),
         margin: EdgeInsets.only(top: calculateOffset()),
         height: height + (widget.hover ? hoverSizeIncrease : 0),
@@ -545,7 +550,7 @@ class _ClassBlockWidgetState extends State<ClassBlockWidget> {
               Container(
                 height: 3,
                 decoration: BoxDecoration(
-                    color: widget.classBlock.color.med,
+                    color: color.med,
                     borderRadius: BorderRadius.only(
                         topRight: Radius.circular(borderRadius),
                         topLeft: Radius.circular(borderRadius))),
@@ -558,19 +563,19 @@ class _ClassBlockWidgetState extends State<ClassBlockWidget> {
                     children: [
                       Text(
                         widget.classBlock.departmentInfo,
-                        style: TextStyle(color: widget.classBlock.color.med),
+                        style: TextStyle(color: color.med),
                       ),
                       Text(
                         widget.classBlock.id,
                         style: TextStyle(
-                            color: widget.classBlock.color.med,
+                            color: color.med,
                             fontWeight: FontWeight.bold),
                       ),
                       height > heightBreakpoint * widget.hourHeight
                           ? Text(
                               widget.classBlock.name,
                               style:
-                                  TextStyle(color: widget.classBlock.color.med),
+                                  TextStyle(color:color.med),
                             )
                           : Container(),
                     ],

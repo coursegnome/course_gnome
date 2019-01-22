@@ -1,15 +1,26 @@
 import 'package:flutter/material.dart';
-
-class TriColor {
-  Color light, med, dark;
-  TriColor(List<String> colors) {
-    this.light = Color(int.parse('0xff${colors[0]}'));
-    this.med = Color(int.parse('0xff${colors[1]}'));
-    this.dark = Color(int.parse('0xff${colors[2]}'));
-  }
-}
+import 'package:course_gnome/model/UtilityClasses.dart';
 
 class CGColor {
   static final cgred = Color(0xffD50110);
   static final lightGray = Color(0xffFAFAFA);
+}
+
+class FlutterTriColor {
+  static Color toFlutter(String color) => Color(int.parse('0xff$color'));
+  Color light, med, dark;
+  FlutterTriColor(TriColor color) {
+//    print(color.light);
+//    print(toFlutter(color.light));
+    this.light = toFlutter(color.light);
+    this.med = toFlutter(color.med);
+    this.dark = toFlutter(color.dark);
+  }
+  TriColor toTriColor() {
+    return TriColor(
+      light.toString().substring(10, light.toString().length - 1),
+      med.toString().substring(10, med.toString().length - 1),
+      dark.toString().substring(10, dark.toString().length - 1),
+    );
+  }
 }

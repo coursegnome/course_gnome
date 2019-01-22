@@ -7,8 +7,8 @@ Course Gnome for mobile.
 ### Imports
 Imports should be entered in this hierarchy:
 ```
-1. Flutter
-2. Other packages
-3. Shared dart code
-4. Flutter code
+1. Flutter + dart core
+2. Other pub packages
+3. Shared Course Gnome code
+4. Flutter specific Course Gnome code
 ```

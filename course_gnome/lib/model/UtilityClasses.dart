@@ -1,30 +1,36 @@
 class CGColors {
 
-  static final cgred = 'D50110';
-  static final lightGray = 'FAFAFA';
+  static String toFlutterHex (String color) => '0xff$color';
+  static String toWebHex (String color) => '#$color';
 
-  static final red = const ['FCE6EA', 'D74660', '96263A'];
-  static final orange = const ['FDEADC', 'E4813D', 'A05320'];
-  static final gold = const ['FDF0D4', 'E1AC3D', '9E7520'];
-  static final green = const ['E3F6EC', '30B36E', '157A45'];
-  static final turquoise = const ['DAF4F2', '21AEA8', '0A7671'];
-  static final lightblue = const ['D8ECF7', '298BC7', '1D618B'];
-  static final darkblue = const ['DAE3F7', '335EC3', '244289'];
-  static final purple = const ['E9DFF6', '7C4DBE', '573685'];
-  static final gray = const ['DEE2E8', '455C78', '304154'];
-
-  static final array = [
-    red,
-    orange,
-    gold,
-    green,
-    turquoise,
-    lightblue,
-    darkblue,
-    purple,
-    gray
+  static const array = [
+    TriColor('FCE6EA', 'D74660', '96263A'),
+    TriColor('FDEADC', 'E4813D', 'A05320'),
+    TriColor('FDF0D4', 'E1AC3D', '9E7520'),
+    TriColor('E3F6EC', '30B36E', '157A45'),
+    TriColor('DAF4F2', '21AEA8', '0A7671'),
+    TriColor('D8ECF7', '298BC7', '1D618B'),
+    TriColor('DAE3F7', '335EC3', '244289'),
+    TriColor('E9DFF6', '7C4DBE', '573685'),
+    TriColor('DEE2E8', '455C78', '304154'),
   ];
 
+}
+
+class TriColor {
+  final String light, med, dark;
+
+  const TriColor(this.light, this.med, this.dark);
+
+  factory TriColor.fromJson(Map<String, dynamic> json) {
+    return TriColor(json["light"], json["med"], json["dark"]);
+  }
+
+  Map<String, dynamic> toJson() => {
+    'light': light,
+    'med': med,
+    'dark': dark,
+  };
 }
 
 class Helper {

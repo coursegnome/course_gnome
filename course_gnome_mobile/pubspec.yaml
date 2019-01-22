@@ -16,7 +16,7 @@ dependencies:
   cloud_functions: ^0.0.5
   font_awesome_flutter: ^8.2.0
   firebase_auth: ^0.6.6
-  flutter_facebook_login: ^1.1.1
+#  flutter_facebook_login: ^1.1.1
 #  firebase_analytics: ^1.0.6
 
   course_gnome:

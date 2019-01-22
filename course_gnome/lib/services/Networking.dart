@@ -102,7 +102,7 @@ class Networking {
         'limit': 10,
         'offset': offset,
       };
-      final resp = http.post(getCoursesURL, body: params);
+//      final resp = http.post(getCoursesURL, body: params);
 //      final coursesJson = resp.body['courses'];
 //      final courses = jsonDecode(coursesJson);
 //      return CourseResults(results: _parseCourses(courses), total: resp.body['count']);

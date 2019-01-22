@@ -1,8 +1,8 @@
 import 'dart:collection';
 import 'dart:convert';
 
-import 'package:course_gnome/model/UtilityClasses.dart';
-import 'package:course_gnome/model/Course.dart';
+import 'UtilityClasses.dart';
+import 'Course.dart';
 
 class Calendars {
   static const String initialCalName = "My Calendar";
@@ -29,16 +29,11 @@ class Calendars {
         'currentCalendarIndex': currentCalendarIndex,
       };
 
-  init() async {
-    final sp = await SharedPreferences.getInstance();
-//    sp.clear();
-    final jsonString = sp.getString("calendars");
+  init({jsonString}) async {
     if (jsonString == null) {
-//      print('No saved cals, create initial one');
       this.addCalendar(initialCalName);
       return;
     }
-//    print('Load saved cals');
     final Map<String, dynamic> json = jsonDecode(jsonString);
     currentCalendarIndex = json['currentCalendarIndex'];
     final List<dynamic> calendars = json['list'];
@@ -60,8 +55,8 @@ class Calendars {
   }
 
   _calendarsUpdated() async {
-    final sp = await SharedPreferences.getInstance();
-    sp.setString("calendars", jsonEncode(this));
+//    final sp = await SharedPreferences.getInstance();
+//    sp.setString("calendars", jsonEncode(this));
   }
 }
 
@@ -101,7 +96,7 @@ class Calendar {
         'blocksByDay': blocksByDay,
       };
 
-  toggleOffering(Course course, Offering offering, CGColor color) {
+  toggleOffering(Course course, Offering offering, TriColor color) {
     if (ids.contains(offering.crn)) {
       removeOffering(offering.crn);
     } else {
@@ -109,7 +104,7 @@ class Calendar {
     }
   }
 
-  addOffering(Course course, Offering offering, CGColor color) {
+  addOffering(Course course, Offering offering, TriColor color) {
     ids.add(offering.crn);
     for (var classTime in offering.classTimes) {
       final offset = classTime.startTime.hour + classTime.startTime.minute / 60;
@@ -139,7 +134,7 @@ class Calendar {
 class ClassBlock {
   double offset, height;
   String departmentInfo, id, name;
-  CGColor color;
+  TriColor color;
 
   ClassBlock(this.offset, this.height, this.departmentInfo, this.id, this.name,
       this.color);
@@ -150,7 +145,7 @@ class ClassBlock {
     departmentInfo = json['departmentInfo'];
     id = json['id'];
     name = json['name'];
-    color = CGColor(json["color-light"], json["color-med"], json["color-dark"]);
+    color = TriColor.fromJson(json["color"]);
   }
 
   Map<String, dynamic> toJson() => {
@@ -159,8 +154,6 @@ class ClassBlock {
         'departmentInfo': departmentInfo,
         'id': id,
         'name': name,
-        'color-light': color.light.value,
-        'color-med': color.med.value,
-        'color-dark': color.dark.value,
+        'color': color,
       };
 }

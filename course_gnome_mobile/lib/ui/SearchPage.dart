@@ -135,7 +135,7 @@ class _SearchPageState extends State<SearchPage> {
                     toggleOffering: widget.toggleOffering,
                     course: widget.courseResults.results[i],
                     borderRadius: _borderRadius,
-                    color: TriColor(CGColors.array[i % CGColors.array.length]),
+                    color: FlutterTriColor(CGColors.array[i % CGColors.array.length]),
                   );
                 },
                 addAutomaticKeepAlives: true,
@@ -387,7 +387,7 @@ class CourseCard extends StatelessWidget {
   final Calendar currentCalendar;
   final Course course;
   final double borderRadius;
-  final TriColor color;
+  final FlutterTriColor color;
 
   CourseCard({
     this.toggleOffering,
@@ -400,7 +400,6 @@ class CourseCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      right: false,
       bottom: false,
       child: Card(
         margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
@@ -495,7 +494,7 @@ class OfferingRow extends StatelessWidget {
     final width = MediaQuery.of(context).size.width;
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
-      print(constraints.maxWidth);
+//      print(constraints.maxWidth);
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -611,7 +610,7 @@ class ClassTimeRow extends StatelessWidget {
 }
 
 class ExtraInfoContainer extends StatelessWidget {
-  final TriColor color;
+  final FlutterTriColor color;
   final Offering offering;
   final Course course;
 

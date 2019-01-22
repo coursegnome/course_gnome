@@ -19,6 +19,9 @@
 # Visual Studio Code related
 .vscode/
 
+# Android studio
+.idea
+
 # Flutter repo-specific
 /bin/cache/
 /bin/mingit/
@@ -88,3 +91,7 @@ unlinked_spec.ds
 !**/ios/**/default.pbxuser
 !**/ios/**/default.perspectivev3
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
+.idea/codeStyles/Project.xml
+.idea/libraries/Dart_Packages.xml
+.idea/libraries/Dart_SDK.xml
+.idea/libraries/Dart_Packages.xml

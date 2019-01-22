@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:course_gnome/model/Calendar.dart';
 import 'package:course_gnome/model/Course.dart';
 import 'package:course_gnome/model/UtilityClasses.dart';
@@ -39,7 +41,10 @@ class _SchedulingPageState extends State<SchedulingPage>
   }
 
   initCal() async {
-    await _calendars.init();
+    final sp = await SharedPreferences.getInstance();
+//    sp.clear();
+    final json = sp.getString("calendars");
+    await _calendars.init(jsonString: json);
     _tabController = TabController(
       length: _calendars.list.length,
       vsync: this,
@@ -63,10 +68,10 @@ class _SchedulingPageState extends State<SchedulingPage>
   }
 
   // Search Page logic
-  _toggleOffering(Course course, Offering offering, CGColor color) {
+  _toggleOffering(Course course, Offering offering, FlutterTriColor color) {
     setState(() {
       _calendars.list[_calendars.currentCalendarIndex]
-          .toggleOffering(course, offering, color);
+          .toggleOffering(course, offering, color.toTriColor());
     });
   }
 
@@ -117,7 +122,7 @@ class _SchedulingPageState extends State<SchedulingPage>
     setState(() {
       _calendars.currentCalendarIndex = _tabController.index;
     });
-    print(_tabController.index);
+//    print(_tabController.index);
   }
 
   _addCalendar() {
@@ -169,7 +174,7 @@ class _SchedulingPageState extends State<SchedulingPage>
 
   @override
   Widget build(BuildContext context) {
-    print(MediaQuery.of(context).size.width);
+//    print(MediaQuery.of(context).size.width);
     _inSplitView = MediaQuery.of(context).size.width > Breakpoints.lg;
     final search = SearchPage(
       calendars: _calendars,

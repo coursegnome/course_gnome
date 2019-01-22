@@ -1,0 +1,48 @@
+name: course_gnome
+description: Discover college courses and plan your schedule with Course Gnome.
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.0.0-dev.68.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  url_launcher: ^4.0.2
+  shared_preferences: ^0.4.3
+  firebase_core: ^0.2.5
+  cloud_functions: ^0.0.5
+  font_awesome_flutter: ^8.2.0
+  firebase_auth: ^0.6.6
+  flutter_facebook_login: ^1.1.1
+#  firebase_analytics: ^1.0.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_launcher_icons: ^0.7.0
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon.png"
+  adaptive_icon_background: "#ffffff"
+
+flutter:
+  uses-material-design: true
+
+  # To add assets to your application, add an assets section, like this:
+  assets:
+    - icon.png
+    - assets/images/
+
+  fonts:
+  - family: Lato
+    fonts:
+    - asset: assets/fonts/Lato-Regular.ttf
+    - asset: assets/fonts/Lato-Light.ttf
+      weight: 300
+    - asset: assets/fonts/Lato-Bold.ttf
+      weight: 700

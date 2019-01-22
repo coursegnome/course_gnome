@@ -1,0 +1,23 @@
+<div class="material-content">
+    <header class="material-header">
+        <div class="material-header-row">
+            <material-button icon>
+                <material-icon icon="person"></material-icon>
+            </material-button>
+            <span class="material-header-title">{{ title }}</span>
+            <div class="material-spacer"></div>
+            <material-button icon>
+                <material-icon icon="filter_list"></material-icon>
+            </material-button>
+            <material-button icon>
+                <material-icon icon="calendar_today"></material-icon>
+            </material-button>
+        </div>
+    </header>
+</div>
+    <div id="search-container">
+        <input class="form-control" placeholder="Search for anything">
+    </div>
+<div class = 'course-results'>
+    <course-card *ngFor="let course of courses"></course-card>
+</div>

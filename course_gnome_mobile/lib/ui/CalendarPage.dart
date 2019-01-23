@@ -3,30 +3,31 @@ import 'package:flutter/services.dart';
 import 'dart:async';
 
 import 'package:course_gnome/model/Calendar.dart';
+import 'package:course_gnome/model/UtilityClasses.dart';
+import 'package:course_gnome/controller/SchedulingPageController.dart';
 
 import 'package:course_gnome_mobile/utilities/UtilitiesClasses.dart';
 
 class CalendarPage extends StatefulWidget {
-  final Calendars _calendars;
-  final TextEditingController _calendarNameController;
-  final TabController _tabController;
-  final Function _removeOffering;
-  final bool _inSplitView;
-  final VoidCallback _addCalendar,
-      _editCalendar,
-      _deleteCalendar,
-      _toggleActivePage;
+  final SchedulingPageController schedulingPageController;
+  final TextEditingController calendarNameController;
+  final TabController tabController;
+  final Function removeOffering;
+  final VoidCallback addCalendar,
+      editCalendar,
+      deleteCalendar,
+      toggleActivePage;
 
-  CalendarPage(
-    this._calendars,
-    this._calendarNameController,
-    this._tabController,
-    this._addCalendar,
-    this._editCalendar,
-    this._deleteCalendar,
-    this._removeOffering,
-    this._inSplitView,
-    this._toggleActivePage,
+  CalendarPage({
+    this.schedulingPageController,
+    this.calendarNameController,
+    this.tabController,
+    this.addCalendar,
+    this.editCalendar,
+    this.deleteCalendar,
+    this.removeOffering,
+    this.toggleActivePage,
+  }
   );
 
   @override
@@ -102,14 +103,14 @@ class _CalendarPageState extends State<CalendarPage> {
   Widget _textField() {
     return TextField(
       autofocus: true,
-      controller: widget._calendarNameController,
+      controller: widget.calendarNameController,
       textCapitalization: TextCapitalization.words,
-      onSubmitted: (text) => widget._addCalendar(),
+      onSubmitted: (text) => widget.addCalendar(),
       maxLength: 20,
       maxLengthEnforced: true,
       style: Theme.of(context).textTheme.headline,
       decoration: InputDecoration(
-        suffixIcon: widget._calendarNameController.text.isNotEmpty
+        suffixIcon: widget.calendarNameController.text.isNotEmpty
             ? IconButton(
                 icon: const Icon(
                   Icons.clear,
@@ -117,7 +118,7 @@ class _CalendarPageState extends State<CalendarPage> {
                 ),
                 onPressed: () {
                   setState(() {
-                    widget._calendarNameController.clear();
+                    widget.calendarNameController.clear();
                   });
                 },
               )
@@ -132,22 +133,22 @@ class _CalendarPageState extends State<CalendarPage> {
       _textField(),
       'Add',
       'Cancel',
-      widget._addCalendar,
+      widget.addCalendar,
       () => Navigator.pop(context),
     );
   }
 
   _showEditCalendarDialog() {
-    widget._calendarNameController.text =
-        widget._calendars.list[widget._calendars.currentCalendarIndex].name;
+    widget.calendarNameController.text =
+        widget.schedulingPageController.calendars.list[widget.schedulingPageController.calendars.currentCalendarIndex].name;
     _showDialog(
       'Edit Calendar',
       _textField(),
       'Save',
       'Cancel',
-      widget._editCalendar,
+      widget.editCalendar,
       () {
-        widget._calendarNameController.clear();
+        widget.calendarNameController.clear();
         Navigator.pop(context);
       },
     );
@@ -157,11 +158,11 @@ class _CalendarPageState extends State<CalendarPage> {
     _showDialog(
       'Delete Calendar',
       Text('Delete calendar ' +
-          widget._calendars.list[widget._calendars.currentCalendarIndex].name +
+          widget.schedulingPageController.calendars.list[widget.schedulingPageController.calendars.currentCalendarIndex].name +
           '?'),
       'Delete',
       'Cancel',
-      widget._deleteCalendar,
+      widget.deleteCalendar,
       () => Navigator.pop(context),
     );
   }
@@ -195,10 +196,10 @@ class _CalendarPageState extends State<CalendarPage> {
       appBar: AppBar(
         elevation: 0,
         title: Text('Calendar'),
-        leading: !widget._inSplitView
+        leading: MediaQuery.of(context).size.width < Breakpoints.lg
             ? IconButton(
                 icon: Icon(Icons.arrow_back_ios),
-                onPressed: widget._toggleActivePage)
+                onPressed: widget.toggleActivePage)
             : null,
         actions: [
           IconButton(
@@ -207,27 +208,27 @@ class _CalendarPageState extends State<CalendarPage> {
           IconButton(
               icon: Icon(Icons.edit),
               onPressed: () => _showEditCalendarDialog()),
-          widget._calendars.list.length > 1
+          widget.schedulingPageController.calendars.list.length > 1
               ? IconButton(
                   icon: Icon(Icons.remove_circle_outline),
                   onPressed: () => _showDeleteCalendarDialog())
               : Container(),
         ],
         bottom: TabBar(
-          controller: widget._tabController,
+          controller: widget.tabController,
           isScrollable: true,
           indicatorColor: Colors.white,
           tabs: List.generate(
-            widget._calendars.list.length,
-            (i) => Tab(text: widget._calendars.list[i].name),
+            widget.schedulingPageController.calendars.list.length,
+            (i) => Tab(text: widget.schedulingPageController.calendars.list[i].name),
           ),
         ),
       ),
       body: TabBarView(
         physics: NeverScrollableScrollPhysics(),
-        controller: widget._tabController,
+        controller: widget.tabController,
         children: List.generate(
-          widget._calendars.list.length,
+          widget.schedulingPageController.calendars.list.length,
           (i) => Column(
                 children: <Widget>[
                   DayList(dayCount, dayWidth, dayController),
@@ -246,8 +247,8 @@ class _CalendarPageState extends State<CalendarPage> {
                               hourHeight,
                               horizontalCalController,
                               verticalCalController,
-                              widget._calendars.list[i],
-                              widget._removeOffering),
+                              widget.schedulingPageController.calendars.list[i],
+                              widget.removeOffering),
                         ],
                       ),
                     ),

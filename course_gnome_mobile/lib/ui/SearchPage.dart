@@ -6,34 +6,22 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:course_gnome/model/Calendar.dart';
 import 'package:course_gnome/model/Course.dart';
 import 'package:course_gnome/model/UtilityClasses.dart';
+import 'package:course_gnome/controller/SchedulingPageController.dart';
 import 'package:course_gnome/services/Networking.dart';
 
-import 'package:course_gnome_mobile/ui/CalendarPage.dart';
-import 'package:course_gnome_mobile/ui/ProfilePage.dart';
 import 'package:course_gnome_mobile/ui/custom/CGExpansionTile.dart';
 import 'package:course_gnome_mobile/utilities/UtilitiesClasses.dart';
 
 class SearchPage extends StatefulWidget {
-  final Calendars calendars;
-  final Function toggleOffering;
-  final bool inSplitView;
-  final VoidCallback toggleActivePage, clearResults;
-  final Function loadMoreResults, search;
-  final SearchObject searchObject;
-  final CourseResults courseResults;
-  final int offset;
-
-  SearchPage(
-      {this.calendars,
-      this.toggleOffering,
-      this.inSplitView,
-      this.toggleActivePage,
-      this.loadMoreResults,
-      this.clearResults,
-      this.search,
-      this.searchObject,
-      this.courseResults,
-      this.offset});
+  final SchedulingPageController schedulingPageController;
+  final VoidCallback toggleActivePage, clearResults, loadMoreResults, getSearchResults;
+  SearchPage({
+    this.schedulingPageController,
+    this.toggleActivePage,
+    this.loadMoreResults,
+    this.clearResults,
+    this.getSearchResults,
+  });
 
   @override
   _SearchPageState createState() => _SearchPageState();
@@ -44,27 +32,6 @@ class _SearchPageState extends State<SearchPage> {
   final _searchTextFieldController = TextEditingController();
   var _searching = false;
   var _showingSearchResults = false;
-
-  _search(String name) async {
-    setState(() {
-      _showingSearchResults = false;
-      _searching = true;
-    });
-    await widget.search(name);
-    setState(() {
-      _searching = false;
-    });
-  }
-
-  _loadMoreResults() async {
-    setState(() {
-      _searching = true;
-    });
-    await widget.loadMoreResults();
-    setState(() {
-      _searching = false;
-    });
-  }
 
   _clearSearch() {
     _searchTextFieldController.clear();
@@ -83,11 +50,6 @@ class _SearchPageState extends State<SearchPage> {
     });
     FocusScope.of(context).requestFocus(new FocusNode());
   }
-
-//  @override
-//  void initState() {
-//    super.initState();
-//  }
 
   @override
   Widget build(BuildContext context) {
@@ -110,8 +72,8 @@ class _SearchPageState extends State<SearchPage> {
             icon: Icon(Icons.filter_list),
             onPressed: () {},
           ),
-          !widget.inSplitView
-              ? CalendarCounter(widget.calendars, widget.toggleActivePage)
+          MediaQuery.of(context).size.width < Breakpoints.lg
+              ? CalendarCounter(widget.schedulingPageController.calendars, widget.toggleActivePage)
               : Container(),
         ],
       ),
@@ -131,15 +93,16 @@ class _SearchPageState extends State<SearchPage> {
                 (BuildContext context, int i) {
                   return CourseCard(
                     currentCalendar: widget
-                        .calendars.list[widget.calendars.currentCalendarIndex],
-                    toggleOffering: widget.toggleOffering,
-                    course: widget.courseResults.results[i],
+                        .schedulingPageController.calendars.currentCalendar(),
+                    toggleOffering: widget.schedulingPageController.toggleOffering,
+                    course: widget.schedulingPageController.searchResults.results[i],
                     borderRadius: _borderRadius,
-                    color: FlutterTriColor(CGColors.array[i % CGColors.array.length]),
+                    color: FlutterTriColor(
+                        CGColors.array[i % CGColors.array.length]),
                   );
                 },
                 addAutomaticKeepAlives: true,
-                childCount: widget.courseResults.results.length,
+                childCount: widget.schedulingPageController.searchResults.results.length,
               ),
             ),
             SliverPadding(
@@ -150,7 +113,7 @@ class _SearchPageState extends State<SearchPage> {
                     Column(
                       children: [
                         !_searching
-                            ? widget.courseResults.total > widget.offset + 10
+                            ? widget.schedulingPageController.searchResults.total > widget.schedulingPageController.searchObject.offset + 10
                                 ? _loadMoreButton()
                                 : Container()
                             : _progressIndicator()
@@ -173,7 +136,7 @@ class _SearchPageState extends State<SearchPage> {
         child: TextField(
           onTap: _onSearchFieldTap,
           controller: _searchTextFieldController,
-          onSubmitted: (text) => _search(text),
+          onSubmitted: (text) => widget.getSearchResults(),
           decoration: InputDecoration(
             border: InputBorder.none,
             hintText: 'Search for anything',
@@ -212,7 +175,7 @@ class _SearchPageState extends State<SearchPage> {
         style: TextStyle(
             color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
       ),
-      onPressed: _loadMoreResults,
+      onPressed: widget.loadMoreResults,
     );
   }
 
@@ -340,7 +303,9 @@ class Filters extends StatelessWidget {
                       Departments.departments.length,
                       (i) => GestureDetector(
                             onTap: () {
-                              updateSearchObject(SearchObject(departmentAcronym: Departments.departments[i]['acronym']));
+                              updateSearchObject(SearchObject(
+                                  departmentAcronym: Departments.departments[i]
+                                      ['acronym']));
                             },
                             child: Container(
                               padding: EdgeInsets.all(6),

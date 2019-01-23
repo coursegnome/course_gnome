@@ -9,7 +9,6 @@ class Calendars {
 
   int currentCalendarIndex;
   List<Calendar> list;
-
   Calendar currentCalendar() => list[currentCalendarIndex];
 
   Calendars() {
@@ -29,17 +28,27 @@ class Calendars {
         'currentCalendarIndex': currentCalendarIndex,
       };
 
-  init({jsonString}) async {
+  static Calendars init (String jsonString) {
     if (jsonString == null) {
-      this.addCalendar(initialCalName);
-      return;
+      final calendars = Calendars();
+      calendars.addCalendar(initialCalName);
+      return calendars;
     }
     final Map<String, dynamic> json = jsonDecode(jsonString);
-    currentCalendarIndex = json['currentCalendarIndex'];
-    final List<dynamic> calendars = json['list'];
-    calendars
-        .forEach((cal) => list.add(Calendar.fromJson(cal, _calendarsUpdated)));
+    return Calendars.fromJson(json);
   }
+
+//  init(jsonString) async {
+//    if (jsonString == null) {
+//      this.addCalendar(initialCalName);
+//      return;
+//    }
+//    final Map<String, dynamic> json = jsonDecode(jsonString);
+//    currentCalendarIndex = json['currentCalendarIndex'];
+//    final List<dynamic> calendars = json['list'];
+//    calendars
+//        .forEach((cal) => list.add(Calendar.fromJson(cal, _calendarsUpdated)));
+//  }
 
   addCalendar(String name) {
     final cal = Calendar(_calendarsUpdated, name);
@@ -100,11 +109,11 @@ class Calendar {
     if (ids.contains(offering.crn)) {
       removeOffering(offering.crn);
     } else {
-      addOffering(course, offering, color);
+      _addOffering(course, offering, color);
     }
   }
 
-  addOffering(Course course, Offering offering, TriColor color) {
+  _addOffering(Course course, Offering offering, TriColor color) {
     ids.add(offering.crn);
     for (var classTime in offering.classTimes) {
       final offset = classTime.startTime.hour + classTime.startTime.minute / 60;

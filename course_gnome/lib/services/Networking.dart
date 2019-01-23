@@ -6,20 +6,18 @@ import 'package:course_gnome/model/Course.dart';
 import 'package:course_gnome/model/UtilityClasses.dart';
 
 class SearchObject {
-
   int offset = 0;
-
   String name;
   String departmentAcronym;
 
   SearchObject({this.name, this.departmentAcronym});
 }
 
-class CourseResults {
+class SearchResults {
   int total = 0;
   List<Course> results = [];
 
-  CourseResults({this.total, this.results});
+  SearchResults({this.total, this.results});
 
   clear() {
     total = 0;
@@ -95,21 +93,22 @@ class Networking {
     );
   }
 
-  static const getCoursesURL = 'https://us-central1-course-gnome.cloudfunctions.net/getCourses';
+  static const getCoursesURL =
+      'https://us-central1-course-gnome.cloudfunctions.net/getCourses';
 
-  static Future<CourseResults> getCourses(
-      SearchObject searchObject, int offset) async {
+  static Future<SearchResults> getCourses(
+      SearchObject searchObject) async {
     try {
       final Map<String, dynamic> params = {
         'name': searchObject.name,
         'limit': 10,
-        'offset': offset,
+        'offset': searchObject.offset,
       };
 //      final resp = http.post(getCoursesURL, body: params);
 //      final coursesJson = resp.body['courses'];
 //      final courses = jsonDecode(coursesJson);
-//      return CourseResults(results: _parseCourses(courses), total: resp.body['count']);
-      return CourseResults(results: _parseCourses(dummyJson), total: 9);
+//      return SearchResults(results: _parseCourses(courses), total: resp.body['count']);
+      return SearchResults(results: _parseCourses(dummyJson), total: 9);
     } catch (e) {
       print('caught generic exception');
       print(e);

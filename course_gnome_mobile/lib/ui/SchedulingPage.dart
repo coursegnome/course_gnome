@@ -63,7 +63,7 @@ class _SchedulingPageState extends State<SchedulingPage>
     _unfocusKeyboard();
     var _page = _pageController.page.round() == 0 ? 1 : 0;
     _pageController.animateToPage(_page,
-        duration: Duration(milliseconds: 400), curve: Curves.easeOut);
+        duration: Duration(milliseconds: 300), curve: Curves.easeOut);
   }
 
   _unfocusKeyboard() {

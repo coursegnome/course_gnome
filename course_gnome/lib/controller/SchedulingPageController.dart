@@ -31,6 +31,9 @@ class SchedulingPageController {
   // TODO test this for two/three cals, index checking
   deleteCurrentCalendar() {
     calendars.removeCalendar(calendars.currentCalendar());
+    if (calendars.currentCalendarIndex > 0) {
+      calendars.currentCalendarIndex--;
+    }
     calendarUpdated();
   }
 

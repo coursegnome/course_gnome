@@ -108,21 +108,21 @@ class _CalendarPageState extends State<CalendarPage> {
       maxLength: 20,
       maxLengthEnforced: true,
       style: Theme.of(context).textTheme.headline,
-      decoration: InputDecoration(
-        suffixIcon: widget.calendarNameController.text.isNotEmpty
-            ? IconButton(
-                icon: const Icon(
-                  Icons.clear,
-                  color: Colors.grey,
-                ),
-                onPressed: () {
-                  setState(() {
-                    widget.calendarNameController.clear();
-                  });
-                },
-              )
-            : Container(),
-      ),
+//      decoration: InputDecoration(
+//        suffixIcon: widget.calendarNameController.text.isNotEmpty
+//            ? IconButton(
+//                icon: const Icon(
+//                  Icons.clear,
+//                  color: Colors.grey,
+//                ),
+//                onPressed: () {
+//                  setState(() {
+//                    widget.calendarNameController.clear();
+//                  });
+//                },
+//              )
+//            : Container(),
+//      ),
     );
   }
 
@@ -539,8 +539,6 @@ class _ClassBlockWidgetState extends State<ClassBlockWidget> {
   Widget build(BuildContext context) {
     final height = widget.classBlock.height * widget.hourHeight;
     final color = FlutterTriColor(widget.classBlock.color);
-    print(widget.classBlock.color.light);
-    print(FlutterTriColor(widget.classBlock.color).light);
     return Opacity(
       opacity: widget.hover ? 0.5 : 1,
       child: Container(

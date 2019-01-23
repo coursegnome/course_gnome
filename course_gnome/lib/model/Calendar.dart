@@ -16,7 +16,6 @@ class Calendars {
   }
 
   Calendars.fromJson(Map<String, dynamic> json) {
-    print(json);
     currentCalendarIndex = json['currentCalendarIndex'];
     final List<dynamic> calendars = json['list'];
     list = [];
@@ -41,7 +40,6 @@ class Calendars {
   addCalendar(String name) {
     final cal = Calendar(name);
     list.add(cal);
-    // behavior for now is we set this calendar to be the current one
     currentCalendarIndex = list.length - 1;
   }
 

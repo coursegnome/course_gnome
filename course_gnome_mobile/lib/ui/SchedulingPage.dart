@@ -41,6 +41,9 @@ class _SchedulingPageState extends State<SchedulingPage>
     final jsonString = sp.getString("calendars");
     setState(() {
       _schedulingPageController.initCalendars(jsonString);
+      print(_schedulingPageController.calendars.list.length);
+      print(_schedulingPageController.calendars.currentCalendarIndex);
+
       _tabController = TabController(
         length: _schedulingPageController.calendars.list.length,
         vsync: this,
@@ -56,6 +59,7 @@ class _SchedulingPageState extends State<SchedulingPage>
   }
 
   _tabChanged() {
+    print(_tabController.index);
     _schedulingPageController.onCurrentCalendarChanged(_tabController.index);
   }
 
@@ -123,13 +127,57 @@ class _SchedulingPageState extends State<SchedulingPage>
   _deleteCurrentCalendar() {
     setState(() {
       _schedulingPageController.deleteCurrentCalendar();
-      _tabController = TabController(
-        length: _schedulingPageController.calendars.list.length,
-        vsync: this,
-      );
-      _tabController.addListener(_tabChanged);
+      if (_tabController.index > 0) {
+        _tabController = TabController(
+          length: _schedulingPageController.calendars.list.length,
+          vsync: this,
+        );
+      }
     });
+//    final calToDeleteIndex = _schedulingPageController.calendars.currentCalendarIndex];
+//    final animationOffset = _tabController.index > 0 ? -1 : 1;
+//    _tabController.animateTo(_tabController.index + animationOffset);
+//    setState(() {
+//      _schedulingPageController.calendars.list.removeAt(calToDelete);
+//    });
+//    setState(() {
+//      _schedulingPageController.deleteCurrentCalendar();
+//      _tabController = TabController(
+//        length: _schedulingPageController.calendars.list.length,
+//        vsync: this,
+//      );
+//      _tabController.addListener(_tabChanged);
+//    });
     Navigator.pop(context);
+
+//    print(_schedulingPageController.calendars.currentCalendarIndex);
+//    print(_schedulingPageController.calendars.list.length);
+//    setState(() {
+//      _schedulingPageController.deleteCurrentCalendar();
+//    });
+//    print(_schedulingPageController.calendars.currentCalendarIndex);
+//    print(_schedulingPageController.calendars.list.length);
+//
+//    _tabController = TabController(
+//      length: _schedulingPageController.calendars.list.length,
+//      vsync: this,
+//    );
+//    _tabController.addListener(_tabChanged);
+
+//    print(_schedulingPageController.calendars.list.length);
+//    if (_schedulingPageController.calendars.currentCalendarIndex == _schedulingPageController.calendars.list.length - 1) {
+//      _tabController.animateTo(_tabController.index-1);
+//    }
+//    setState(() {
+////      _schedulingPageController.deleteCurrentCalendar();
+////      print(_schedulingPageController.calendars.list.length);
+//      _tabController = TabController(
+//        length: _schedulingPageController.calendars.list.length,
+//        vsync: this,
+//      );
+//      _tabController.addListener(_tabChanged);
+//    });
+    
   }
 
   _removeOffering(String id) {

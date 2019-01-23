@@ -16,11 +16,11 @@ class Calendars {
   }
 
   Calendars.fromJson(Map<String, dynamic> json) {
+    print(json);
     currentCalendarIndex = json['currentCalendarIndex'];
-    final List<Map<String, dynamic>> calendars = json['list'];
+    final List<dynamic> calendars = json['list'];
     list = [];
-    calendars
-        .forEach((cal) => list.add(Calendar.fromJson(cal, _calendarsUpdated)));
+    calendars.forEach((cal) => list.add(Calendar.fromJson(cal)));
   }
 
   Map<String, dynamic> toJson() => {
@@ -28,7 +28,7 @@ class Calendars {
         'currentCalendarIndex': currentCalendarIndex,
       };
 
-  static Calendars init (String jsonString) {
+  static Calendars init(String jsonString) {
     if (jsonString == null) {
       final calendars = Calendars();
       calendars.addCalendar(initialCalName);
@@ -38,34 +38,15 @@ class Calendars {
     return Calendars.fromJson(json);
   }
 
-//  init(jsonString) async {
-//    if (jsonString == null) {
-//      this.addCalendar(initialCalName);
-//      return;
-//    }
-//    final Map<String, dynamic> json = jsonDecode(jsonString);
-//    currentCalendarIndex = json['currentCalendarIndex'];
-//    final List<dynamic> calendars = json['list'];
-//    calendars
-//        .forEach((cal) => list.add(Calendar.fromJson(cal, _calendarsUpdated)));
-//  }
-
   addCalendar(String name) {
-    final cal = Calendar(_calendarsUpdated, name);
+    final cal = Calendar(name);
     list.add(cal);
     // behavior for now is we set this calendar to be the current one
     currentCalendarIndex = list.length - 1;
-    _calendarsUpdated();
   }
 
   removeCalendar(Calendar calendar) {
     list.remove(calendar);
-    _calendarsUpdated();
-  }
-
-  _calendarsUpdated() async {
-//    final sp = await SharedPreferences.getInstance();
-//    sp.setString("calendars", jsonEncode(this));
   }
 }
 
@@ -73,17 +54,14 @@ class Calendar {
   String name;
   HashSet<String> ids;
   List<List<ClassBlock>> blocksByDay;
-  Function calendarUpdated;
 
-  Calendar(calendarUpdated, name) {
-    this.calendarUpdated = calendarUpdated;
+  Calendar(name) {
     this.name = name;
     ids = HashSet<String>();
     blocksByDay = List.generate(7, (i) => List<ClassBlock>());
   }
 
-  Calendar.fromJson(Map<String, dynamic> json, calendarUpdated) {
-    this.calendarUpdated = calendarUpdated;
+  Calendar.fromJson(Map<String, dynamic> json) {
     name = json['name'];
     ids = HashSet<String>();
     List idsList = json['ids'] as List;
@@ -130,13 +108,11 @@ class Calendar {
             offset, height, departmentInfo, offering.crn, course.name, color));
       }
     }
-    calendarUpdated();
   }
 
   removeOffering(String id) {
     ids.remove(id);
     blocksByDay.forEach((list) => list.removeWhere((block) => block.id == id));
-    calendarUpdated();
   }
 }
 

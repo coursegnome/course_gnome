@@ -14,13 +14,18 @@ import 'package:course_gnome_mobile/utilities/UtilitiesClasses.dart';
 
 class SearchPage extends StatefulWidget {
   final SchedulingPageController schedulingPageController;
-  final VoidCallback toggleActivePage, clearResults, loadMoreResults, getSearchResults;
+  final VoidCallback toggleActivePage,
+      clearResults,
+      loadMoreResults,
+      getSearchResults;
+  final Function toggleOffering;
   SearchPage({
-    this.schedulingPageController,
-    this.toggleActivePage,
-    this.loadMoreResults,
-    this.clearResults,
-    this.getSearchResults,
+    @required this.schedulingPageController,
+    @required this.toggleActivePage,
+    @required this.loadMoreResults,
+    @required this.clearResults,
+    @required this.getSearchResults,
+    @required this.toggleOffering,
   });
 
   @override
@@ -73,7 +78,8 @@ class _SearchPageState extends State<SearchPage> {
             onPressed: () {},
           ),
           MediaQuery.of(context).size.width < Breakpoints.lg
-              ? CalendarCounter(widget.schedulingPageController.calendars, widget.toggleActivePage)
+              ? CalendarCounter(widget.schedulingPageController.calendars,
+                  widget.toggleActivePage)
               : Container(),
         ],
       ),
@@ -92,17 +98,24 @@ class _SearchPageState extends State<SearchPage> {
               delegate: SliverChildBuilderDelegate(
                 (BuildContext context, int i) {
                   return CourseCard(
-                    currentCalendar: widget
-                        .schedulingPageController.calendars.currentCalendar(),
-                    toggleOffering: widget.schedulingPageController.toggleOffering,
-                    course: widget.schedulingPageController.searchResults.results[i],
+                    currentCalendar: widget.schedulingPageController.calendars
+                        .currentCalendar(),
+                    toggleOffering:
+                        widget.toggleOffering,
+                    course: widget
+                        .schedulingPageController.searchResults.results[i],
                     borderRadius: _borderRadius,
                     color: FlutterTriColor(
                         CGColors.array[i % CGColors.array.length]),
                   );
                 },
                 addAutomaticKeepAlives: true,
-                childCount: widget.schedulingPageController.searchResults.results.length,
+                childCount:
+                    widget.schedulingPageController.searchResults.results !=
+                            null
+                        ? widget.schedulingPageController.searchResults.results
+                            .length
+                        : 0,
               ),
             ),
             SliverPadding(
@@ -113,7 +126,14 @@ class _SearchPageState extends State<SearchPage> {
                     Column(
                       children: [
                         !_searching
-                            ? widget.schedulingPageController.searchResults.total > widget.schedulingPageController.searchObject.offset + 10
+                            ? widget.schedulingPageController.searchResults
+                                            .results !=
+                                        null &&
+                                    widget.schedulingPageController
+                                            .searchResults.total >
+                                        widget.schedulingPageController
+                                                .searchObject.offset +
+                                            10
                                 ? _loadMoreButton()
                                 : Container()
                             : _progressIndicator()
@@ -429,7 +449,7 @@ class CourseCard extends StatelessWidget {
                         color: color.med,
                         onLongPress: () {
                           HapticFeedback.selectionClick();
-                          toggleOffering(course, course.offerings[j], color);
+                          toggleOffering(course, course.offerings[j], color.toTriColor());
                         },
                         title: GestureDetector(
                           child: OfferingRow(color.med, course.offerings[j]),

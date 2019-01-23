@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:course_gnome/model/Calendar.dart';
-import 'package:course_gnome/model/Course.dart';
 import 'package:course_gnome/model/UtilityClasses.dart';
 import 'package:course_gnome/controller/SchedulingPageController.dart';
-import 'package:course_gnome/services/Networking.dart';
 
 import 'package:course_gnome_mobile/ui/SearchPage.dart';
 import 'package:course_gnome_mobile/ui/CalendarPage.dart';
-import 'package:course_gnome_mobile/utilities/UtilitiesClasses.dart';
 
 class SchedulingPage extends StatefulWidget {
   @override
@@ -27,6 +24,7 @@ class _SchedulingPageState extends State<SchedulingPage>
   @override
   void initState() {
     super.initState();
+    _schedulingPageController.calendarUpdated = _calendarUpdated;
     initCal();
   }
 
@@ -50,6 +48,11 @@ class _SchedulingPageState extends State<SchedulingPage>
       );
     });
     _tabController.addListener(_tabChanged);
+  }
+
+  _calendarUpdated() async {
+    final sp = await SharedPreferences.getInstance();
+    sp.setString("calendars", jsonEncode(_schedulingPageController.calendars));
   }
 
   _tabChanged() {
@@ -82,6 +85,12 @@ class _SchedulingPageState extends State<SchedulingPage>
   _clearResults() {
     setState(() {
       _schedulingPageController.clearResults();
+    });
+  }
+
+  _toggleOffering(course, offering, color) {
+    setState(() {
+      _schedulingPageController.toggleOffering(course, offering, color);
     });
   }
 
@@ -132,12 +141,15 @@ class _SchedulingPageState extends State<SchedulingPage>
   @override
   Widget build(BuildContext context) {
     final search = SearchPage(
+      schedulingPageController: _schedulingPageController,
       clearResults: _clearResults,
       loadMoreResults: _loadMoreResults,
       getSearchResults: _getSearchResults,
       toggleActivePage: _toggleActivePage,
+      toggleOffering: _toggleOffering,
     );
     final calendar = CalendarPage(
+      schedulingPageController: _schedulingPageController,
       calendarNameController: _calendarNameController,
       tabController: _tabController,
       addCalendar: _addCalendar,

@@ -14,21 +14,20 @@ class CalendarPage extends StatefulWidget {
   final TabController tabController;
   final Function removeOffering;
   final VoidCallback addCalendar,
-      editCalendar,
-      deleteCalendar,
+      editCurrentCalendarName,
+      deleteCurrentCalendar,
       toggleActivePage;
 
   CalendarPage({
-    this.schedulingPageController,
-    this.calendarNameController,
-    this.tabController,
-    this.addCalendar,
-    this.editCalendar,
-    this.deleteCalendar,
-    this.removeOffering,
-    this.toggleActivePage,
-  }
-  );
+    @required this.schedulingPageController,
+    @required this.calendarNameController,
+    @required this.tabController,
+    @required this.addCalendar,
+    @required this.editCurrentCalendarName,
+    @required this.deleteCurrentCalendar,
+    @required this.removeOffering,
+    @required this.toggleActivePage,
+  });
 
   @override
   _CalendarPageState createState() => _CalendarPageState();
@@ -139,14 +138,17 @@ class _CalendarPageState extends State<CalendarPage> {
   }
 
   _showEditCalendarDialog() {
-    widget.calendarNameController.text =
-        widget.schedulingPageController.calendars.list[widget.schedulingPageController.calendars.currentCalendarIndex].name;
+    widget.calendarNameController.text = widget
+        .schedulingPageController
+        .calendars
+        .list[widget.schedulingPageController.calendars.currentCalendarIndex]
+        .name;
     _showDialog(
       'Edit Calendar',
       _textField(),
       'Save',
       'Cancel',
-      widget.editCalendar,
+      widget.editCurrentCalendarName,
       () {
         widget.calendarNameController.clear();
         Navigator.pop(context);
@@ -158,11 +160,16 @@ class _CalendarPageState extends State<CalendarPage> {
     _showDialog(
       'Delete Calendar',
       Text('Delete calendar ' +
-          widget.schedulingPageController.calendars.list[widget.schedulingPageController.calendars.currentCalendarIndex].name +
+          widget
+              .schedulingPageController
+              .calendars
+              .list[widget
+                  .schedulingPageController.calendars.currentCalendarIndex]
+              .name +
           '?'),
       'Delete',
       'Cancel',
-      widget.deleteCalendar,
+      widget.deleteCurrentCalendar,
       () => Navigator.pop(context),
     );
   }
@@ -220,7 +227,8 @@ class _CalendarPageState extends State<CalendarPage> {
           indicatorColor: Colors.white,
           tabs: List.generate(
             widget.schedulingPageController.calendars.list.length,
-            (i) => Tab(text: widget.schedulingPageController.calendars.list[i].name),
+            (i) => Tab(
+                text: widget.schedulingPageController.calendars.list[i].name),
           ),
         ),
       ),
@@ -569,14 +577,12 @@ class _ClassBlockWidgetState extends State<ClassBlockWidget> {
                       Text(
                         widget.classBlock.id,
                         style: TextStyle(
-                            color: color.med,
-                            fontWeight: FontWeight.bold),
+                            color: color.med, fontWeight: FontWeight.bold),
                       ),
                       height > heightBreakpoint * widget.hourHeight
                           ? Text(
                               widget.classBlock.name,
-                              style:
-                                  TextStyle(color:color.med),
+                              style: TextStyle(color: color.med),
                             )
                           : Container(),
                     ],

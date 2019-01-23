@@ -5,6 +5,8 @@ import 'package:course_gnome/services/Networking.dart';
 
 class SchedulingPageController {
   Calendars calendars = null;
+  Function calendarUpdated;
+
   initCalendars(jsonString) {
     calendars = Calendars.init(jsonString);
   }
@@ -13,19 +15,23 @@ class SchedulingPageController {
   onCalendarTextChanged() {}
   onCurrentCalendarChanged(int index) {
     calendars.currentCalendarIndex = index;
+    calendarUpdated();
   }
 
   addCalendar(String name) {
     calendars.addCalendar(name);
+    calendarUpdated();
   }
 
   editCurrentCalendarName(String name) {
     calendars.currentCalendar().name = name;
+    calendarUpdated();
   }
 
   // TODO test this for two/three cals, index checking
   deleteCurrentCalendar() {
     calendars.removeCalendar(calendars.currentCalendar());
+    calendarUpdated();
   }
 
   // Searching
@@ -33,12 +39,13 @@ class SchedulingPageController {
   var searchResults = SearchResults();
 
   toggleOffering(Course course, Offering offering, TriColor color) {
-    calendars.list[calendars.currentCalendarIndex]
-        .toggleOffering(course, offering, color);
+    calendars.currentCalendar().toggleOffering(course, offering, color);
+    calendarUpdated();
   }
 
   removeOffering(String id) {
     calendars.currentCalendar().removeOffering(id);
+    calendarUpdated();
   }
 
   getSearchResults() async {

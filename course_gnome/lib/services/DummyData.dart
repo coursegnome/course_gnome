@@ -14,14 +14,14 @@ class DummyData {
       "live": false,
       "offerings": [
         {
-          "instructors": "Bell and Evans, K",
+          "instructors": "BellintonEvans and Evans, K",
           "linkedOfferings": [
             {
               "instructors": "Bell and Evans, K",
               "id": "0-0-AFST-1001-10",
               "sectionNumber": "10",
-              "earliestStartTime": "12:45:00",
-              "latestEndTime": "14:00:00",
+              "earliestStartTime": "11:45:00",
+              "latestEndTime": "12:15:00",
               "status": "waitlist",
               "someMonday": null,
               "someTuesday": true,
@@ -101,7 +101,7 @@ class DummyData {
             {
               "id": 1,
               "startTime": "12:45:00",
-              "endTime": "14:00:00",
+              "endTime": "12:50:00",
               "location": "ROME 352",
               "monday": false,
               "tuesday": true,

@@ -58,7 +58,7 @@ class _CalendarPageState extends State<CalendarPage> {
   }
 
   _roundHorizontalScroll() {
-    print('rounding');
+//    print('rounding');
   }
 
   _calVerticallyScrolled() {

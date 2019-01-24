@@ -58,6 +58,8 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    print(width);
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -77,7 +79,7 @@ class _SearchPageState extends State<SearchPage> {
             icon: Icon(Icons.filter_list),
             onPressed: () {},
           ),
-          MediaQuery.of(context).size.width < Breakpoints.lg
+          width < Breakpoints.split
               ? CalendarCounter(widget.schedulingPageController.calendars,
                   widget.toggleActivePage)
               : Container(),
@@ -100,8 +102,7 @@ class _SearchPageState extends State<SearchPage> {
                   return CourseCard(
                     currentCalendar: widget.schedulingPageController.calendars
                         .currentCalendar(),
-                    toggleOffering:
-                        widget.toggleOffering,
+                    toggleOffering: widget.toggleOffering,
                     course: widget
                         .schedulingPageController.searchResults.results[i],
                     borderRadius: _borderRadius,
@@ -449,7 +450,8 @@ class CourseCard extends StatelessWidget {
                         color: color.med,
                         onLongPress: () {
                           HapticFeedback.selectionClick();
-                          toggleOffering(course, course.offerings[j], color.toTriColor());
+                          toggleOffering(
+                              course, course.offerings[j], color.toTriColor());
                         },
                         title: GestureDetector(
                           child: OfferingRow(color.med, course.offerings[j]),
@@ -476,55 +478,54 @@ class OfferingRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    return LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
-//      print(constraints.maxWidth);
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            flex: 2,
-            child: Text(
-              offering.sectionNumber,
-              style: TextStyle(color: color),
+    final spaceAllowance =
+        Breakpoints.allowance(MediaQuery.of(context).size.width);
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          flex: 2,
+          child: Text(
+            offering.sectionNumber,
+            style: TextStyle(color: color),
+          ),
+        ),
+        offering.instructors != null && spaceAllowance >= 3
+            ? Expanded(
+                flex: 5,
+                child: Padding(
+                  padding: EdgeInsets.only(right: 20),
+                  child: Text(
+                    offering.instructors,
+                    style: TextStyle(color: color),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              )
+            : Container(),
+        Expanded(
+          flex: 8,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: List.generate(
+              offering.classTimes.length,
+              (k) => ClassTimeRow(offering.classTimes[k], color),
             ),
           ),
-//          width > Breakpoints.sm && offering.instructors != null
-//              ? Expanded(
-//                  flex: 7,
-//                  child: Padding(
-//                    padding: EdgeInsets.only(right: 20),
-//                    child: Text(
-//                      offering.instructors,
-//                      style: TextStyle(color: color),
-//                      overflow: TextOverflow.ellipsis,
-//                    ),
-//                  ),
-//                )
-//              : Container(),
-          Expanded(
-            flex: 8,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: List.generate(
-                offering.classTimes.length,
-                (k) => ClassTimeRow(offering.classTimes[k], color),
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 3,
-            child: Text(
-              offering.crn,
-              style: TextStyle(color: color),
-              textAlign: TextAlign.right,
-            ),
-          ),
-        ],
-      );
-    });
+        ),
+        offering.instructors != null && spaceAllowance >= 2
+            ? Expanded(
+                flex: 2,
+                child: Text(
+                  offering.crn,
+                  style: TextStyle(color: color),
+                  textAlign: TextAlign.right,
+                ),
+              )
+            : Container(),
+      ],
+    );
   }
 }
 
@@ -553,18 +554,20 @@ class ClassTimeRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
+    final spaceAllowance =
+        Breakpoints.allowance(MediaQuery.of(context).size.width);
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-//        width > Breakpoints.md && classTime.location != null
-//            ? Padding(
-//                padding: const EdgeInsets.only(right: 10.0),
-//                child: Text(
-//                  classTime.location,
-//                  style: TextStyle(color: color),
-//                ),
-//              )
-//            : Container(),
+        classTime.location != null && spaceAllowance >= 4
+            ? Padding(
+                padding: const EdgeInsets.only(right: 10.0),
+                child: Text(
+                  classTime.location,
+                  style: TextStyle(color: color),
+                ),
+              )
+            : Container(),
         Row(
           children: List.generate(
             5,
@@ -612,11 +615,15 @@ class ExtraInfoContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
+    final spaceAllowance =
+        Breakpoints.allowance(MediaQuery.of(context).size.width);
+    bool hasLocation = false;
     String locationString =
         offering.classTimes.length > 1 ? 'Locations: ' : 'Location: ';
-    offering.classTimes
-        .forEach((time) => locationString += time.location + ', ');
+    offering.classTimes.forEach((time) {
+      locationString += time.location + ', ';
+      hasLocation = true;
+    });
     locationString = Helper.removeLastChars(2, locationString);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -626,16 +633,18 @@ class ExtraInfoContainer extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              width < Breakpoints.sm && offering.instructors != null
+              offering.instructors != null && spaceAllowance < 3
                   ? Text(
                       'Instructors: ' + offering.instructors,
                       style: TextStyle(color: color.med),
                     )
                   : Container(),
-              Text(
-                locationString,
-                style: TextStyle(color: color.med),
-              ),
+              hasLocation && spaceAllowance < 4
+                  ? Text(
+                      locationString,
+                      style: TextStyle(color: color.med),
+                    )
+                  : Container(),
             ],
           ),
         ),

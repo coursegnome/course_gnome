@@ -41,9 +41,6 @@ class _SchedulingPageState extends State<SchedulingPage>
     final jsonString = sp.getString("calendars");
     setState(() {
       _schedulingPageController.initCalendars(jsonString);
-      print(_schedulingPageController.calendars.list.length);
-      print(_schedulingPageController.calendars.currentCalendarIndex);
-
       _tabController = TabController(
         length: _schedulingPageController.calendars.list.length,
         vsync: this,
@@ -59,7 +56,7 @@ class _SchedulingPageState extends State<SchedulingPage>
   }
 
   _tabChanged() {
-    print(_tabController.index);
+//    print(_tabController.index);
     _schedulingPageController.onCurrentCalendarChanged(_tabController.index);
   }
 
@@ -188,6 +185,7 @@ class _SchedulingPageState extends State<SchedulingPage>
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
     final search = SearchPage(
       schedulingPageController: _schedulingPageController,
       clearResults: _clearResults,
@@ -207,7 +205,7 @@ class _SchedulingPageState extends State<SchedulingPage>
       toggleActivePage: _toggleActivePage,
     );
     return _schedulingPageController.calendars != null
-        ? MediaQuery.of(context).size.width >= Breakpoints.lg
+        ? width >= Breakpoints.split
             ? Row(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [

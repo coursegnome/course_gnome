@@ -191,6 +191,13 @@
             </list>
           </value>
         </entry>
+        <entry key="course_gnome">
+          <value>
+            <list>
+              <option value="$PROJECT_DIR$/../course_gnome/lib" />
+            </list>
+          </value>
+        </entry>
         <entry key="crypto">
           <value>
             <list>
@@ -717,6 +724,7 @@
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/watcher-0.9.7+10/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/web_socket_channel-1.0.9/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/yaml-2.1.15/lib" />
+      <root url="file://$PROJECT_DIR$/../course_gnome/lib" />
     </CLASSES>
     <SOURCES />
   </library>

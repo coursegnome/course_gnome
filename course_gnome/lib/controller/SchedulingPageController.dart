@@ -6,26 +6,33 @@ import 'package:course_gnome/services/Networking.dart';
 class SchedulingPageController {
   Calendars calendars = null;
   Function calendarUpdated;
+  CalendarsHistory calendarsHistory = CalendarsHistory();
+
+  saveEdit() {
+    calendarsHistory.update(calendars);
+    calendarUpdated();
+  }
 
   initCalendars(jsonString) {
     calendars = Calendars.init(jsonString);
+    calendarsHistory.update(calendars);
   }
 
   // Calendars
   onCalendarTextChanged() {}
+
   onCurrentCalendarChanged(int index) {
-    calendars.currentCalendarIndex = index;
-    calendarUpdated();
+    saveEdit();
   }
 
   addCalendar(String name) {
     calendars.addCalendar(name);
-    calendarUpdated();
+    saveEdit();
   }
 
   editCurrentCalendarName(String name) {
     calendars.currentCalendar().name = name;
-    calendarUpdated();
+    saveEdit();
   }
 
   // TODO test this for two/three cals, index checking
@@ -34,21 +41,36 @@ class SchedulingPageController {
     if (calendars.currentCalendarIndex > 0) {
       calendars.currentCalendarIndex--;
     }
-    calendarUpdated();
+    saveEdit();
+  }
+
+  undo() {
+    calendars = calendarsHistory.goBackwards();
+  }
+
+  redo() {
+    calendars = calendarsHistory.goForwards();
   }
 
   // Searching
   var searchObject = SearchObject();
   var searchResults = SearchResults();
 
+//  TriColor colorFromIndex(int i) {
+//    print(calendars.currentCalendar().colors.length);
+//    return calendars
+//        .currentCalendar()
+//        .colors[i % calendars.currentCalendar().colors.length];
+//  }
+
   toggleOffering(Course course, Offering offering, TriColor color) {
     calendars.currentCalendar().toggleOffering(course, offering, color);
-    calendarUpdated();
+    saveEdit();
   }
 
   removeOffering(String id) {
     calendars.currentCalendar().removeOffering(id);
-    calendarUpdated();
+    saveEdit();
   }
 
   getSearchResults() async {

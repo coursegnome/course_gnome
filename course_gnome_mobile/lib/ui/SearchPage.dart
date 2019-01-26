@@ -108,6 +108,7 @@ class _SearchPageState extends State<SearchPage> {
                     borderRadius: _borderRadius,
                     color: FlutterTriColor(
                         CGColors.array[i % CGColors.array.length]),
+//                        widget.schedulingPageController.colorFromIndex(i)),
                   );
                 },
                 addAutomaticKeepAlives: true,
@@ -485,7 +486,7 @@ class OfferingRow extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
-          flex: 2,
+          flex: 1,
           child: Text(
             offering.sectionNumber,
             style: TextStyle(color: color),
@@ -493,7 +494,7 @@ class OfferingRow extends StatelessWidget {
         ),
         offering.instructors != null && spaceAllowance >= 3
             ? Expanded(
-                flex: 5,
+                flex: 3,
                 child: Padding(
                   padding: EdgeInsets.only(right: 20),
                   child: Text(
@@ -505,7 +506,7 @@ class OfferingRow extends StatelessWidget {
               )
             : Container(),
         Expanded(
-          flex: 8,
+          flex: 5,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: List.generate(

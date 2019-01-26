@@ -4,6 +4,33 @@ import 'dart:convert';
 import 'UtilityClasses.dart';
 import 'Course.dart';
 
+class CalendarsHistory {
+  int current = 0;
+  List<Calendars> history = [];
+
+  void update(Calendars calendars) {
+    history = history.sublist(0, current);
+    history.add(calendars);
+    print(history);
+
+    current = history.length - 1;
+  }
+
+  Calendars goBackwards() {
+    if (current != 0) {
+      --current;
+    }
+    return history[current];
+  }
+
+  Calendars goForwards() {
+    if (current != history.length - 1) {
+      ++current;
+    }
+    return history[current];
+  }
+}
+
 class Calendars {
   static const String initialCalName = "My Calendar";
 
@@ -51,10 +78,12 @@ class Calendars {
 class Calendar {
   String name;
   HashSet<String> ids;
+//  List<TriColor> colors = [];
   List<List<ClassBlock>> blocksByDay;
 
   Calendar(name) {
     this.name = name;
+//    colors.addAll(CGColors.array);
     ids = HashSet<String>();
     blocksByDay = List.generate(7, (i) => List<ClassBlock>());
   }
@@ -62,16 +91,17 @@ class Calendar {
   Calendar.fromJson(Map<String, dynamic> json) {
     name = json['name'];
     ids = HashSet<String>();
+//    colors.addAll(CGColors.array);
     List idsList = json['ids'] as List;
     idsList.forEach((id) => ids.add(id));
     final List<dynamic> blocksByDay = json['blocksByDay'];
     this.blocksByDay = List.generate(7, (i) => List<ClassBlock>());
     for (var i = 0; i < blocksByDay.length; ++i) {
-      blocksByDay[i].forEach(
-        (block) => this.blocksByDay[i].add(
-              ClassBlock.fromJson(block),
-            ),
-      );
+      blocksByDay[i].forEach((block) {
+        final newBlock = ClassBlock.fromJson(block);
+        this.blocksByDay[i].add(newBlock);
+//        this.colors.remove((color) => color == newBlock.color);
+      });
     }
   }
 
@@ -83,13 +113,16 @@ class Calendar {
 
   toggleOffering(Course course, Offering offering, TriColor color) {
     if (ids.contains(offering.crn)) {
-      removeOffering(offering.crn);
+      removeOffering(offering.crn, color);
     } else {
       _addOffering(course, offering, color);
     }
   }
 
   _addOffering(Course course, Offering offering, TriColor color) {
+//    colors.removeWhere((c1) {
+//      return c1.light.toLowerCase() == color.light.toLowerCase();
+//    });
     ids.add(offering.crn);
     for (var classTime in offering.classTimes) {
       final offset = classTime.startTime.hour + classTime.startTime.minute / 60;
@@ -108,7 +141,8 @@ class Calendar {
     }
   }
 
-  removeOffering(String id) {
+  removeOffering(String id, TriColor color) {
+//    colors.add(color);
     ids.remove(id);
     blocksByDay.forEach((list) => list.removeWhere((block) => block.id == id));
   }

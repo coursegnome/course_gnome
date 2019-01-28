@@ -1,0 +1,98 @@
+@import 'package:angular_components/material_expansionpanel/mixins';
+
+.card {
+  border-top: 4px solid #D50110;
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+  color: #D50110;
+  font-size: smaller;
+}
+
+.course {
+  padding: 5px 8px 2px 8px;
+}
+
+.course-top-details {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.course-name {
+  font-size: large;
+  font-weight: bold;
+}
+
+.dense {
+  @include expansionpanel-dense-theme;
+}
+
+.expansion-panel {
+  /*cursor: pointer;*/
+  /*-webkit-user-select: none;*/
+  /*-moz-user-select: none;*/
+  /*-ms-user-select: none;*/
+  /*user-select: none;*/
+}
+
+.offering {
+  color: #D50110;
+  display: flex;
+  justify-content: start;
+  align-items: start;
+}
+
+.offering-right {
+  color: #D50110;
+  text-align: right;
+}
+
+.section-number {
+  padding-right: 10px;
+}
+
+.instructors {
+  padding-right: 25px;
+  max-width: 100px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.class-times {
+  display: flex;
+  flex-direction: column;
+  padding-right: 10px;
+}
+
+.class-time {
+  display: flex;
+  align-items: center;
+}
+
+.location {
+  padding-right: 7px;
+}
+
+.days {
+  padding-right: 7px;
+}
+
+.day {
+  margin-right: 2px;
+  height: 13px;
+  width: 13px;
+  border-radius: 3px;
+  background-color: #D50110;
+}
+
+.time {
+  padding-left: 12px;
+}
+
+.offering-row {
+  position: absolute;
+  margin-top: -7px;
+  margin-left: -10px;
+  width: 100%;
+}

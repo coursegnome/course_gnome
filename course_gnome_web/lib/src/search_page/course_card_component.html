@@ -1,39 +1,29 @@
 <div class = "card">
     <div class = "course">
         <div name class="course-top-details">
-            <span style="margin-left:0">AFST 1000</span><span>3 credits</span>
+            <span style="margin-left:0">{{course.departmentAcronym}} {{course.departmentNumber}}</span><span>{{course.credit}} credits</span>
         </div>
-        <span class="course-name">American Studies Intro</span>
+        <span class="course-name">{{course.name}}</span>
     </div>
-    <material-expansionpanel flat class="dense expansion-panel" [disableHeaderExpansion]="true" [showSaveCancel]="false">
-        <div name class = "offering">
-            <span class = "section-number">10</span>
-            <div class = "day"></div>
-            <div class = "day"></div>
-            <div class = "day"></div>
-            <div class = "day"></div>
-            <div class = "day"></div>
-            <span>12:45-1:30</span>
+    <material-expansionpanel flat class="dense" [disableHeaderExpansion]="true" [showSaveCancel]="false"
+                             *ngFor="let offering of course.offerings">
+        <div name class = "offering-row">
+        <div value class = "offering">
+            <span class = "section-number">{{offering.sectionNumber}}</span>
+            <span class="instructors">{{offering.instructors}}</span>
+            <div class = "class-times">
+                <div class="class-time" *ngFor="let classTime of offering.classTimes">
+                    <span class="location">{{classTime.location}}</span>
+                    <div class = "day" *ngFor="let i of numbers">
+                        <!--<div class = "day"></div>-->
+                    </div>
+                    <span class = "time">{{classTime.timeRangeToString()}}</span>
+                </div>
+            </div>
+            <span>{{offering.crn}}</span>
         </div>
-        <div value class ="offering-right"><span>43021</span></div>
-        The second section of the side panel!
-    </material-expansionpanel>
-    <material-expansionpanel flat class="expansion-panel" [disableHeaderExpansion]="true" [showSaveCancel]="false">
-        <div name class = "offering">
-            <span class = "section-number">10</span>
-            <div class = "day"></div>
-            <div class = "day"></div>
-            <div class = "day"></div>
-            <div class = "day"></div>
-            <div class = "day"></div>
-            <span>12:45-1:30</span>
         </div>
-        <div value class ="offering-right"><span>43021</span></div>
+        <!--<div value class ="offering-right"><span>{{offering.crn}}</span></div>-->
         The second section of the side panel!
-    </material-expansionpanel>
-    <material-expansionpanel class="dense"
-                             [showSaveCancel]="false"
-                             name="Dense theme">
-        This panel uses the Dense theme mixin.
     </material-expansionpanel>
 </div>

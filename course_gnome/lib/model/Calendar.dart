@@ -11,8 +11,6 @@ class CalendarsHistory {
   void update(Calendars calendars) {
     history = history.sublist(0, current);
     history.add(calendars);
-    print(history);
-
     current = history.length - 1;
   }
 
@@ -113,7 +111,7 @@ class Calendar {
 
   toggleOffering(Course course, Offering offering, TriColor color) {
     if (ids.contains(offering.crn)) {
-      removeOffering(offering.crn, color);
+      removeOffering(offering.crn);
     } else {
       _addOffering(course, offering, color);
     }
@@ -141,7 +139,7 @@ class Calendar {
     }
   }
 
-  removeOffering(String id, TriColor color) {
+  removeOffering(String id) {
 //    colors.add(color);
     ids.remove(id);
     blocksByDay.forEach((list) => list.removeWhere((block) => block.id == id));

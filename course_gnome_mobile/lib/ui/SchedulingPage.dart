@@ -140,6 +140,17 @@ class _SchedulingPageState extends State<SchedulingPage>
     });
   }
 
+  _scaleCalendarHorizontally(double initialValue, double scale) {
+    setState(() {
+      _schedulingPageController.scaleHorizontally(initialValue, scale);
+    });
+  }
+  _scaleCalendarVertically(double initialValue, double scale) {
+    setState(() {
+      _schedulingPageController.scaleHorizontally(initialValue, scale);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
@@ -160,6 +171,8 @@ class _SchedulingPageState extends State<SchedulingPage>
       deleteCurrentCalendar: _deleteCurrentCalendar,
       removeOffering: _removeOffering,
       toggleActivePage: _toggleActivePage,
+      scaleCalendarHorizontally:  _scaleCalendarHorizontally,
+      scaleCalendarVertically:  _scaleCalendarVertically,
     );
     return _schedulingPageController.calendars != null
         ? width >= Breakpoints.split

@@ -1,7 +1,11 @@
 import 'package:angular/angular.dart';
+
 import 'package:angular_components/angular_components.dart';
 import 'package:angular_components/material_icon/material_icon.dart';
 import 'package:angular_components/material_button/material_button.dart';
+
+import 'package:course_gnome/controller/SchedulingPageController.dart';
+import 'package:course_gnome/model/Course.dart';
 
 @Component(
   selector: 'search-page',
@@ -23,12 +27,15 @@ import 'package:angular_components/material_button/material_button.dart';
 class SearchPageComponent {
   final title = "Search";
   final courses = ['One', 'Two', 'Three'];
+  @Input()
+  SchedulingPageController schedulingPageController;
 }
 
 @Component(
   selector: 'course-card',
   templateUrl: 'course_card_component.html',
   directives: [
+    coreDirectives,
     CourseCardComponent,
     MaterialExpansionPanel,
   ],
@@ -38,5 +45,7 @@ class SearchPageComponent {
   ],
 )
 class CourseCardComponent {
-  var name = 'Angular';
+  @Input()
+  Course course;
+  final numbers = List(5);
 }

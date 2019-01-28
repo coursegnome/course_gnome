@@ -4,7 +4,7 @@
             <material-button icon>
                 <material-icon icon="person"></material-icon>
             </material-button>
-            <span class="material-header-title">{{ title }}</span>
+            <span class="material-header-title" style="font-weight: bold;">{{ title }}</span>
             <div class="material-spacer"></div>
             <material-button icon>
                 <material-icon icon="filter_list"></material-icon>
@@ -15,9 +15,12 @@
         </div>
     </header>
 </div>
-    <div id="search-container">
-        <input class="form-control" placeholder="Search for anything">
-    </div>
+<div id="search-container">
+    <input class="form-control" placeholder="Search for anything">
+    <material-button (click)="schedulingPageController.getSearchResults()" icon class = "search-button">
+        <material-icon icon="search"></material-icon>
+    </material-button>
+</div>
 <div class = 'course-results'>
-    <course-card *ngFor="let course of courses"></course-card>
+    <course-card *ngFor="let course of schedulingPageController.searchResults.results" [course] = "course"></course-card>
 </div>

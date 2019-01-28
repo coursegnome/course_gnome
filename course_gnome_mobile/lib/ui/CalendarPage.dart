@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
 
+import 'package:auto_size_text/auto_size_text.dart';
+
 import 'package:course_gnome/model/Calendar.dart';
 import 'package:course_gnome/model/UtilityClasses.dart';
 import 'package:course_gnome/controller/SchedulingPageController.dart';
@@ -12,7 +14,9 @@ class CalendarPage extends StatefulWidget {
   final SchedulingPageController schedulingPageController;
   final TextEditingController calendarNameController;
   final TabController tabController;
-  final Function removeOffering;
+  final Function removeOffering,
+      scaleCalendarHorizontally,
+      scaleCalendarVertically;
   final VoidCallback addCalendar,
       editCurrentCalendarName,
       deleteCurrentCalendar,
@@ -27,6 +31,8 @@ class CalendarPage extends StatefulWidget {
     @required this.deleteCurrentCalendar,
     @required this.removeOffering,
     @required this.toggleActivePage,
+    @required this.scaleCalendarHorizontally,
+    @required this.scaleCalendarVertically,
   });
 
   @override
@@ -34,11 +40,12 @@ class CalendarPage extends StatefulWidget {
 }
 
 class _CalendarPageState extends State<CalendarPage> {
-  static const hourCount = 17;
-  static const startHour = 7;
-  static const dayCount = 7;
-  var hourHeight = 100.0;
-  var dayWidth = 100.0;
+//  static final minHourHeight = 60.0;
+//  static final minDayWidth = 60.0;
+//  static final maxHourHeight = 140.0;
+//  static final maxDayWidth = 140.0;
+//  var hourHeight = 100.0;
+//  var dayWidth = 100.0;
 
   ScrollController hourController;
   ScrollController dayController;
@@ -65,9 +72,55 @@ class _CalendarPageState extends State<CalendarPage> {
     hourController.jumpTo(verticalCalController.offset);
   }
 
-//  scaleStart(ScaleStartDetails details) {}
-//  scaleUpdate(ScaleUpdateDetails details) {}
-//  scaleEnd(ScaleEndDetails details) {}
+  double initialValue;
+  double initialScrollPosition;
+  Offset initialFocalPoint;
+  bool scalingDayWidth = true;
+
+  scaleStart(ScaleStartDetails details) {
+    final angle = details.angle;
+    initialFocalPoint = details.focalPoint;
+    if ((angle > -2 && angle < -1) || (angle > 1 && angle < 2)) {
+      scalingDayWidth = false;
+      initialValue = widget.schedulingPageController.calendarValues.hourHeight;
+      initialScrollPosition = verticalCalController.offset;
+      return;
+    }
+    if ((angle > 2.5 || angle < -2.5) || (angle < 0.5 && angle > -0.5)) {
+      scalingDayWidth = true;
+      initialValue = widget.schedulingPageController.calendarValues.dayWidth;
+      initialScrollPosition = horizontalCalController.offset;
+      return;
+    }
+  }
+
+  scaleUpdate(ScaleUpdateDetails details) {
+    final scale = details.scale;
+    setState(() {
+      if (scalingDayWidth) {
+        final width = initialValue * scale;
+        if (width > CalendarValues.maxDayWidth ||
+            width < CalendarValues.minDayWidth) return;
+        widget.schedulingPageController.calendarValues.dayWidth = width;
+        horizontalCalController.jumpTo(initialScrollPosition * scale);
+        print(
+            "initial: $initialScrollPosition, new: ${initialScrollPosition * scale}");
+      } else {
+        final height = initialValue * scale;
+        if (height > CalendarValues.maxHourHeight ||
+            height < CalendarValues.minHourHeight) return;
+        widget.schedulingPageController.calendarValues.hourHeight = height;
+        verticalCalController.jumpTo(initialScrollPosition * scale);
+
+//        final offset = initialFocalPoint.dy;
+//        final scaleFactor =.9 + ((offset-200)/600)/10;
+//        print(scale);
+//        print(initialScrollPosition * scale);
+      }
+    });
+  }
+
+  scaleEnd(ScaleEndDetails details) {}
 
   _showDialog(String title, Widget body, String opOneText, String opTwoText,
       VoidCallback opOneAction, VoidCallback opTwoAction) {
@@ -177,11 +230,18 @@ class _CalendarPageState extends State<CalendarPage> {
   @override
   void initState() {
     super.initState();
-    hourController = ScrollController(initialScrollOffset: hourHeight * 4);
-    verticalCalController =
-        ScrollController(initialScrollOffset: hourHeight * 4);
-    dayController = ScrollController(initialScrollOffset: dayWidth);
-    horizontalCalController = ScrollController(initialScrollOffset: dayWidth);
+    hourController = ScrollController(
+        initialScrollOffset:
+            widget.schedulingPageController.calendarValues.hourHeight * 4);
+    verticalCalController = ScrollController(
+        initialScrollOffset:
+            widget.schedulingPageController.calendarValues.hourHeight * 4);
+    dayController = ScrollController(
+        initialScrollOffset:
+            widget.schedulingPageController.calendarValues.dayWidth);
+    horizontalCalController = ScrollController(
+        initialScrollOffset:
+            widget.schedulingPageController.calendarValues.dayWidth);
     horizontalCalController.addListener(_calHorizontallyScrolled);
     verticalCalController.addListener(_calVerticallyScrolled);
   }
@@ -239,24 +299,37 @@ class _CalendarPageState extends State<CalendarPage> {
           widget.schedulingPageController.calendars.list.length,
           (i) => Column(
                 children: <Widget>[
-                  DayList(dayCount, dayWidth, dayController),
+                  DayList(
+                      CalendarValues.dayCount,
+                      widget.schedulingPageController.calendarValues.dayWidth,
+                      dayController),
                   Expanded(
                     child: SafeArea(
                       right: false,
                       child: Row(
                         children: <Widget>[
                           HourList(
-                              hourCount, startHour, hourHeight, hourController),
+                              CalendarValues.hourCount,
+                              CalendarValues.startHour,
+                              widget.schedulingPageController.calendarValues
+                                  .hourHeight,
+                              hourController),
                           CalendarView(
-                              dayCount,
-                              hourCount,
-                              startHour,
-                              dayWidth,
-                              hourHeight,
-                              horizontalCalController,
-                              verticalCalController,
-                              widget.schedulingPageController.calendars.list[i],
-                              widget.removeOffering),
+                            CalendarValues.dayCount,
+                            CalendarValues.hourCount,
+                            CalendarValues.startHour,
+                            widget.schedulingPageController.calendarValues
+                                .dayWidth,
+                            widget.schedulingPageController.calendarValues
+                                .hourHeight,
+                            horizontalCalController,
+                            verticalCalController,
+                            widget.schedulingPageController.calendars.list[i],
+                            widget.removeOffering,
+                            scaleStart,
+                            scaleUpdate,
+                            scaleEnd,
+                          ),
                         ],
                       ),
                     ),
@@ -275,17 +348,22 @@ class CalendarView extends StatefulWidget {
   final ScrollController horizontalCalController, verticalCalController;
   final Calendar calendar;
   final Function removeOffering;
+  final Function scaleStart, scaleUpdate, scaleEnd;
 
   CalendarView(
-      this.dayCount,
-      this.hourCount,
-      this.startHour,
-      this.dayWidth,
-      this.hourHeight,
-      this.horizontalCalController,
-      this.verticalCalController,
-      this.calendar,
-      this.removeOffering);
+    this.dayCount,
+    this.hourCount,
+    this.startHour,
+    this.dayWidth,
+    this.hourHeight,
+    this.horizontalCalController,
+    this.verticalCalController,
+    this.calendar,
+    this.removeOffering,
+    this.scaleStart,
+    this.scaleUpdate,
+    this.scaleEnd,
+  );
 
   @override
   _CalendarViewState createState() => _CalendarViewState();
@@ -307,9 +385,9 @@ class _CalendarViewState extends State<CalendarView> {
               controller: widget.verticalCalController,
               scrollDirection: Axis.vertical,
               child: GestureDetector(
-//            onScaleStart: (details) => scaleStart(details),
-//            onScaleUpdate: (details) => scaleUpdate(details),
-//            onScaleEnd: (details) => scaleEnd(details),
+                onScaleStart: (details) => widget.scaleStart(details),
+                onScaleUpdate: (details) => widget.scaleUpdate(details),
+                onScaleEnd: (details) => widget.scaleEnd(details),
                 child: SizedBox(
                   height: widget.hourHeight * widget.hourCount,
                   child: ListView(
@@ -467,9 +545,7 @@ class DayList extends StatelessWidget {
             (i) => Container(
                   alignment: Alignment.center,
                   width: dayWidth,
-                  child: Text(
-                    dayStrings[i],
-                  ),
+                  child: Text(dayWidth > 80 ? dayStrings[i] : dayStrings[i][0]),
                 ),
           ),
         ),
@@ -524,7 +600,7 @@ class ClassBlockWidget extends StatefulWidget {
 }
 
 class _ClassBlockWidgetState extends State<ClassBlockWidget> {
-  static const heightBreakpoint = 1;
+//  static const heightBreakpoint = 1;
   static const borderRadius = 3.0;
   static const lighteningFactor = 80;
   static const hoverSizeIncrease = 20;
@@ -572,15 +648,31 @@ class _ClassBlockWidgetState extends State<ClassBlockWidget> {
                         widget.classBlock.departmentInfo,
                         style: TextStyle(color: color.med),
                       ),
-                      Text(
-                        widget.classBlock.id,
-                        style: TextStyle(
-                            color: color.med, fontWeight: FontWeight.bold),
-                      ),
-                      height > heightBreakpoint * widget.hourHeight
+                      height > 70
                           ? Text(
-                              widget.classBlock.name,
-                              style: TextStyle(color: color.med),
+                              widget.classBlock.id,
+                              style: TextStyle(
+                                  color: color.med,
+                                  fontWeight: FontWeight.bold),
+                            )
+                          : Container(),
+                      height > 90
+                          ? Expanded(
+                              child: new LayoutBuilder(builder:
+                                  (BuildContext context,
+                                      BoxConstraints constraints) {
+                                return new Text(
+                                  widget.classBlock.name,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(color: color.med),
+                                  maxLines: (constraints.maxHeight /
+                                          Theme.of(context)
+                                              .textTheme
+                                              .body1
+                                              .fontSize)
+                                      .floor(),
+                                );
+                              }),
                             )
                           : Container(),
                     ],

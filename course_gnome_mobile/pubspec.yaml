@@ -19,6 +19,8 @@ dependencies:
 #  flutter_facebook_login: ^1.1.1
 #  firebase_analytics: ^1.0.6
 
+  auto_size_text: ^0.3.0
+
   course_gnome:
     path: ../course_gnome
 

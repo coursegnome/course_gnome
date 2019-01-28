@@ -19,6 +19,18 @@ class SchedulingPageController {
   }
 
   // Calendars
+  var calendarValues = CalendarValues();
+  scaleHorizontally(double initialValue, double scale) {
+    final width = initialValue * scale;
+    if (width > CalendarValues.maxDayWidth || width < CalendarValues.minDayWidth) return;
+    calendarValues.dayWidth = width;
+  }
+  scaleVertically(double initialValue, double scale) {
+    final height = initialValue * scale;
+    if (height > CalendarValues.maxHourHeight || height < CalendarValues.minHourHeight) return;
+    calendarValues.hourHeight = height;
+  }
+
   onCalendarTextChanged() {}
 
   onCurrentCalendarChanged(int index) {
@@ -90,4 +102,16 @@ class SchedulingPageController {
   clearResults() {
     searchResults.clear();
   }
+}
+
+class CalendarValues {
+  static const hourCount = 17;
+  static const startHour = 7;
+  static const dayCount = 7;
+  static final minHourHeight = 60.0;
+  static final minDayWidth = 60.0;
+  static final maxHourHeight = 140.0;
+  static final maxDayWidth = 140.0;
+  var hourHeight = 100.0;
+  var dayWidth = 100.0;
 }

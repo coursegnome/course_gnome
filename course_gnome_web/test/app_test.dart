@@ -1,8 +1,8 @@
 @TestOn('browser')
 import 'package:angular_test/angular_test.dart';
 import 'package:test/test.dart';
-import 'package:course_gnome/app_component.dart';
-import 'package:course_gnome/app_component.template.dart' as ng;
+import 'package:course_gnome_web/app_component.dart';
+import 'package:course_gnome_web/app_component.template.dart' as ng;
 
 void main() {
   final testBed =

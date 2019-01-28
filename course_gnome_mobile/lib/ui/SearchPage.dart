@@ -59,7 +59,6 @@ class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    print(width);
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -515,7 +514,7 @@ class OfferingRow extends StatelessWidget {
             ),
           ),
         ),
-        offering.instructors != null && spaceAllowance >= 2
+        offering.crn != null && spaceAllowance >= 2
             ? Expanded(
                 flex: 2,
                 child: Text(

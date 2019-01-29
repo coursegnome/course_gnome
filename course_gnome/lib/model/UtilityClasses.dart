@@ -68,11 +68,6 @@ class Breakpoints {
   }
 }
 
-class TimeOfDay {
-  final int hour, minute;
-  TimeOfDay({this.hour, this.minute});
-}
-
 class Departments {
   static const departments = [
     {'name': 'Accountancy', 'acronym': 'ACCY'},

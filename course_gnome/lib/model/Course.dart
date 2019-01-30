@@ -27,6 +27,18 @@ class Course {
         'offerings: $offerings}';
   }
 
+  Map<String, dynamic> toJson() => {
+    'departmentAcronym': departmentAcronym,
+    'departmentNumberString': departmentNumber,
+    'departmentNumber': int.parse(departmentNumber.replaceAll(RegExp('[^0-9]'), '')),
+    'name': name,
+    'credit': credit,
+    'description': description,
+    'bulletinLink': bulletinLink,
+    'offerings': List.generate(offerings.length, ((i) => offerings[i].toJson()))
+  };
+
+
 }
 
 enum Status {
@@ -40,6 +52,10 @@ class Offering {
   List<ClassTime> classTimes;
   List<Offering> linkedOfferings;
   String linkedOfferingsName;
+  String comments;
+  List<String> courseAttributes;
+  String findBooksLink;
+  String fee;
 
   Offering({
     this.sectionNumber,
@@ -51,13 +67,30 @@ class Offering {
     this.linkedOfferingsName,
   });
 
+
   @override
   String toString() {
-    return 'Offering(sectionNumber: $sectionNumber, status: $status,'
-        'crn: $crn, classTimes: $classTimes, instructors: $instructors,'
-        'linkedOfferings: $linkedOfferings, '
-        'linkedOfferingsName: $linkedOfferingsName)';
+    return 'Offering{sectionNumber: $sectionNumber, crn: $crn, '
+        'instructors: $instructors, status: $status, classTimes: $classTimes, '
+        'linkedOfferings: $linkedOfferings, linkedOfferingsName: $linkedOfferingsName, '
+        'comments: $comments, courseAttributes: $courseAttributes, '
+        'findBooksLink: $findBooksLink, fee: $fee}';
   }
+
+  Map<String, dynamic> toJson() => {
+    'sectionNumber': sectionNumber,
+    'crn': crn,
+    'instructors': instructors,
+    'status': status.toString().split('.').last,
+    'classTimes': List.generate(classTimes.length, ((i) => classTimes[i].toJson())),
+    'linkedOfferings': linkedOfferings != null ? List.generate(linkedOfferings.length, ((i) => linkedOfferings[i].toJson())) : null,
+    'linkedOfferingsName': linkedOfferingsName,
+    'comments': comments,
+    'courseAttributes': courseAttributes,
+    'findBooksLink': findBooksLink,
+    'fee': fee,
+  };
+
 }
 
 class ClassTime {
@@ -84,6 +117,19 @@ class ClassTime {
         'mon: $mon, tues: $tues, weds: $weds, thur: $thur, fri: $fri, sat: $sat}';
   }
 
+  Map<String, dynamic> toJson() => {
+  'startTime': startTime != null ? startTime.toTimestamp() : null,
+  'endTime': endTime != null ? endTime.toTimestamp() : null,
+  'location': location,
+  'sun': sun,
+  'mon': mon,
+  'tues': tues,
+  'weds': weds,
+  'thur': thur,
+  'fri': fri,
+  'sat': sat
+  };
+
   String timeToString(TimeOfDay time) {
     var minuteString = time.minute.toString();
     if (time.minute < 10) {
@@ -94,6 +140,9 @@ class ClassTime {
   }
 
   String timeRangeToString() {
+    if (startTime == null || endTime == null) {
+      return 'TBA';
+    }
     return timeToString(startTime) + '-' + timeToString(endTime);
   }
 }
@@ -101,8 +150,14 @@ class ClassTime {
 class TimeOfDay {
   final int hour, minute;
   TimeOfDay({this.hour, this.minute});
+
   @override
   String toString() {
     return '$hour:$minute';
+  }
+
+  toTimestamp() {
+    final date = DateTime(2000, 1, 1, hour, minute);
+    return date.toIso8601String();
   }
 }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:course_gnome/model/UtilityClasses.dart';
 
 class CGColor {
-  static final cgred = Color(0xffD50110);
+  static final cgred = Color(0xffC3282B);
   static final lightGray = Color(0xffFAFAFA);
 }
 

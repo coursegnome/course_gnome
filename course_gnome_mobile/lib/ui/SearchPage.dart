@@ -497,7 +497,7 @@ class OfferingRow extends StatelessWidget {
                 child: Padding(
                   padding: EdgeInsets.only(right: 20),
                   child: Text(
-                    offering.instructors,
+                    offering.instructors.join(', '),
                     style: TextStyle(color: color),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -576,7 +576,7 @@ class ClassTimeRow extends StatelessWidget {
                   width: 13,
                   height: 13,
                   decoration: BoxDecoration(
-                    color: classTime.days[i + 1] ? color : Colors.transparent,
+                    color: _dayIsIncluded(classTime, i) ? color : Colors.transparent,
                     border: Border.all(color: color, width: 1),
                     borderRadius: BorderRadius.all(
                       Radius.circular(2),
@@ -595,6 +595,24 @@ class ClassTimeRow extends StatelessWidget {
       ],
     );
   }
+
+  bool _dayIsIncluded(ClassTime ct, int i) {
+    switch(i) {
+      case 0:
+        return ct.mon == true;
+      case 1:
+        return ct.tues == true;
+      case 2:
+        return ct.weds == true;
+      case 3:
+        return ct.thur == true;
+      case 4:
+        return ct.fri == true;
+      default:
+        return true;
+    }
+  }
+
 }
 
 class ExtraInfoContainer extends StatelessWidget {
@@ -635,7 +653,7 @@ class ExtraInfoContainer extends StatelessWidget {
             children: <Widget>[
               offering.instructors != null && spaceAllowance < 3
                   ? Text(
-                      'Instructors: ' + offering.instructors,
+                      'Instructors: ' + offering.instructors.join(", "),
                       style: TextStyle(color: color.med),
                     )
                   : Container(),

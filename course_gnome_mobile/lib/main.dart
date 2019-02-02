@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
         primaryColor: CGColor.cgred,
         fontFamily: 'Lato',
       ),
-      home: SchedulingPage(),
+      home: LoginPage(),
       debugShowCheckedModeBanner: false,
     );
   }

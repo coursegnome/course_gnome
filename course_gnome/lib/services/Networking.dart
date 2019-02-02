@@ -48,13 +48,13 @@ class Networking {
     return ClassTime(
         startTime: _stringToTimeOfDay(classTime["startTime"]),
         endTime: _stringToTimeOfDay(classTime["endTime"]),
-        location: classTime["location"],
-        days: _classTimeToDays(classTime));
+        location: classTime["location"]);
+//        days: _classTimeToDays(classTime));
   }
 
   static Offering _parseOffering(offering) {
     return Offering(
-        status: offering["status"].toString().toUpperCase(),
+//        status: offering["status"].toString().toUpperCase(),
         sectionNumber: offering["sectionNumber"].toString(),
         crn: offering["crn"].toString(),
         instructors: offering["instructors"],

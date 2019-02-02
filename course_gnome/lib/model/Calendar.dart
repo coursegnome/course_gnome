@@ -129,13 +129,30 @@ class Calendar {
           (classTime.endTime.minute - classTime.startTime.minute) / 60;
       final departmentInfo =
           course.departmentAcronym + ' ' + course.departmentNumber;
-      for (var i = 0; i < classTime.days.length; ++i) {
-        if (!classTime.days[i]) {
-          continue;
-        }
-        blocksByDay[i].add(ClassBlock(
-            offset, height, departmentInfo, offering.crn, course.name, color));
+      final block = ClassBlock(
+          offset, height, departmentInfo, offering.crn, course.name, color);
+      if (classTime.sun) {
+        blocksByDay[0].add(block);
       }
+      if (classTime.mon) {
+        blocksByDay[1].add(block);
+      }
+      if (classTime.tues) {
+        blocksByDay[2].add(block);
+      }
+      if (classTime.weds) {
+        blocksByDay[3].add(block);
+      }
+      if (classTime.thur) {
+        blocksByDay[4].add(block);
+      }
+      if (classTime.fri) {
+        blocksByDay[5].add(block);
+      }
+      if (classTime.sat) {
+        blocksByDay[6].add(block);
+      }
+
     }
   }
 

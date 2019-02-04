@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:http/http.dart' as http;
 
-import 'package:course_gnome/model/Course.dart';
-import 'package:course_gnome/model/UtilityClasses.dart';
+import 'package:core/model/Course.dart';
+import 'package:core/model/UtilityClasses.dart';
 import 'DummyData.dart';
 
 class SearchObject {

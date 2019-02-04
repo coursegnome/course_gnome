@@ -4,8 +4,8 @@ import 'package:angular_components/angular_components.dart';
 import 'package:angular_components/material_icon/material_icon.dart';
 import 'package:angular_components/material_button/material_button.dart';
 
-import 'package:course_gnome/controller/SchedulingPageController.dart';
-import 'package:course_gnome/model/Course.dart';
+import 'package:core/controller/SchedulingPageController.dart';
+import 'package:core/model/Course.dart';
 
 @Component(
   selector: 'search-page',

@@ -1,4 +1,4 @@
-import 'package:course_gnome/model/UtilityClasses.dart';
+import 'package:core/model/UtilityClasses.dart';
 
 class Course {
   String departmentAcronym,

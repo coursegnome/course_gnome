@@ -4,9 +4,9 @@ import 'dart:async';
 
 import 'package:auto_size_text/auto_size_text.dart';
 
-import 'package:course_gnome/model/Calendar.dart';
-import 'package:course_gnome/model/UtilityClasses.dart';
-import 'package:course_gnome/controller/SchedulingPageController.dart';
+import 'package:core/model/Calendar.dart';
+import 'package:core/model/UtilityClasses.dart';
+import 'package:core/controller/SchedulingPageController.dart';
 
 import 'package:course_gnome_mobile/utilities/UtilitiesClasses.dart';
 

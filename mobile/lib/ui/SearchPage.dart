@@ -3,11 +3,11 @@ import 'package:flutter/services.dart';
 
 import 'package:url_launcher/url_launcher.dart';
 
-import 'package:course_gnome/model/Calendar.dart';
-import 'package:course_gnome/model/Course.dart';
-import 'package:course_gnome/model/UtilityClasses.dart';
-import 'package:course_gnome/controller/SchedulingPageController.dart';
-import 'package:course_gnome/services/Networking.dart';
+import 'package:core/model/Calendar.dart';
+import 'package:core/model/Course.dart';
+import 'package:core/model/UtilityClasses.dart';
+import 'package:core/controller/SchedulingPageController.dart';
+import 'package:core/services/Networking.dart';
 
 import 'package:course_gnome_mobile/ui/custom/CGExpansionTile.dart';
 import 'package:course_gnome_mobile/utilities/UtilitiesClasses.dart';

@@ -1,4 +1,5 @@
-name: course_gnome
+name: core
+description: Shared code for mobile and web Course Gnome apps.
 environment:
   sdk: '>=2.0.0 <3.0.0'
 #  flutter: ^0.1.2

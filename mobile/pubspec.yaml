@@ -22,8 +22,8 @@ dependencies:
 
   auto_size_text: ^0.3.0
 
-  course_gnome:
-    path: ../course_gnome
+  core:
+    path: ../core
 
 dev_dependencies:
   flutter_test:

@@ -3,8 +3,8 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:course_gnome/model/UtilityClasses.dart';
-import 'package:course_gnome/controller/SchedulingPageController.dart';
+import 'package:core/model/UtilityClasses.dart';
+import 'package:core/controller/SchedulingPageController.dart';
 
 import 'package:course_gnome_mobile/ui/SearchPage.dart';
 import 'package:course_gnome_mobile/ui/CalendarPage.dart';
@@ -93,6 +93,10 @@ class _SchedulingPageState extends State<SchedulingPage>
     setState(() {
       _schedulingPageController.toggleOffering(course, offering, color);
     });
+  }
+
+  _setState() {
+
   }
 
   // Calendar Page logic

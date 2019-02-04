@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:course_gnome/model/UtilityClasses.dart';
+import 'package:core/model/UtilityClasses.dart';
 
 class CGColor {
   static final cgred = Color(0xffC3282B);

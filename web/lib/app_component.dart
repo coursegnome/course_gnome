@@ -1,6 +1,6 @@
 import 'package:angular/angular.dart';
 
-import 'package:course_gnome/controller/SchedulingPageController.dart';
+import 'package:core/controller/SchedulingPageController.dart';
 
 import 'src/search_page/search_page_components.dart';
 

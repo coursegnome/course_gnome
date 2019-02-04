@@ -1,7 +1,8 @@
-import 'package:course_gnome/model/Calendar.dart';
-import 'package:course_gnome/model/Course.dart';
-import 'package:course_gnome/model/UtilityClasses.dart';
-import 'package:course_gnome/services/Networking.dart';
+
+import 'package:core/model/Calendar.dart';
+import 'package:core/model/Course.dart';
+import 'package:core/model/UtilityClasses.dart';
+import 'package:core/services/Networking.dart';
 
 class SchedulingPageController {
   Calendars calendars = null;

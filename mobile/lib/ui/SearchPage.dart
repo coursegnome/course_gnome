@@ -588,7 +588,7 @@ class ClassTimeRow extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(left: 3.0),
           child: Text(
-            classTime.timeRangeToString(),
+            classTime.timeRange,
             style: TextStyle(color: color),
           ),
         )

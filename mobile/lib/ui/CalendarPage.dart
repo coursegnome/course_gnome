@@ -1,14 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'dart:async';
 
-import 'package:auto_size_text/auto_size_text.dart';
-
-import 'package:core/model/Calendar.dart';
-import 'package:core/model/UtilityClasses.dart';
 import 'package:core/controller/SchedulingPageController.dart';
-
+import 'package:core/model/Schedule.dart';
+import 'package:core/model/UtilityClasses.dart';
 import 'package:course_gnome_mobile/utilities/UtilitiesClasses.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class CalendarPage extends StatefulWidget {
   final SchedulingPageController schedulingPageController;
@@ -74,53 +71,34 @@ class _CalendarPageState extends State<CalendarPage> {
 
   double initialValue;
   double initialScrollPosition;
-  Offset initialFocalPoint;
-  bool scalingDayWidth = true;
+
+  double initialWidth;
+  double initialHeight;
 
   scaleStart(ScaleStartDetails details) {
-    final angle = details.angle;
-    initialFocalPoint = details.focalPoint;
-    if ((angle > -2 && angle < -1) || (angle > 1 && angle < 2)) {
-      scalingDayWidth = false;
-      initialValue = widget.schedulingPageController.calendarValues.hourHeight;
-      initialScrollPosition = verticalCalController.offset;
-      return;
-    }
-    if ((angle > 2.5 || angle < -2.5) || (angle < 0.5 && angle > -0.5)) {
-      scalingDayWidth = true;
-      initialValue = widget.schedulingPageController.calendarValues.dayWidth;
-      initialScrollPosition = horizontalCalController.offset;
-      return;
-    }
-  }
-
-  scaleUpdate(ScaleUpdateDetails details) {
-    final scale = details.scale;
     setState(() {
-      if (scalingDayWidth) {
-        final width = initialValue * scale;
-        if (width > CalendarValues.maxDayWidth ||
-            width < CalendarValues.minDayWidth) return;
-        widget.schedulingPageController.calendarValues.dayWidth = width;
-        horizontalCalController.jumpTo(initialScrollPosition * scale);
-        print(
-            "initial: $initialScrollPosition, new: ${initialScrollPosition * scale}");
-      } else {
-        final height = initialValue * scale;
-        if (height > CalendarValues.maxHourHeight ||
-            height < CalendarValues.minHourHeight) return;
-        widget.schedulingPageController.calendarValues.hourHeight = height;
-        verticalCalController.jumpTo(initialScrollPosition * scale);
-
-//        final offset = initialFocalPoint.dy;
-//        final scaleFactor =.9 + ((offset-200)/600)/10;
-//        print(scale);
-//        print(initialScrollPosition * scale);
-      }
+      initialWidth = widget.schedulingPageController.calendarValues.dayWidth;
+      initialHeight = widget.schedulingPageController.calendarValues.hourHeight;
     });
   }
 
-  scaleEnd(ScaleEndDetails details) {}
+  scaleUpdate(ScaleUpdateDetails details) {
+    setState(() {
+      final width = initialValue * details.horizontalScale;
+      if (width > CalendarValues.maxDayWidth ||
+          width < CalendarValues.minDayWidth) return;
+      widget.schedulingPageController.calendarValues.dayWidth = width;
+      horizontalCalController
+          .jumpTo(initialScrollPosition * details.horizontalScale);
+
+      final height = initialValue * details.verticalScale;
+      if (height > CalendarValues.maxHourHeight ||
+          height < CalendarValues.minHourHeight) return;
+      widget.schedulingPageController.calendarValues.hourHeight = height;
+      verticalCalController
+          .jumpTo(initialScrollPosition * details.verticalScale);
+    });
+  }
 
   _showDialog(String title, Widget body, String opOneText, String opTwoText,
       VoidCallback opOneAction, VoidCallback opTwoAction) {
@@ -328,7 +306,6 @@ class _CalendarPageState extends State<CalendarPage> {
                             widget.removeOffering,
                             scaleStart,
                             scaleUpdate,
-                            scaleEnd,
                           ),
                         ],
                       ),
@@ -348,7 +325,7 @@ class CalendarView extends StatefulWidget {
   final ScrollController horizontalCalController, verticalCalController;
   final Calendar calendar;
   final Function removeOffering;
-  final Function scaleStart, scaleUpdate, scaleEnd;
+  final Function scaleStart, scaleUpdate;
 
   CalendarView(
     this.dayCount,
@@ -362,7 +339,6 @@ class CalendarView extends StatefulWidget {
     this.removeOffering,
     this.scaleStart,
     this.scaleUpdate,
-    this.scaleEnd,
   );
 
   @override
@@ -387,7 +363,6 @@ class _CalendarViewState extends State<CalendarView> {
               child: GestureDetector(
                 onScaleStart: (details) => widget.scaleStart(details),
                 onScaleUpdate: (details) => widget.scaleUpdate(details),
-                onScaleEnd: (details) => widget.scaleEnd(details),
                 child: SizedBox(
                   height: widget.hourHeight * widget.hourCount,
                   child: ListView(

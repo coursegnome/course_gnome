@@ -1,6 +1,7 @@
 import 'dart:collection';
 import 'dart:convert';
 
+import 'package:core/src/consts/colors.dart';
 import 'Course.dart';
 
 class CalendarsHistory {
@@ -47,9 +48,9 @@ class Calendars {
   }
 
   Map<String, dynamic> toJson() => {
-    'list': list,
-    'currentCalendarIndex': currentCalendarIndex,
-  };
+        'list': list,
+        'currentCalendarIndex': currentCalendarIndex,
+      };
 
   static Calendars init(String jsonString) {
     if (jsonString == null) {
@@ -103,10 +104,10 @@ class Calendar {
   }
 
   Map<String, dynamic> toJson() => {
-    'name': name,
-    'ids': ids.toList(),
-    'blocksByDay': blocksByDay,
-  };
+        'name': name,
+        'ids': ids.toList(),
+        'blocksByDay': blocksByDay,
+      };
 
   toggleOffering(Course course, Offering offering, TriColor color) {
     if (ids.contains(offering.crn)) {
@@ -151,7 +152,6 @@ class Calendar {
       if (classTime.sat) {
         blocksByDay[6].add(block);
       }
-
     }
   }
 
@@ -180,11 +180,11 @@ class ClassBlock {
   }
 
   Map<String, dynamic> toJson() => {
-    'offset': offset,
-    'height': height,
-    'departmentInfo': departmentInfo,
-    'id': id,
-    'name': name,
-    'color': color,
-  };
+        'offset': offset,
+        'height': height,
+        'departmentInfo': departmentInfo,
+        'id': id,
+        'name': name,
+        'color': color,
+      };
 }

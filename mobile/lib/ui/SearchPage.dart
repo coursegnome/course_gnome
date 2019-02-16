@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 
 import 'package:url_launcher/url_launcher.dart';
 
-import 'package:core/model/Calendar.dart';
+import 'package:core/model/Schedule.dart';
 import 'package:core/model/Course.dart';
 import 'package:core/model/UtilityClasses.dart';
 import 'package:core/controller/SchedulingPageController.dart';
@@ -576,7 +576,9 @@ class ClassTimeRow extends StatelessWidget {
                   width: 13,
                   height: 13,
                   decoration: BoxDecoration(
-                    color: _dayIsIncluded(classTime, i) ? color : Colors.transparent,
+                    color: _dayIsIncluded(classTime, i)
+                        ? color
+                        : Colors.transparent,
                     border: Border.all(color: color, width: 1),
                     borderRadius: BorderRadius.all(
                       Radius.circular(2),
@@ -597,7 +599,7 @@ class ClassTimeRow extends StatelessWidget {
   }
 
   bool _dayIsIncluded(ClassTime ct, int i) {
-    switch(i) {
+    switch (i) {
       case 0:
         return ct.mon == true;
       case 1:
@@ -612,7 +614,6 @@ class ClassTimeRow extends StatelessWidget {
         return true;
     }
   }
-
 }
 
 class ExtraInfoContainer extends StatelessWidget {

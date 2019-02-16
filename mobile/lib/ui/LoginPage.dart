@@ -6,7 +6,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 //import 'package:flutter_facebook_login_login/flutter_facebook_login.dart';
 
-
 import 'package:course_gnome_mobile/ui/SchedulingPage.dart';
 
 class LoginPage extends StatefulWidget {
@@ -17,7 +16,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-
   _signInWithGoogle() async {
     final GoogleSignIn _googleSignIn = GoogleSignIn();
     GoogleSignInAccount googleUser = await _googleSignIn.signIn();
@@ -85,12 +83,18 @@ class _LoginPageState extends State<LoginPage> {
                 padding: const EdgeInsets.only(top: 50.0),
                 child: RichText(
                   text: TextSpan(
-                    style: TextStyle(color: Colors.white, fontSize: 18, ),
-                    children: [
-                      TextSpan(text: 'Find classes and build schedules with ',),
-                      TextSpan(text: 'Course Gnome.', style: TextStyle(fontWeight: FontWeight.bold))
-                    ]
-                  ),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                      ),
+                      children: [
+                        TextSpan(
+                          text: 'Find classes and build schedules with ',
+                        ),
+                        TextSpan(
+                            text: 'Course Gnome.',
+                            style: TextStyle(fontWeight: FontWeight.bold))
+                      ]),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -100,7 +104,10 @@ class _LoginPageState extends State<LoginPage> {
                 child: RaisedButton.icon(
                   color: Colors.white,
                   onPressed: _signInWithGoogle,
-                  icon: Image.asset('assets/images/google-logo.png', height: 35,),
+                  icon: Image.asset(
+                    'assets/images/google-logo.png',
+                    height: 35,
+                  ),
                   label: Text(
                     "Log in with Google",
                     style: TextStyle(

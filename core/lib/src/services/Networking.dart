@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:http/http.dart' as http;
 
 import 'package:core/model/Course.dart';
@@ -97,8 +95,7 @@ class Networking {
   static const getCoursesURL =
       'https://us-central1-course-gnome.cloudfunctions.net/getCourses';
 
-  static Future<SearchResults> getCourses(
-      SearchObject searchObject) async {
+  static Future<SearchResults> getCourses(SearchObject searchObject) async {
     try {
       final Map<String, dynamic> params = {
         'name': searchObject.name,
@@ -109,12 +106,12 @@ class Networking {
 //      final coursesJson = resp.body['courses'];
 //      final courses = jsonDecode(coursesJson);
 //      return SearchResults(results: _parseCourses(courses), total: resp.body['count']);
-      return SearchResults(results: _parseCourses(DummyData.dummyJson), total: 11);
+      return SearchResults(
+          results: _parseCourses(DummyData.dummyJson), total: 11);
     } catch (e) {
       print('caught generic exception');
       print(e);
       return null;
     }
   }
-
 }

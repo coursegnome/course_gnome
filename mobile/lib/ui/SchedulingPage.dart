@@ -95,9 +95,7 @@ class _SchedulingPageState extends State<SchedulingPage>
     });
   }
 
-  _setState() {
-
-  }
+  _setState() {}
 
   // Calendar Page logic
   _addCalendar() {
@@ -149,6 +147,7 @@ class _SchedulingPageState extends State<SchedulingPage>
       _schedulingPageController.scaleHorizontally(initialValue, scale);
     });
   }
+
   _scaleCalendarVertically(double initialValue, double scale) {
     setState(() {
       _schedulingPageController.scaleHorizontally(initialValue, scale);
@@ -175,8 +174,8 @@ class _SchedulingPageState extends State<SchedulingPage>
       deleteCurrentCalendar: _deleteCurrentCalendar,
       removeOffering: _removeOffering,
       toggleActivePage: _toggleActivePage,
-      scaleCalendarHorizontally:  _scaleCalendarHorizontally,
-      scaleCalendarVertically:  _scaleCalendarVertically,
+      scaleCalendarHorizontally: _scaleCalendarHorizontally,
+      scaleCalendarVertically: _scaleCalendarVertically,
     );
     return _schedulingPageController.calendars != null
         ? width >= Breakpoints.split

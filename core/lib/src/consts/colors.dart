@@ -4,7 +4,7 @@ class CGColors {
   static const cgRed = Color.rgb(195, 40, 43);
   static const lightGray = Color.rgb(250, 250, 250);
 
-  static const array = [
+  static const array = <TriColor>[
     //TODO: change all these to rgb
 //    TriColor('FCE6EA', 'D74660', '96263A'),
 //    TriColor('FDEADC', 'E4813D', 'A05320'),
@@ -27,7 +27,7 @@ class TriColor {
     return TriColor(json["light"], json["med"], json["dark"]);
   }
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => <String, dynamic>{
         'light': light,
         'med': med,
         'dark': dark,

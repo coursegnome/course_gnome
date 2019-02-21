@@ -2,7 +2,7 @@ import 'dart:collection';
 import 'dart:convert';
 
 import 'package:core/src/consts/colors.dart';
-import 'Course.dart';
+import 'course.dart';
 
 class CalendarsHistory {
   int current = 0;
@@ -131,26 +131,8 @@ class Calendar {
           course.departmentAcronym + ' ' + course.departmentNumber;
       final block = ClassBlock(
           offset, height, departmentInfo, offering.crn, course.name, color);
-      if (classTime.sun) {
-        blocksByDay[0].add(block);
-      }
-      if (classTime.mon) {
-        blocksByDay[1].add(block);
-      }
-      if (classTime.tues) {
-        blocksByDay[2].add(block);
-      }
-      if (classTime.weds) {
-        blocksByDay[3].add(block);
-      }
-      if (classTime.thur) {
-        blocksByDay[4].add(block);
-      }
-      if (classTime.fri) {
-        blocksByDay[5].add(block);
-      }
-      if (classTime.sat) {
-        blocksByDay[6].add(block);
+      for (var i = 0; i < classTime.days.length; ++i) {
+        blocksByDay[i].add(block);
       }
     }
   }

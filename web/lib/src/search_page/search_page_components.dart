@@ -5,7 +5,7 @@ import 'package:angular_components/material_icon/material_icon.dart';
 import 'package:angular_components/material_button/material_button.dart';
 
 import 'package:core/controller/SchedulingPageController.dart';
-import 'package:core/model/Course.dart';
+import 'package:core/model/course.dart';
 
 @Component(
   selector: 'search-page',

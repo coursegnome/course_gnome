@@ -1,6 +1,6 @@
 import 'package:http/http.dart' as http;
 
-import 'package:core/model/Course.dart';
+import 'package:core/model/course.dart';
 import 'package:core/model/UtilityClasses.dart';
 import 'DummyData.dart';
 

@@ -1,5 +1,5 @@
-export 'Schedule.dart';
+export 'schedule.dart';
 export 'Course.dart';
-export 'Query.dart';
-export 'SearchError.dart';
-export 'SearchResults.dart';
+export 'query.dart';
+export 'search_error.dart';
+export 'search_results.dart';

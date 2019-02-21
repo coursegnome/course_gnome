@@ -3,8 +3,8 @@ import 'package:flutter/services.dart';
 
 import 'package:url_launcher/url_launcher.dart';
 
-import 'package:core/model/Schedule.dart';
-import 'package:core/model/Course.dart';
+import 'package:core/model/schedule.dart';
+import 'package:core/model/course.dart';
 import 'package:core/model/UtilityClasses.dart';
 import 'package:core/controller/SchedulingPageController.dart';
 import 'package:core/services/Networking.dart';

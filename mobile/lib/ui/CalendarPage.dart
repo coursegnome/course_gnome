@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:core/controller/SchedulingPageController.dart';
-import 'package:core/model/Schedule.dart';
+import 'package:core/model/schedule.dart';
 import 'package:core/model/UtilityClasses.dart';
 import 'package:course_gnome_mobile/utilities/UtilitiesClasses.dart';
 import 'package:flutter/material.dart';

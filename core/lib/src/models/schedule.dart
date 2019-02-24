@@ -1,27 +1,28 @@
 import 'dart:collection';
 import 'dart:convert';
 
-import 'package:core/src/consts/colors.dart';
+import 'package:color/color.dart';
+
 import 'course.dart';
 
-class CalendarsHistory {
+class SchedulesHistory {
   int current = 0;
-  List<Calendars> history = [];
+  List<Schedules> history = [];
 
-  void update(Calendars calendars) {
+  void update(Schedules schedules) {
     history = history.sublist(0, current);
-    history.add(calendars);
+    history.add(schedules);
     current = history.length - 1;
   }
 
-  Calendars goBackwards() {
+  Schedules goBackwards() {
     if (current != 0) {
       --current;
     }
     return history[current];
   }
 
-  Calendars goForwards() {
+  Schedules goForwards() {
     if (current != history.length - 1) {
       ++current;
     }
@@ -29,144 +30,102 @@ class CalendarsHistory {
   }
 }
 
-class Calendars {
-  static const String initialCalName = "My Calendar";
-
-  int currentCalendarIndex;
-  List<Calendar> list;
-  Calendar currentCalendar() => list[currentCalendarIndex];
-
-  Calendars() {
-    list = [];
+class Schedules {
+  factory Schedules(String jsonString) {
+    if (jsonString == null) {
+      return Schedules._internal()..addSchedule(initialScheduleName);
+    }
+    final Map<String, dynamic> json = jsonDecode(jsonString);
+    return Schedules.fromJson(json);
   }
 
-  Calendars.fromJson(Map<String, dynamic> json) {
-    currentCalendarIndex = json['currentCalendarIndex'];
-    final List<dynamic> calendars = json['list'];
-    list = [];
-    calendars.forEach((cal) => list.add(Calendar.fromJson(cal)));
+  Schedules._internal({this.currentScheduleIndex, this.list});
+
+  static Schedules fromJson(Map<String, dynamic> json) {
+    final List<Schedule> list = json['classTimes']
+        .map((Map<String, dynamic> schedule) => Schedule.fromJson(schedule))
+        .toList();
+    return Schedules._internal(
+      currentScheduleIndex: json['currentScheduleIndex'],
+      list: list,
+    );
   }
 
   Map<String, dynamic> toJson() => {
         'list': list,
-        'currentCalendarIndex': currentCalendarIndex,
+        'currentScheduleIndex': currentScheduleIndex,
       };
 
-  static Calendars init(String jsonString) {
-    if (jsonString == null) {
-      final calendars = Calendars();
-      calendars.addCalendar(initialCalName);
-      return calendars;
-    }
-    final Map<String, dynamic> json = jsonDecode(jsonString);
-    return Calendars.fromJson(json);
+  static const String initialScheduleName = 'My Schedule';
+  int currentScheduleIndex;
+  List<Schedule> list = [];
+  Schedule get currentSchedule => list[currentScheduleIndex];
+
+  void addSchedule(String name) {
+    final schedule = Schedule(name);
+    list.add(schedule);
+    currentScheduleIndex = list.length - 1;
   }
 
-  addCalendar(String name) {
-    final cal = Calendar(name);
-    list.add(cal);
-    currentCalendarIndex = list.length - 1;
-  }
-
-  removeCalendar(Calendar calendar) {
-    list.remove(calendar);
+  void removeSchedule(Schedule schedule) {
+    list.remove(schedule);
   }
 }
 
-class Calendar {
-  String name;
-  HashSet<String> ids;
-//  List<TriColor> colors = [];
-  List<List<ClassBlock>> blocksByDay;
+class Schedule {
+  Schedule(this.name, {this.offerings, this.colors});
 
-  Calendar(name) {
-    this.name = name;
-//    colors.addAll(CGColors.array);
-    ids = HashSet<String>();
-    blocksByDay = List.generate(7, (i) => List<ClassBlock>());
-  }
-
-  Calendar.fromJson(Map<String, dynamic> json) {
-    name = json['name'];
-    ids = HashSet<String>();
-//    colors.addAll(CGColors.array);
-    List idsList = json['ids'] as List;
-    idsList.forEach((id) => ids.add(id));
-    final List<dynamic> blocksByDay = json['blocksByDay'];
-    this.blocksByDay = List.generate(7, (i) => List<ClassBlock>());
-    for (var i = 0; i < blocksByDay.length; ++i) {
-      blocksByDay[i].forEach((block) {
-        final newBlock = ClassBlock.fromJson(block);
-        this.blocksByDay[i].add(newBlock);
-//        this.colors.remove((color) => color == newBlock.color);
-      });
-    }
+  static Schedule fromJson(Map<String, dynamic> json) {
+    final List<Offering> offerings = json['offerings']
+        .map((Map<String, dynamic> offering) => Offering.fromJson(offering))
+        .toList();
+    return Schedule(json['name'], offerings: offerings, colors: json['colors']);
   }
 
   Map<String, dynamic> toJson() => {
         'name': name,
         'ids': ids.toList(),
-        'blocksByDay': blocksByDay,
+        'colors': colors,
       };
 
-  toggleOffering(Course course, Offering offering, TriColor color) {
+  String name;
+  List<Offering> offerings;
+  Map<String, Color> colors; // map ids to colors
+
+  HashSet<String> get ids => offerings.map((o) => o.crn).toSet();
+
+  double height(ClassTime classTime) {
+    return classTime.endTime.hour -
+        classTime.startTime.hour +
+        (classTime.endTime.minute - classTime.startTime.minute) / 60;
+  }
+
+  double offset(ClassTime classTime) =>
+      classTime.startTime.hour + classTime.startTime.minute / 60;
+
+  List<ClassTime> classTimesForDay(int i) {
+    final List<ClassTime> classTimes = [];
+    for (final offering in offerings) {
+      classTimes.addAll(offering.classTimes.where((ct) => ct.days[i]));
+    }
+    return classTimes;
+  }
+
+  void toggleOffering(Course course, Offering offering, Color color) {
     if (ids.contains(offering.crn)) {
       removeOffering(offering.crn);
     } else {
-      _addOffering(course, offering, color);
+      addOffering(course, offering, color);
     }
   }
 
-  _addOffering(Course course, Offering offering, TriColor color) {
-//    colors.removeWhere((c1) {
-//      return c1.light.toLowerCase() == color.light.toLowerCase();
-//    });
-    ids.add(offering.crn);
-    for (var classTime in offering.classTimes) {
-      final offset = classTime.startTime.hour + classTime.startTime.minute / 60;
-      final height = classTime.endTime.hour -
-          classTime.startTime.hour +
-          (classTime.endTime.minute - classTime.startTime.minute) / 60;
-      final departmentInfo =
-          course.departmentAcronym + ' ' + course.departmentNumber;
-      final block = ClassBlock(
-          offset, height, departmentInfo, offering.crn, course.name, color);
-      for (var i = 0; i < classTime.days.length; ++i) {
-        blocksByDay[i].add(block);
-      }
-    }
+  void addOffering(Course course, Offering offering, Color color) {
+    offerings.add(offering);
+    colors[offering.crn] = color;
   }
 
-  removeOffering(String id) {
-//    colors.add(color);
+  void removeOffering(String id) {
     ids.remove(id);
-    blocksByDay.forEach((list) => list.removeWhere((block) => block.id == id));
+    colors.remove(id);
   }
-}
-
-class ClassBlock {
-  double offset, height;
-  String departmentInfo, id, name;
-  TriColor color;
-
-  ClassBlock(this.offset, this.height, this.departmentInfo, this.id, this.name,
-      this.color);
-
-  ClassBlock.fromJson(Map<String, dynamic> json) {
-    offset = json['offset'];
-    height = json['height'];
-    departmentInfo = json['departmentInfo'];
-    id = json['id'];
-    name = json['name'];
-    color = TriColor.fromJson(json["color"]);
-  }
-
-  Map<String, dynamic> toJson() => {
-        'offset': offset,
-        'height': height,
-        'departmentInfo': departmentInfo,
-        'id': id,
-        'name': name,
-        'color': color,
-      };
 }

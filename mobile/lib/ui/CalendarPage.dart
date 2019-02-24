@@ -1,14 +1,10 @@
 import 'dart:async';
 
-import 'package:core/controller/SchedulingPageController.dart';
-import 'package:core/model/schedule.dart';
-import 'package:core/model/UtilityClasses.dart';
 import 'package:course_gnome_mobile/utilities/UtilitiesClasses.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class CalendarPage extends StatefulWidget {
-  final SchedulingPageController schedulingPageController;
   final TextEditingController calendarNameController;
   final TabController tabController;
   final Function removeOffering,
@@ -20,7 +16,6 @@ class CalendarPage extends StatefulWidget {
       toggleActivePage;
 
   CalendarPage({
-    @required this.schedulingPageController,
     @required this.calendarNameController,
     @required this.tabController,
     @required this.addCalendar,
@@ -172,7 +167,7 @@ class _CalendarPageState extends State<CalendarPage> {
     widget.calendarNameController.text = widget
         .schedulingPageController
         .calendars
-        .list[widget.schedulingPageController.calendars.currentCalendarIndex]
+        .list[widget.schedulingPageController.calendars.currentScheduleIndex]
         .name;
     _showDialog(
       'Edit Calendar',
@@ -195,7 +190,7 @@ class _CalendarPageState extends State<CalendarPage> {
               .schedulingPageController
               .calendars
               .list[widget
-                  .schedulingPageController.calendars.currentCalendarIndex]
+                  .schedulingPageController.calendars.currentScheduleIndex]
               .name +
           '?'),
       'Delete',

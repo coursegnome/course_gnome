@@ -61,6 +61,7 @@ class Offering {
     @required this.status,
     @required this.sectionNumber,
     @required this.crn,
+    @required this.parent,
     this.instructors,
     this.courseAttributes,
     this.classTimes,
@@ -73,9 +74,11 @@ class Offering {
     this.earliestStartTime,
     this.latestEndTime,
   })  : assert(status != null),
+        assert(parent != null),
         assert(sectionNumber != null),
         assert(crn != null);
 
+  final Course parent;
   final List<String> instructors, courseAttributes;
   final List<ClassTime> classTimes;
   final List<Offering> linkedOfferings;
@@ -109,7 +112,9 @@ class Offering {
     final Status status = json['status'] == 'Open'
         ? Status.Open
         : json['status'] == 'Closed' ? Status.Closed : Status.Waitlist;
+    final Course parent = json['parent'];
     return Offering(
+      parent: parent,
       instructors: json['instructors'],
       courseAttributes: json['courseAttributes'],
       classTimes: classTimes,
@@ -127,6 +132,7 @@ class Offering {
   }
 
   Map<String, dynamic> toJson() => <String, dynamic>{
+        'parent': parent,
         'sectionNumber': sectionNumber,
         'crn': crn,
         'instructors': instructors,

@@ -100,7 +100,7 @@ class _SearchPageState extends State<SearchPage> {
                 (BuildContext context, int i) {
                   return CourseCard(
                     currentCalendar: widget.schedulingPageController.calendars
-                        .currentCalendar(),
+                        .currentSchedule(),
                     toggleOffering: widget.toggleOffering,
                     course: widget
                         .schedulingPageController.searchResults.results[i],
@@ -248,7 +248,7 @@ class _CalendarCounterState extends State<CalendarCounter> {
               Stack(
                 children: <Widget>[
                   Container(
-                    decoration: widget._calendars.currentCalendar().ids.length >
+                    decoration: widget._calendars.currentSchedule().ids.length >
                             0
                         ? BoxDecoration(
                             shape: BoxShape.circle,
@@ -261,10 +261,10 @@ class _CalendarCounterState extends State<CalendarCounter> {
                   Positioned(
                     top: 5,
                     left: 9,
-                    child: widget._calendars.currentCalendar().ids.length > 0
+                    child: widget._calendars.currentSchedule().ids.length > 0
                         ? Text(
                             widget._calendars
-                                .currentCalendar()
+                                .currentSchedule()
                                 .ids
                                 .length
                                 .toString(),

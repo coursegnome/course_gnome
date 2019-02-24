@@ -44,7 +44,7 @@ class _SchedulingPageState extends State<SchedulingPage>
       _tabController = TabController(
         length: _schedulingPageController.calendars.list.length,
         vsync: this,
-        initialIndex: _schedulingPageController.calendars.currentCalendarIndex,
+        initialIndex: _schedulingPageController.calendars.currentScheduleIndex,
       );
     });
     _tabController.addListener(_tabChanged);
@@ -102,7 +102,7 @@ class _SchedulingPageState extends State<SchedulingPage>
     final name = _calendarNameController.text;
     if (name.isEmpty) return;
     setState(() {
-      _schedulingPageController.addCalendar(name);
+      _schedulingPageController.addSchedule(name);
       _tabController = TabController(
         length: _schedulingPageController.calendars.list.length,
         vsync: this,

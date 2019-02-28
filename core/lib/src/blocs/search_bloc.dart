@@ -20,11 +20,11 @@ class SearchBloc extends Bloc<SearchChanged, SearchState> {
 
   @override
   void onTransition(Transition<SearchChanged, SearchState> transition) {
-    print(transition);
+    print('Search transition:  $transition');
   }
 
   @override
-  SearchState get initialState => SearchStateEmpty();
+  SearchState get initialState => SearchEmpty();
 
   @override
   Stream<SearchState> mapEventToState(
@@ -32,17 +32,17 @@ class SearchBloc extends Bloc<SearchChanged, SearchState> {
     SearchChanged event,
   ) async* {
     if (event is SearchChanged) {
-      if (searchTerm.isEmpty) {
-        yield SearchStateEmpty();
+      if (event.query.isEmpty) {
+        yield SearchEmpty();
       } else {
-        yield SearchStateLoading();
+        yield SearchLoading();
         try {
-          final results = await githubRepository.search(searchTerm);
-          yield SearchStateSuccess(results.items);
+          final results = await searchRepository.results(event.query);
+          yield SearchSuccess(results);
         } catch (error) {
-          yield error is SearchResultError
-              ? SearchStateError(error.message)
-              : SearchStateError('something went wrong');
+          yield error is SearchError
+              ? SearchError(error.message)
+              : SearchError('something went wrong');
         }
       }
     }
@@ -50,7 +50,7 @@ class SearchBloc extends Bloc<SearchChanged, SearchState> {
 }
 
 class SearchChanged extends Equatable {
-  SearchChanged({this.query}) : super([query]);
+  SearchChanged(this.query) : super([query]);
   final Query query;
 }
 
@@ -58,16 +58,16 @@ class SearchState extends Equatable {
   SearchState([List props = const []]) : super(props);
 }
 
-class SearchStateEmpty extends SearchState {}
+class SearchEmpty extends SearchState {}
 
-class SearchStateLoading extends SearchState {}
+class SearchLoading extends SearchState {}
 
-class SearchStateError extends SearchState {
-  SearchStateError(this.error) : super([error]);
-  final String error;
+class SearchError extends SearchState {
+  SearchError(this.message) : super([message]);
+  final String message;
 }
 
-class SearchStateSuccess extends SearchState {
-  SearchStateSuccess(this.searchResult);
+class SearchSuccess extends SearchState {
+  SearchSuccess(this.searchResult);
   final SearchResult searchResult;
 }

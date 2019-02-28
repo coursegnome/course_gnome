@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:core/core.dart';
 import 'package:algolia/algolia.dart';
 
@@ -5,9 +7,9 @@ import 'config.dart' as algolia_config;
 
 class SearchRepository {
   final client = SearchClient();
-  final cache = <String, SearchResult>{};
+  final HashMap<Query, SearchResult> cache = HashMap<Query, SearchResult>();
 
-  Future<SearchResult> getResults(Query query) async {
+  Future<SearchResult> results(Query query) async {
     if (cache.containsKey(query.stringCode)) {
       return cache[query.stringCode];
     } else {

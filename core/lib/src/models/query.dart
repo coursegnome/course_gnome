@@ -1,6 +1,30 @@
 import 'package:core/core.dart';
+import 'package:equatable/equatable.dart';
 
-class Query {
+class Query extends Equatable {
+  Query({
+    this.text,
+    this.departments,
+    this.statuses,
+    this.minDepartmentNumber,
+    this.maxDepartmentNumber,
+    this.earliestStartTime,
+    this.latestEndTime,
+    this.onlyDays,
+    this.days,
+  }) : super([
+          text,
+          departments,
+          statuses,
+          minDepartmentNumber,
+          maxDepartmentNumber,
+          earliestStartTime,
+          latestEndTime,
+          onlyDays,
+          days,
+        ]);
+
+  // search text
   String text;
 
   //facets
@@ -8,16 +32,21 @@ class Query {
   List<Status> statuses;
 
   // numeric
-  int minDepartmentNumber;
-  int maxDepartmentNumber;
-  TimeOfDay earliestStartTime;
-  TimeOfDay latestEndTime;
+  int minDepartmentNumber, maxDepartmentNumber;
+  TimeOfDay earliestStartTime, latestEndTime;
   bool onlyDays;
   List<bool> days;
 
-  bool isEmpty() {
-    return text.isEmpty && departments.isEmpty;
-  }
+  bool get isEmpty =>
+      text == null &&
+      departments == null &&
+      statuses == null &&
+      minDepartmentNumber == null &&
+      maxDepartmentNumber == null &&
+      earliestStartTime == null &&
+      latestEndTime == null &&
+      onlyDays == null &&
+      days == null;
 
   String get queryString {
     String query = '';
@@ -28,6 +57,7 @@ class Query {
         query += 'AND';
       }
       query += ' $string ';
+      atLeastOneAdded = true;
     }
 
     if (departments != null) {
@@ -49,24 +79,6 @@ class Query {
       addFilter('offerings.latestEndTime > $latestEndTime');
     }
     return query;
-  }
-
-  String get stringCode {
-    String code = '';
-    if (departmentAcronym != null) {
-      addFilter('departmentAcronym:$departmentAcronym ');
-    }
-    if (status != null) {
-      code += 'status:${status.toString().split('.')[1]} ';
-    }
-    if (minDepartmentNumber != null) {
-      code += '';
-    }
-    return code;
-  }
-
-  addFilter(String string) {
-//    if (code) {}
   }
 }
 

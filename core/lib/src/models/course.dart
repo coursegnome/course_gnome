@@ -61,7 +61,7 @@ class Offering {
     @required this.status,
     @required this.sectionNumber,
     @required this.crn,
-    @required this.parent,
+    this.parent,
     this.instructors,
     this.courseAttributes,
     this.classTimes,
@@ -74,11 +74,10 @@ class Offering {
     this.earliestStartTime,
     this.latestEndTime,
   })  : assert(status != null),
-        assert(parent != null),
         assert(sectionNumber != null),
         assert(crn != null);
 
-  final Course parent;
+  Course parent;
   final List<String> instructors, courseAttributes;
   final List<ClassTime> classTimes;
   final List<Offering> linkedOfferings;

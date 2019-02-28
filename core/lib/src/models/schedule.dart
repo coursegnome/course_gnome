@@ -73,22 +73,24 @@ class Schedules {
 }
 
 class Schedule {
-  Schedule(this.name, {this.offerings, this.colors});
+  Schedule(this.name, this.id, {this.offerings, this.colors});
 
   static Schedule fromJson(Map<String, dynamic> json) {
     final List<Offering> offerings = json['offerings']
         .map((Map<String, dynamic> offering) => Offering.fromJson(offering))
         .toList();
-    return Schedule(json['name'], offerings: offerings, colors: json['colors']);
+    return Schedule(json['name'], json['id'],
+        offerings: offerings, colors: json['colors']);
   }
 
   Map<String, dynamic> toJson() => {
         'name': name,
-        'ids': ids.toList(),
+        'id': id,
+        'ids': offerings,
         'colors': colors,
       };
 
-  String name;
+  String name, id;
   List<Offering> offerings;
   Map<String, Color> colors; // map ids to colors
 

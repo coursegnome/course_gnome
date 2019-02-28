@@ -4,33 +4,37 @@ class Query {
   String text;
 
   //facets
-  String departmentAcronym;
-  Status status;
+  List<String> departments;
+  List<Status> statuses;
 
   // numeric
   int minDepartmentNumber;
   int maxDepartmentNumber;
-  String earliestStartTime;
-  String latestEndTime;
+  TimeOfDay earliestStartTime;
+  TimeOfDay latestEndTime;
   bool onlyDays;
   List<bool> days;
+
+  bool isEmpty() {
+    return text.isEmpty && departments.isEmpty;
+  }
 
   String get queryString {
     String query = '';
     bool atLeastOneAdded = false;
 
-    addFilter(String string) {
+    void addFilter(String string) {
       if (atLeastOneAdded) {
         query += 'AND';
       }
       query += ' $string ';
     }
 
-    if (departmentAcronym != null) {
-      addFilter('departmentAcronym:$departmentAcronym');
+    if (departments != null) {
+//      addFilter('departmentAcronym:$departmentAcronym');
     }
-    if (status != null) {
-      addFilter('status:${status.toString().split('.')[1]} ');
+    if (statuses != null) {
+//      addFilter('status:${status.toString().split('.')[1]} ');
     }
     if (minDepartmentNumber != null) {
       addFilter('departmentNumber >= $minDepartmentNumber');

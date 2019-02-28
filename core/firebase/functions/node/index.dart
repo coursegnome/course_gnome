@@ -4,6 +4,7 @@ import 'package:firebase_functions_interop/firebase_functions_interop.dart';
 // Deploy instructions
 // pub run build_runner build --output=build
 // firebase deploy --only functions
+// pub run build_runner build --output=build && firebase deploy --only functions
 
 void main() {
   functions['allSchedules'] = functions.https.onRequest(allSchedules);
@@ -12,22 +13,23 @@ void main() {
   functions['deleteSchedule'] = functions.https.onRequest(deleteSchedule);
 }
 
-App initApp() {
-  const serviceAccountKeyFilename = 'core/firebase/functions/service.json';
-  final admin = FirebaseAdmin.instance;
-  return admin.initializeApp(AppOptions(
-    credential: admin.certFromPath(serviceAccountKeyFilename),
-    databaseURL: 'https://course-gnome.firebaseio.com',
-  ));
-}
+final Firestore firestore = FirebaseAdmin.instance.initializeApp().firestore();
 
+/// Return all schedules encoded as JSON
 Future<void> allSchedules(ExpressHttpRequest request) async {
   final String userId = request.body['userId'];
-  final querySnapshot = await FirebaseAdmin.instance
-      .initializeApp()
-      .firestore()
-      .collection('$userId/schedules')
-      .get();
+  if (userId == null) {
+    print('User can not be null');
+    throw HttpsError('FormattingError', 'User can not be null. Data recieved:',
+        request.body);
+  }
+  final querySnapshot =
+      await firestore.collection('users/$userId/schedules').get();
+  if (querySnapshot == null) {
+    print('User does not exist with that ID');
+    throw HttpsError(
+        'ServerError', 'User does not exist with the ID: $userId', null);
+  }
   final List<Map<String, dynamic>> schedules = [];
   for (final doc in querySnapshot.documents) {
     schedules.add({doc.documentID: doc.data.toMap()});
@@ -41,10 +43,10 @@ Future<void> addSchedule(ExpressHttpRequest request) async {
   final String userId = request.body['userId'];
   final String scheduleName = request.body['scheduleName'];
   final data = DocumentData()
-    ..setNestedData('offerings', null)
-    ..setString('scheduleName', scheduleName);
+    ..setNestedData('offerings', DocumentData())
+    ..setString('name', scheduleName);
   final docRef =
-      await initApp().firestore().collection('$userId/schedules').add(data);
+      await firestore.collection('users/$userId/schedules').add(data);
   request.response.writeln(docRef.documentID);
   request.response.close();
 }
@@ -54,13 +56,13 @@ Future<void> updateSchedule(ExpressHttpRequest request) async {
   final String userId = request.body['userId'];
   final String scheduleId = request.body['scheduleId'];
   final String scheduleName = request.body['scheduleName'];
-  final Map<String, String> colors = request.body['colors'];
+  final Map<String, dynamic> colors = json.decode(request.body['colors']);
   final DocumentData offerings = DocumentData();
-  colors.forEach((id, color) => offerings..setString(id, color));
+  colors.forEach((id, color) => offerings.setString(id, color));
   final data = DocumentData()
     ..setNestedData('offerings', offerings)
-    ..setString('scheduleName', scheduleName);
-  initApp().firestore().document('$userId/schedules/$scheduleId').setData(data);
+    ..setString('name', scheduleName);
+  firestore.document('users/$userId/schedules/$scheduleId').setData(data);
   request.response.close();
 }
 
@@ -68,6 +70,6 @@ Future<void> updateSchedule(ExpressHttpRequest request) async {
 Future<void> deleteSchedule(ExpressHttpRequest request) async {
   final String userId = request.body['userId'];
   final String scheduleId = request.body['scheduleId'];
-  initApp().firestore().document('$userId/schedules/$scheduleId').delete();
+  firestore.document('users/$userId/schedules/$scheduleId').delete();
   request.response.close();
 }

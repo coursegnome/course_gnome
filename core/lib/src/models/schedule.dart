@@ -1,5 +1,5 @@
 import 'dart:collection';
-import 'dart:convert';
+import 'package:meta/meta.dart';
 
 import 'package:color/color.dart';
 
@@ -31,30 +31,32 @@ class SchedulesHistory {
 }
 
 class Schedules {
-  factory Schedules(String jsonString) {
-    if (jsonString == null) {
-      return Schedules._internal()..addSchedule(initialScheduleName);
-    }
-    final Map<String, dynamic> json = jsonDecode(jsonString);
-    return Schedules.fromJson(json);
-  }
+//  factory Schedules(String jsonString) {
+//    if (jsonString == null) {
+//      return Schedules._internal()..addSchedule(initialScheduleName);
+//    }
+//    final Map<String, dynamic> json = jsonDecode(jsonString);
+//    return Schedules.fromJson(json);
+//  }
 
-  Schedules._internal({this.currentScheduleIndex, this.list});
+  Schedules({@required this.list, this.currentScheduleIndex = 0});
 
-  static Schedules fromJson(Map<String, dynamic> json) {
-    final List<Schedule> list = json['classTimes']
-        .map((Map<String, dynamic> schedule) => Schedule.fromJson(schedule))
-        .toList();
-    return Schedules._internal(
-      currentScheduleIndex: json['currentScheduleIndex'],
-      list: list,
-    );
-  }
+//  Schedules._internal({this.currentScheduleIndex, this.list});
 
-  Map<String, dynamic> toJson() => {
-        'list': list,
-        'currentScheduleIndex': currentScheduleIndex,
-      };
+//  static Schedules fromJson(Map<String, dynamic> json) {
+//    final List<Schedule> list = json['classTimes']
+//        .map((Map<String, dynamic> schedule) => Schedule.fromJson(schedule))
+//        .toList();
+//    return Schedules._internal(
+//      currentScheduleIndex: json['currentScheduleIndex'],
+//      list: list,
+//    );
+//  }
+//
+//  Map<String, dynamic> toJson() => {
+//        'list': list,
+//        'currentScheduleIndex': currentScheduleIndex,
+//      };
 
   static const String initialScheduleName = 'My Schedule';
   int currentScheduleIndex;
@@ -67,13 +69,17 @@ class Schedules {
     currentScheduleIndex = list.length - 1;
   }
 
-  void removeSchedule(Schedule schedule) {
-    list.remove(schedule);
+  void removeSchedule(String scheduleId) {
+    if (list.length >= 2) {
+      list.removeWhere((schedule) => schedule.id == scheduleId);
+    } else {
+      list.first.offerings.clear();
+    }
   }
 }
 
 class Schedule {
-  Schedule(this.name, this.id, {this.offerings, this.colors});
+//  Schedule(this.name, this.id, {this.offerings, this.colors});
 
   static Schedule fromJson(Map<String, dynamic> json) {
     final List<Offering> offerings = json['offerings']
@@ -82,6 +88,8 @@ class Schedule {
     return Schedule(json['name'], json['id'],
         offerings: offerings, colors: json['colors']);
   }
+
+  factory Schedule() {}
 
   Map<String, dynamic> toJson() => {
         'name': name,
@@ -113,15 +121,15 @@ class Schedule {
     return classTimes;
   }
 
-  void toggleOffering(Course course, Offering offering, Color color) {
+  void toggleOffering(Offering offering, Color color) {
     if (ids.contains(offering.crn)) {
       removeOffering(offering.crn);
     } else {
-      addOffering(course, offering, color);
+      addOffering(offering, color);
     }
   }
 
-  void addOffering(Course course, Offering offering, Color color) {
+  void addOffering(Offering offering, Color color) {
     offerings.add(offering);
     colors[offering.crn] = color;
   }

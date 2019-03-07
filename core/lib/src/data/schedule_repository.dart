@@ -27,7 +27,7 @@ Future<void> addSchedule({
   await http.post(addScheduleUrl, body: {
     'userId': userId,
     'scheduleName': scheduleName,
-  }).catchError(() => throw ScheduleTransactionError('Failed to add schedule'));
+  });
 }
 
 Future<void> deleteSchedule({
@@ -37,8 +37,7 @@ Future<void> deleteSchedule({
   await http.post(deleteScheduleUrl, body: {
     'userId': userId,
     'scheduleId': scheduleId,
-  }).catchError(
-      () => throw ScheduleTransactionError('Failed to delete schedule'));
+  });
 }
 
 Future<void> updateSchedule({
@@ -55,6 +54,5 @@ Future<void> updateSchedule({
     'userId': userId,
     'scheduleId': scheduleId,
     'offerings': stringOfferings,
-  }).catchError(
-      () => throw ScheduleTransactionError('Failed to update schedule'));
+  });
 }

@@ -48,7 +48,8 @@ class Query extends Equatable {
       onlyDays == null &&
       days == null;
 
-  String get queryString {
+  @override
+  String toString() {
     String query = '';
     bool atLeastOneAdded = false;
 
@@ -82,7 +83,7 @@ class Query extends Equatable {
   }
 }
 
-/// ```price < 10 AND (category:Book OR NOT category:Ebook)```
+// ```price < 10 AND (category:Book OR NOT category:Ebook)```
 
 //filters: 'attribute:value AND | OR | NOT attribute:value'
 //'numeric_attribute = | != | > | >= | < | <= numeric_value'

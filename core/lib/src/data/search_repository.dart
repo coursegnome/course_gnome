@@ -10,8 +10,8 @@ class SearchRepository {
   final HashMap<Query, SearchResult> cache = HashMap<Query, SearchResult>();
 
   Future<SearchResult> results(Query query) async {
-    if (cache.containsKey(query.stringCode)) {
-      return cache[query.stringCode];
+    if (cache.containsKey(query.toString())) {
+      return cache[query.toString()];
     } else {
       return client.search(query);
     }
@@ -24,14 +24,11 @@ class SearchClient {
       Algolia.init(applicationId: '4AISU681XR', apiKey: algolia_config.apiKey);
 
   Future<SearchResult> search(Query query) async {
-    AlgoliaQuery _algQuery =
-        algolia.instance.index('contacts').search(query.text);
-    _algQuery.setFilters(formQueryString(query));
-    AlgoliaQuerySnapshot _snap = await _algQuery.getObjects();
+    final AlgoliaQuery _algQuery = algolia.instance
+        .index('contacts')
+        .search(query.text)
+          ..setFilters(query.toString());
+    final AlgoliaQuerySnapshot _snap = await _algQuery.getObjects();
     return SearchResult.fromSnapshot(_snap);
-  }
-
-  String formQueryString(Query query) {
-    return 'price < 10 AND (category:Book OR NOT category:Ebook)';
   }
 }

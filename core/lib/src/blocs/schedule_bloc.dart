@@ -33,25 +33,54 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
   ) async* {
     if (event is ScheduleEvent) {
       if (event is FetchSchedules) {
+        if (event.userId == null) {
+          final schedules = Schedules()..addSchedule('My Schedule');
+          yield SchedulesLoaded(schedules);
+          return;
+        }
         yield SchedulesLoading();
-        final Schedules schedules =
-            await schedule_repo.allSchedules(userId: event.userId);
-        yield NormalState(schedules);
-      }
-      if (event is ScheduleAdded) {
-        yield ScheduleTransactionOngoing();
         try {
-          await schedule_repo.addSchedule(
-            userId: event.userId,
-            scheduleName: event.scheduleName,
-          );
-          if (currentState is NormalState) {
-            yield NormalState(currentState.schedules);
-          }
+          final Schedules schedules =
+              await schedule_repo.allSchedules(userId: event.userId);
+          yield SchedulesLoaded(schedules);
         } catch (e) {
-          yield e is ScheduleTransactionError
-              ? ScheduleTransactionError(e.message)
-              : ScheduleTransactionError('something went wrong');
+          yield e is ScheduleLoadError
+              ? e
+              : ScheduleLoadError('Failed to load schedules');
+        }
+      }
+      if (currentState is SchedulesLoaded) {
+        if (event is ScheduleAdded) {
+          if (event.userId != null) {
+            schedule_repo.addSchedule(
+              userId: event.userId,
+              scheduleName: event.scheduleName,
+            );
+          }
+          final schedules = currentState.schedules
+            ..addSchedule(event.scheduleName);
+          yield SchedulesLoaded(schedules);
+        }
+        if (event is ScheduleDeleted) {
+          if (event.userId != null) {
+            schedule_repo.deleteSchedule(
+                userId: event.userId, scheduleId: event.scheduleId);
+          }
+          final schedules = currentState.schedules
+            ..removeSchedule(event.scheduleId);
+          yield SchedulesLoaded(schedules);
+        }
+        if (event is OfferingToggled) {
+          final schedules = currentState.schedules
+            ..currentSchedule.toggleOffering(event.offering, event.color);
+          if (event.userId != null) {
+            schedule_repo.updateSchedule(
+              userId: event.userId,
+              scheduleId: currentState.schedules.currentSchedule.id,
+              offerings: schedules.currentSchedule.colors,
+            );
+          }
+          yield SchedulesLoaded(schedules);
         }
       }
     }
@@ -59,58 +88,48 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
 }
 
 class ScheduleEvent extends Equatable {
-  ScheduleEvent([
-    this.userId,
-    List props = const [],
-  ]) : super([props]);
+  ScheduleEvent([List props = const [], this.userId]) : super([props]);
   final String userId;
 }
 
-class FetchSchedules extends ScheduleEvent {}
+class FetchSchedules extends ScheduleEvent {
+  FetchSchedules({@required String userId}) : super([userId], userId);
+}
 
 class ScheduleAdded extends ScheduleEvent {
-  ScheduleAdded({
-    @required this.scheduleName,
-    @required String userId,
-  }) : super(userId, [scheduleName]);
+  ScheduleAdded({@required this.scheduleName, @required String userId})
+      : super([scheduleName], userId);
   final String scheduleName;
 }
 
 class ScheduleDeleted extends ScheduleEvent {
-  ScheduleDeleted({
-    @required this.id,
-    @required String userId,
-  }) : super(userId, [id]);
-  final String id;
+  ScheduleDeleted({@required this.scheduleId, @required String userId})
+      : super([scheduleId], userId);
+  final String scheduleId;
 }
 
-class ScheduleUpdated extends ScheduleEvent {
-  ScheduleUpdated({
-    @required this.scheduleName,
-    @required this.offerings,
+class OfferingToggled extends ScheduleEvent {
+  OfferingToggled({
+    @required this.offering,
+    @required this.color,
     @required String userId,
-  }) : super(userId, [scheduleName, offerings]);
-  final String scheduleName;
-  final Map<String, Color> offerings;
+  }) : super([offering, color], userId);
+  final Offering offering;
+  final Color color;
 }
 
 class ScheduleState extends Equatable {
-  ScheduleState([this.schedules, List props = const []]) : super(props);
+  ScheduleState([List props = const [], this.schedules]) : super(props);
   final Schedules schedules;
 }
 
 class SchedulesLoading extends ScheduleState {}
 
-class NormalState extends ScheduleState {}
+class SchedulesLoaded extends ScheduleState {
+  SchedulesLoaded(Schedules schedules) : super([schedules], schedules);
+}
 
 class ScheduleLoadError extends ScheduleState {
   ScheduleLoadError(this.message) : super([message]);
-  final String message;
-}
-
-class ScheduleTransactionOngoing extends ScheduleState {}
-
-class ScheduleTransactionError extends ScheduleState {
-  ScheduleTransactionError(this.message) : super([message]);
   final String message;
 }

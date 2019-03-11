@@ -31,14 +31,19 @@ class Course {
     final List<Offering> offerings = json['offerings']
         .map((Map<String, dynamic> item) => Offering.fromJson(item))
         .toList();
-    return Course(
-        departmentAcronym: json['departmentAcronym'],
-        departmentNumber: json['departmentNum'],
-        name: json['name'],
-        credit: json['credit'],
-        description: json['description'],
-        bulletinLink: json['bulletinLink'],
-        offerings: offerings);
+    final Course course = Course(
+      departmentAcronym: json['departmentAcronym'],
+      departmentNumber: json['departmentNum'],
+      name: json['name'],
+      credit: json['credit'],
+      description: json['description'],
+      bulletinLink: json['bulletinLink'],
+      offerings: offerings,
+    );
+    for (final offering in course.offerings) {
+      offering.parent = course;
+    }
+    return course;
   }
 
   Map<String, dynamic> toJson() => <String, dynamic>{
@@ -60,7 +65,7 @@ class Offering {
   Offering({
     @required this.status,
     @required this.sectionNumber,
-    @required this.crn,
+    @required this.id,
     this.parent,
     this.instructors,
     this.courseAttributes,
@@ -75,7 +80,7 @@ class Offering {
     this.latestEndTime,
   })  : assert(status != null),
         assert(sectionNumber != null),
-        assert(crn != null);
+        assert(id != null);
 
   Course parent;
   final List<String> instructors, courseAttributes;
@@ -83,7 +88,7 @@ class Offering {
   final List<Offering> linkedOfferings;
   final Status status;
   final String sectionNumber,
-      crn,
+      id,
       linkedOfferingsName,
       comments,
       findBooksLink,
@@ -93,7 +98,7 @@ class Offering {
 
   @override
   String toString() {
-    return 'Offering{sectionNumber: $sectionNumber, crn: $crn, '
+    return 'Offering{sectionNumber: $sectionNumber, crn: $id, '
         'instructors: $instructors, status: $status, classTimes: $classTimes, '
         'linkedOfferings: $linkedOfferings, linkedOfferingsName: $linkedOfferingsName, '
         'comments: $comments, courseAttributes: $courseAttributes, '
@@ -111,16 +116,14 @@ class Offering {
     final Status status = json['status'] == 'Open'
         ? Status.Open
         : json['status'] == 'Closed' ? Status.Closed : Status.Waitlist;
-    final Course parent = json['parent'];
-    return Offering(
-      parent: parent,
+    final Offering offering = Offering(
       instructors: json['instructors'],
       courseAttributes: json['courseAttributes'],
       classTimes: classTimes,
       linkedOfferings: linkedOfferings,
       status: status,
       sectionNumber: json['sectionNumber'],
-      crn: json['crn'],
+      id: json['crn'],
       linkedOfferingsName: json['linkedOfferingsName'],
       comments: json['comments'],
       findBooksLink: json['findBooksLink'],
@@ -128,12 +131,15 @@ class Offering {
       earliestStartTime: TimeOfDay.fromTimestamp(json['earliestStartTime']),
       latestEndTime: TimeOfDay.fromTimestamp(json['latestEndTime']),
     );
+    for (final ct in offering.classTimes) {
+      ct.parent = offering;
+    }
+    return offering;
   }
 
   Map<String, dynamic> toJson() => <String, dynamic>{
-        'parent': parent,
         'sectionNumber': sectionNumber,
-        'crn': crn,
+        'crn': id,
         'instructors': instructors,
         'status': status.toString().split('.').last,
         'classTimes': classTimes?.map((ClassTime ct) => ct.toJson())?.toList(),
@@ -156,11 +162,13 @@ class ClassTime {
     this.endTime,
     this.days,
     this.location,
+    this.parent,
   });
 
   final TimeOfDay startTime, endTime;
   final List<bool> days;
   final String location;
+  Offering parent;
 
   @override
   String toString() {

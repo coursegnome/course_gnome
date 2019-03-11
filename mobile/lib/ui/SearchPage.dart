@@ -442,11 +442,11 @@ class CourseCard extends StatelessWidget {
                 course.offerings.length,
                 (j) => Container(
                       color:
-                          currentCalendar.ids.contains(course.offerings[j].crn)
+                          currentCalendar.ids.contains(course.offerings[j].id)
                               ? color.med.withOpacity(0.1)
                               : Colors.transparent,
                       child: CGExpansionTile(
-                        key: PageStorageKey<String>(course.offerings[j].crn),
+                        key: PageStorageKey<String>(course.offerings[j].id),
                         color: color.med,
                         onLongPress: () {
                           HapticFeedback.selectionClick();
@@ -514,11 +514,11 @@ class OfferingRow extends StatelessWidget {
             ),
           ),
         ),
-        offering.crn != null && spaceAllowance >= 2
+        offering.id != null && spaceAllowance >= 2
             ? Expanded(
                 flex: 2,
                 child: Text(
-                  offering.crn,
+                  offering.id,
                   style: TextStyle(color: color),
                   textAlign: TextAlign.right,
                 ),

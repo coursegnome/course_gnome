@@ -1,141 +1,235 @@
-import 'dart:collection';
 import 'package:meta/meta.dart';
 
 import 'package:color/color.dart';
+import 'package:equatable/equatable.dart';
 
 import 'course.dart';
 
 class SchedulesHistory {
-  int current = 0;
-  List<Schedules> history = [];
-
-  void update(Schedules schedules) {
-    history = history.sublist(0, current);
-    history.add(schedules);
-    current = history.length - 1;
+  SchedulesHistory({Schedules schedules}) {
+    history = schedules != null ? [schedules] : [Schedules.init()];
   }
 
-  Schedules goBackwards() {
-    if (current != 0) {
-      --current;
-    }
-    return history[current];
-  }
+  /// History of edits made by user to their schedules
+  List<Schedules> history;
 
-  Schedules goForwards() {
-    if (current != history.length - 1) {
-      ++current;
-    }
-    return history[current];
-  }
-}
+  /// Index of current point in history
+  int currentHistoryIndex = 0;
 
-class Schedules {
-//  factory Schedules(String jsonString) {
-//    if (jsonString == null) {
-//      return Schedules._internal()..addSchedule(initialScheduleName);
-//    }
-//    final Map<String, dynamic> json = jsonDecode(jsonString);
-//    return Schedules.fromJson(json);
-//  }
+  Schedules get current => history[currentHistoryIndex];
 
-  Schedules({@required this.list, this.currentScheduleIndex = 0});
-
-//  Schedules._internal({this.currentScheduleIndex, this.list});
-
-//  static Schedules fromJson(Map<String, dynamic> json) {
-//    final List<Schedule> list = json['classTimes']
-//        .map((Map<String, dynamic> schedule) => Schedule.fromJson(schedule))
-//        .toList();
-//    return Schedules._internal(
-//      currentScheduleIndex: json['currentScheduleIndex'],
-//      list: list,
-//    );
-//  }
-//
-//  Map<String, dynamic> toJson() => {
-//        'list': list,
-//        'currentScheduleIndex': currentScheduleIndex,
-//      };
-
-  static const String initialScheduleName = 'My Schedule';
-  int currentScheduleIndex;
-  List<Schedule> list = [];
-  Schedule get currentSchedule => list[currentScheduleIndex];
-
-  void addSchedule(String name) {
-    final schedule = Schedule(name);
-    list.add(schedule);
-    currentScheduleIndex = list.length - 1;
-  }
-
-  void removeSchedule(String scheduleId) {
-    if (list.length >= 2) {
-      list.removeWhere((schedule) => schedule.id == scheduleId);
-    } else {
-      list.first.offerings.clear();
+  void undo() {
+    if (currentHistoryIndex > 0) {
+      --currentHistoryIndex;
     }
   }
-}
 
-class Schedule {
-//  Schedule(this.name, this.id, {this.offerings, this.colors});
-
-  static Schedule fromJson(Map<String, dynamic> json) {
-    final List<Offering> offerings = json['offerings']
-        .map((Map<String, dynamic> offering) => Offering.fromJson(offering))
-        .toList();
-    return Schedule(json['name'], json['id'],
-        offerings: offerings, colors: json['colors']);
-  }
-
-  factory Schedule() {}
-
-  Map<String, dynamic> toJson() => {
-        'name': name,
-        'id': id,
-        'ids': offerings,
-        'colors': colors,
-      };
-
-  String name, id;
-  List<Offering> offerings;
-  Map<String, Color> colors; // map ids to colors
-
-  HashSet<String> get ids => offerings.map((o) => o.crn).toSet();
-
-  double height(ClassTime classTime) {
-    return classTime.endTime.hour -
-        classTime.startTime.hour +
-        (classTime.endTime.minute - classTime.startTime.minute) / 60;
-  }
-
-  double offset(ClassTime classTime) =>
-      classTime.startTime.hour + classTime.startTime.minute / 60;
-
-  List<ClassTime> classTimesForDay(int i) {
-    final List<ClassTime> classTimes = [];
-    for (final offering in offerings) {
-      classTimes.addAll(offering.classTimes.where((ct) => ct.days[i]));
+  void redo() {
+    if (currentHistoryIndex < history.length - 1) {
+      ++currentHistoryIndex;
     }
-    return classTimes;
+  }
+
+  void addSchedule(String name, String id) {
+    _addToHistory(current.addSchedule(name, id));
+  }
+
+  void editScheduleName(String name) {
+    _addToHistory(current.editScheduleName(name));
+  }
+
+  void deleteSchedule(String id) {
+    _addToHistory(current.deleteSchedule(id));
   }
 
   void toggleOffering(Offering offering, Color color) {
-    if (ids.contains(offering.crn)) {
-      removeOffering(offering.crn);
-    } else {
-      addOffering(offering, color);
+    _addToHistory(current.toggleOffering(offering, color));
+  }
+
+  void _addToHistory(Schedules schedules) {
+    history = history.sublist(0, currentHistoryIndex + 1)..add(schedules);
+    ++currentHistoryIndex;
+  }
+}
+
+/// Collection of user's schedules,
+class Schedules extends Equatable {
+  Schedules({@required this.schedules, this.currentScheduleIndex = 0})
+      : super([schedules, currentScheduleIndex]);
+
+  /// List of all user's schedules
+  final List<Schedule> schedules;
+
+  /// Index of currently selected schedule
+  final int currentScheduleIndex;
+
+  /// Quick access to current schedule
+  Schedule get currentSchedule => schedules[currentScheduleIndex];
+
+  static Schedules init() {
+    return Schedules(
+      schedules: [Schedule.init()],
+      currentScheduleIndex: 0,
+    );
+  }
+
+  Schedules deleteSchedule(String id) {
+    final List<Schedule> newSchedules = _cloneSchedules()
+      ..removeWhere((schedule) => schedule.id == id);
+    return Schedules(
+      schedules: newSchedules,
+      currentScheduleIndex: (newSchedules.length - 1).clamp(0, double.infinity),
+    );
+  }
+
+  Schedules addSchedule(String name, String id) {
+    if (schedules.any((schedule) => schedule.id == id)) {
+      throw ArgumentError('A Schedule with id: $id already exsits');
     }
+    final List<Schedule> newSchedules = _cloneSchedules()
+      ..add(Schedule(name: name, id: id, offerings: {}));
+    return Schedules(
+      schedules: newSchedules,
+      currentScheduleIndex: newSchedules.length - 1,
+    );
   }
 
-  void addOffering(Offering offering, Color color) {
-    offerings.add(offering);
-    colors[offering.crn] = color;
+  Schedules editScheduleName(String name) {
+    final List<Schedule> newSchedules = [];
+    for (var i = 0; i < schedules.length; ++i) {
+      final schedule = schedules[i];
+      newSchedules.add(i == currentScheduleIndex
+          ? schedule.editScheduleName(name)
+          : schedule.clone());
+    }
+    return Schedules(
+      schedules: newSchedules,
+      currentScheduleIndex: currentScheduleIndex,
+    );
   }
 
-  void removeOffering(String id) {
-    ids.remove(id);
-    colors.remove(id);
+  Schedules toggleOffering(Offering offering, Color color) {
+    final List<Schedule> newSchedules = [];
+    for (var i = 0; i < schedules.length; ++i) {
+      final schedule = schedules[i];
+      newSchedules.add(i == currentScheduleIndex
+          ? schedule.toggleOffering(offering, color)
+          : schedule.clone());
+    }
+    return Schedules(
+      schedules: newSchedules,
+      currentScheduleIndex: currentScheduleIndex,
+    );
   }
+
+  List<Schedule> _cloneSchedules() {
+    return schedules.map((schedule) => schedule.clone()).toList();
+  }
+
+  @override
+  String toString() =>
+      'Schedules{currentScheduleIndex: $currentScheduleIndex, schedules: $schedules}';
+}
+
+class Schedule extends Equatable {
+  Schedule({@required this.id, this.name, this.offerings})
+      : super([name, id, offerings]);
+
+  /// The user-given name for the schedule, i.e. "My New Schedule".
+  final String name;
+
+  /// The random generated ID to uniquely identify the schedule in the backend.
+  final String id;
+
+  /// Set of offerings including the colors they were saved as.
+  final Set<ColoredOffering> offerings;
+
+  /// Default schedule name if user does not supply
+  static String defaultScheduleName = 'My Schedule';
+
+  static Schedule init() {
+    return Schedule(
+      name: defaultScheduleName,
+      id: '0',
+      offerings: {},
+    );
+  }
+
+  Schedule clone() {
+    return Schedule(id: id, name: name, offerings: offerings);
+  }
+
+  Schedule editScheduleName(String name) {
+    return Schedule(
+      offerings: offerings,
+      name: name,
+      id: id,
+    );
+  }
+
+  Schedule toggleOffering(Offering offering, Color color) {
+    final newOfferings = offerings;
+    if (newOfferings.any((co) => co.offering == offering)) {
+      newOfferings.removeWhere((co) => co.offering == offering);
+    } else {
+      newOfferings.add(ColoredOffering(offering: offering, color: color));
+    }
+    return Schedule(
+      offerings: newOfferings,
+      name: name,
+      id: id,
+    );
+  }
+
+  // returns map of ids to colors
+  Map<String, Color> get colorMap {
+    final Map<String, Color> map = {};
+    for (final offering in offerings) {
+      map[offering.offering.id] = offering.color;
+    }
+    return map;
+  }
+
+  Set<GraphicalClassTime> graphicsForDay(int i) {
+    if (i < 0 || i > 6) {
+      return null;
+    }
+    final Set<GraphicalClassTime> graphics = {};
+    for (final offering in offerings) {
+      for (final classTime
+          in offering.offering.classTimes.where((ct) => ct.days[i])) {
+        graphics.add(
+            GraphicalClassTime(classTime: classTime, color: offering.color));
+      }
+    }
+    return graphics;
+  }
+
+  @override
+  String toString() => 'Schedule{name: $name, id: $id, offerings: $offerings}';
+}
+
+class ColoredOffering {
+  ColoredOffering({@required this.offering, @required this.color});
+  final Offering offering;
+  final Color color;
+
+  @override
+  int get hashCode => int.parse(offering.id);
+  @override
+  bool operator ==(other) {
+    return other is ColoredOffering && offering.id == other.offering.id;
+  }
+}
+
+class GraphicalClassTime {
+  GraphicalClassTime({@required this.classTime, @required this.color});
+  final ClassTime classTime;
+  final Color color;
+  double height() =>
+      classTime.endTime.hour -
+      classTime.startTime.hour +
+      (classTime.endTime.minute - classTime.startTime.minute) / 60;
+
+  double offset() => classTime.startTime.hour + classTime.startTime.minute / 60;
 }

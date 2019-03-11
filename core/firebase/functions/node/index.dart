@@ -18,6 +18,7 @@ final Firestore firestore = FirebaseAdmin.instance.initializeApp().firestore();
 /// Return all schedules encoded as JSON
 Future<void> allSchedules(ExpressHttpRequest request) async {
   final String userId = request.body['userId'];
+  print('UserID: $userId');
   if (userId == null) {
     print('User can not be null');
     throw HttpsError('FormattingError', 'User can not be null. Data recieved:',

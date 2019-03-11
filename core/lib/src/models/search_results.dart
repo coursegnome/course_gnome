@@ -3,11 +3,6 @@ import 'package:core/core.dart';
 import 'package:algolia/algolia.dart';
 
 class SearchResult {
-  final List<Course> courses;
-  final int totalHits;
-  final int totalPages;
-  final int page;
-
   SearchResult({
     @required this.courses,
     @required this.totalHits,
@@ -17,6 +12,11 @@ class SearchResult {
         assert(totalHits != null),
         assert(totalPages != null),
         assert(page != null);
+
+  final List<Course> courses;
+  final int totalHits;
+  final int totalPages;
+  final int page;
 
   static SearchResult fromSnapshot(AlgoliaQuerySnapshot snap) {
     return SearchResult(

@@ -19,14 +19,15 @@ class CGColors {
 }
 
 class TriColor {
-  final Color light, med, dark;
 
   const TriColor(this.light, this.med, this.dark);
 
   factory TriColor.fromJson(Map<String, dynamic> json) {
-    return TriColor(json["light"], json["med"], json["dark"]);
+    return TriColor(json['light'], json['med'], json['dark']);
   }
 
+  final Color light, med, dark;
+  
   Map<String, dynamic> toJson() => <String, dynamic>{
         'light': light,
         'med': med,

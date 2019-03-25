@@ -4,8 +4,6 @@ import 'package:test/test.dart';
 import 'package:color/color.dart';
 import 'package:core/core.dart';
 
-import 'package:core/src/data/schedule_repository.dart' as schedule_repo;
-
 void main() {
   test('Schedules History', () {
     // Init
@@ -69,8 +67,9 @@ void main() {
   });
 
   group('Schedule Repo', () {
+    final scheduleRepo = ScheduleRepository();
     test('All Schedules', () async {
-      await schedule_repo.allSchedules(userId: 'userid');
+      await scheduleRepo.getAllSchedules();
     });
   });
 

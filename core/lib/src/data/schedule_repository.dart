@@ -6,91 +6,74 @@ import 'package:color/color.dart';
 import 'package:algolia/algolia.dart';
 import 'config.dart' as algolia_config;
 
-const addScheduleUrl =
-    'https://us-central1-course-gnome.cloudfunctions.net/addSchedule';
-const deleteScheduleUrl =
-    'https://us-central1-course-gnome.cloudfunctions.net/deleteSchedule';
-const allSchedulesUrl =
-    'https://us-central1-course-gnome.cloudfunctions.net/allSchedules';
-const updateScheduleUrl =
-    'https://us-central1-course-gnome.cloudfunctions.net/updateSchedule';
+// These callbacks allow web and native to handle firebase work.
+typedef GetAllSchedules = Future<Map<String, dynamic>> Function();
+typedef AddSchedule = Future<String> Function({String scheduleName});
+typedef DeleteSchedule = Future<void> Function({String scheduleId});
+typedef EditSchedule = Future<void> Function(
+    {String scheduleId, Map<String, Color> offerings});
 
-////    final Map<String, dynamic> json = jsonDecode(response.body);
+class ScheduleRepository {
+  ScheduleRepository({
+    this.getAllSchedulesCallback,
+    this.addSchedule,
+    this.deleteSchedule,
+    this.editScheduleCallback,
+  });
+ 
+  final GetAllSchedules getAllSchedulesCallback;
+  final AddSchedule addSchedule;
+  final DeleteSchedule deleteSchedule;
+  final EditSchedule editScheduleCallback;
 
-Future<Schedules> allSchedules({String userId}) async {
-  http.Response response;
-  try {
-    response = await http.post(allSchedulesUrl, body: {'userId': userId});
-    print(response.request);
-  } catch (e) {
-    print(e);
-    throw ScheduleLoadError('Failed to load schedules');
-  }
-  final List<dynamic> schedulesJson = json.decode(response.body);
-  final List<Schedule> scheduleList = [];
-  final List<String> ids = [];
-  for (final scheduleJson in schedulesJson) {
+  Future<Schedules> getAllSchedules() async {
+    if (getAllSchedulesCallback == null) {
+      //   return null;
+    }
+
+    //final Map<String, dynamic> allSchedules = await getAllSchedulesCallback();
+    final List<Schedule> scheduleList = [];
+    final List<String> ids = ['2'];
+    //for (final scheduleJson in allSchedules.entries) {
 //    scheduleList.add(Schedule(
 //      id: scheduleJson.keys.first,
 //      name: scheduleJson.values.first['name'],
 //      offerings: List
 //    ));
-    for (final offering in scheduleJson.values.first['offerings'].entries) {
-      ids.add(offering.key);
+    //for (final offering in scheduleJson.values.first['offerings'].entries) {
+    //  ids.add(offering.key);
+    //}
+    //}
+    final List<Course> courses = [];
+    print(ids);
+    if (ids.isNotEmpty) {
+      const index = 'gwu-201902';
+      const Algolia algolia = Algolia.init(
+        applicationId: '4AISU681XR',
+        apiKey: algolia_config.apiKey,
+      );
+      final String query = 'offerings.crn=${ids.first}';
+      for (var i = 0; i < ids.length; ++i) {}
+      final AlgoliaQuery _algQuery = algolia.instance.index(index);
+      _algQuery.setFacetFilter('crn:10732');
+      print(_algQuery.parameters);
+      final AlgoliaQuerySnapshot _snap = await _algQuery.getObjects();
+      print(_snap.hits.first.data);
     }
   }
-  final List<Course> courses = [];
-  print(ids);
-  if (ids.isNotEmpty) {
-    const index = 'gwu-201902';
-    const Algolia algolia = Algolia.init(
-        applicationId: '4AISU681XR', apiKey: algolia_config.apiKey);
-    final String query = 'offerings.crn=${ids.first}';
-    for (var i = 0; i < ids.length; ++i) {}
-    final AlgoliaQuery _algQuery = algolia.instance.index(index);
-    _algQuery.setFacetFilter('crn:10732');
-    final AlgoliaQuerySnapshot _snap = await _algQuery.getObjects();
-    print(_snap.hits.first.data);
+
+  Future<void> updateSchedule({
+    @required String scheduleId,
+    @required Map<String, Color> offerings,
+  }) async {
+    // colors to strings
+    if (editScheduleCallback == null) {
+      return;
+    }
+    Map<String, String> stringOfferings;
+    for (final entry in offerings.entries) {
+      stringOfferings[entry.key] = entry.value.toString();
+    }
+    editScheduleCallback(scheduleId: scheduleId, offerings: offerings);
   }
-}
-
-Future<String> addSchedule({
-  @required String userId,
-  @required String scheduleName,
-}) async {
-  final response = await http.post(
-    addScheduleUrl,
-    body: {
-      'userId': userId,
-      'scheduleName': scheduleName,
-    },
-  ).catchError(() => throw ScheduleLoadError('Failed to add schedule'));
-  return response.body;
-}
-
-Future<void> deleteSchedule({
-  @required String userId,
-  @required String scheduleId,
-}) async {
-  await http.post(deleteScheduleUrl, body: {
-    'userId': userId,
-    'scheduleId': scheduleId,
-  }).catchError(() => throw ScheduleLoadError('Failed to delete schedule'));
-}
-
-Future<void> updateSchedule({
-  @required String userId,
-  @required String scheduleId,
-  @required Map<String, Color> offerings,
-}) async {
-  // colors to strings
-  Map<String, String> stringOfferings;
-  for (final entry in offerings.entries) {
-    stringOfferings[entry.key] = entry.value.toString();
-  }
-  await http.post(addScheduleUrl, body: {
-    'userId': userId,
-    'scheduleId': scheduleId,
-    'offerings': stringOfferings,
-  }).catchError(() => throw ScheduleLoadError('Failed to update schedule'));
 }

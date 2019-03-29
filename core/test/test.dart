@@ -7,7 +7,7 @@ import 'package:core/core.dart';
 void main() {
   test('Schedules History', () {
     // Init
-    final SchedulesHistory schedulesHistory = SchedulesHistory();
+    final SchedulesHistory schedulesHistory = SchedulesHistory.init();
     expect(schedulesHistory.currentHistoryIndex, 0);
     expect(schedulesHistory.current.schedules.length, 1);
     expect(schedulesHistory.current.schedules.first.name,
@@ -72,37 +72,4 @@ void main() {
       await scheduleRepo.getAllSchedules();
     });
   });
-
-//  group('Scheduling Bloc', () {
-//    test('Not Logged In', () {
-//      final ScheduleBloc bloc = ScheduleBloc();
-//
-//      expect(bloc.initialState, SchedulesLoading());
-//
-//      expectLater(
-//        bloc.state,
-//        emitsInOrder(
-//          [
-//            SchedulesLoading(),
-//            SchedulesLoaded(
-//              Schedules(schedules: [Schedule(name: 'My Schedule', id: '0')]),
-//            ),
-//            SchedulesLoaded(
-//              Schedules(schedules: [
-//                Schedule(name: 'My Schedule', id: '0'),
-//                Schedule(name: 'New Schedule', id: '1'),
-//              ]),
-//            ),
-//          ],
-//        ),
-//      );
-//
-//      bloc.dispatch(FetchSchedules(userId: null));
-//      bloc.dispatch(ScheduleAdded(scheduleName: 'New Schedule', userId: null));
-////      Future.delayed(Duration(milliseconds: 100)).then((x) {
-////        bloc.dispatch(
-////            ScheduleAdded(scheduleName: 'New Schedule', userId: null));
-////      });
-//    });
-//  });
 }

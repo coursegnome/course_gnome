@@ -1,204 +1,129 @@
-import 'package:meta/meta.dart';
+import 'dart:core';
+import 'package:json_annotation/json_annotation.dart';
 
-class Course {
-  Course({
-    @required this.departmentAcronym,
-    @required this.departmentNumber,
-    @required this.name,
-    @required this.offerings,
+part 'course.g.dart';
+
+@JsonSerializable()
+class Offering {
+  Offering({
+    this.name,
+    this.deptAcr,
+    this.deptNum,
     this.credit,
-    this.description,
-    this.bulletinLink,
+    this.status,
+    this.id,
+    this.teachers,
+    this.section,
+    this.classTimes,
   });
+  factory Offering.fromJson(Map<String, dynamic> json) =>
+      _$OfferingFromJson(json);
+  final String credit;
+  final String deptAcr;
+  final String deptNum;
+  final String name;
+  final Status status;
+  final String id;
+  final List<String> teachers;
+  final String section;
+  final List<ClassTime> classTimes;
+}
 
-  final String departmentAcronym,
-      departmentNumber,
-      name,
-      credit,
-      description,
-      bulletinLink;
-  final List<Offering> offerings;
+@JsonSerializable()
+class SearchOffering extends Offering {
+  SearchOffering({
+    String credit,
+    String deptAcr,
+    String deptNum,
+    String name,
+    Status status,
+    String id,
+    List<String> teachers,
+    String section,
+    List<ClassTime> classTimes,
+    this.deptNumInt,
+    this.sectionInt,
+    this.range,
+    this.deptName,
+    this.school,
+    this.season,
+  }) : super(
+          name: name,
+          deptAcr: deptAcr,
+          deptNum: deptNum,
+          credit: credit,
+          status: status,
+          id: id,
+          teachers: teachers,
+          section: section,
+          classTimes: classTimes,
+        );
+  Map<String, dynamic> toJson() => _$SearchOfferingToJson(this);
+  final int deptNumInt;
+  final int sectionInt;
+  final String deptName;
+  final ClassTime range;
+  final String school;
+  final String season;
+}
 
-  @override
-  String toString() {
-    return 'Course{departmentAcronym: $departmentAcronym, '
-        'departmentNumber: $departmentNumber, name: $name, credit: $credit, '
-        'description: $description, bulletinLink: $bulletinLink, '
-        'offerings: $offerings}';
-  }
-
-  static Course fromJson(Map<String, dynamic> json) {
-    final List<Offering> offerings = json['offerings']
-        .map((Map<String, dynamic> item) => Offering.fromJson(item))
-        .toList();
-    final Course course = Course(
-      departmentAcronym: json['departmentAcronym'],
-      departmentNumber: json['departmentNum'],
-      name: json['name'],
-      credit: json['credit'],
-      description: json['description'],
-      bulletinLink: json['bulletinLink'],
-      offerings: offerings,
-    );
-    for (final offering in course.offerings) {
-      offering.parent = course;
+@JsonSerializable()
+class ClassTime {
+  ClassTime({
+    this.location,
+    this.u,
+    this.m,
+    this.t,
+    this.w,
+    this.r,
+    this.f,
+    this.s,
+    this.end,
+    this.start,
+  });
+  factory ClassTime.fromJson(Map<String, dynamic> json) =>
+      _$ClassTimeFromJson(json);
+  Map<String, dynamic> toJson() => _$ClassTimeToJson(this);
+  final String location;
+  final bool u, m, t, w, r, f, s;
+  List<bool> get days => [u, m, t, w, r, f, s];
+  bool get timeIsTBA {
+    for (bool day in days) {
+      if (day == null) {
+        return true;
+      }
     }
-    return course;
+    return false;
   }
 
-  Map<String, dynamic> toJson() => <String, dynamic>{
-        'departmentAcronym': departmentAcronym,
-        'departmentNumberString': departmentNumber,
-        'departmentNumber':
-            int.parse(departmentNumber.replaceAll(RegExp('[^0-9]'), '')),
-        'name': name,
-        'credit': credit,
-        'description': description,
-        'bulletinLink': bulletinLink,
-        'offerings': offerings.map((Offering o) => o.toJson()).toList(),
-      };
+  @JsonKey(fromJson: TimeOfDay.fromTimestamp, toJson: TimeOfDay.toTimestamp)
+  final TimeOfDay start;
+  @JsonKey(fromJson: TimeOfDay.fromTimestamp, toJson: TimeOfDay.toTimestamp)
+  final TimeOfDay end;
+  String get timeRange {
+    if (start == null || end == null) {
+      return 'TBA';
+    }
+    return start.toString() + '-' + end.toString();
+  }
 }
 
 enum Status { Open, Closed, Waitlist }
 
-class Offering {
-  Offering({
-    @required this.status,
-    @required this.sectionNumber,
-    @required this.id,
-    this.parent,
-    this.instructors,
-    this.courseAttributes,
-    this.classTimes,
-    this.linkedOfferings,
-    this.linkedOfferingsName,
-    this.comments,
-    this.findBooksLink,
-    this.fee,
-    this.days,
-    this.earliestStartTime,
-    this.latestEndTime,
-  })  : assert(status != null),
-        assert(sectionNumber != null),
-        assert(id != null);
-
-  Course parent;
-  final List<String> instructors, courseAttributes;
-  final List<ClassTime> classTimes;
-  final List<Offering> linkedOfferings;
-  final Status status;
-  final String sectionNumber,
-      id,
-      linkedOfferingsName,
-      comments,
-      findBooksLink,
-      fee;
-  final TimeOfDay earliestStartTime, latestEndTime;
-  final List<bool> days;
-
-  @override
-  String toString() {
-    return 'Offering{sectionNumber: $sectionNumber, crn: $id, '
-        'instructors: $instructors, status: $status, classTimes: $classTimes, '
-        'linkedOfferings: $linkedOfferings, linkedOfferingsName: $linkedOfferingsName, '
-        'comments: $comments, courseAttributes: $courseAttributes, '
-        'findBooksLink: $findBooksLink, fee: $fee, days: $days, '
-        'earliestStartTime: $earliestStartTime, latestEndTime: $latestEndTime}';
-  }
-
-  static Offering fromJson(Map<String, dynamic> json) {
-    final List<ClassTime> classTimes = json['classTimes']
-        .map((Map<String, dynamic> item) => ClassTime.fromJson(item))
-        .toList();
-    final List<Offering> linkedOfferings = json['linkedOfferings']
-        .map((Map<String, dynamic> item) => Offering.fromJson(item))
-        .toList();
-    final Status status = json['status'] == 'Open'
-        ? Status.Open
-        : json['status'] == 'Closed' ? Status.Closed : Status.Waitlist;
-    final Offering offering = Offering(
-      instructors: json['instructors'],
-      courseAttributes: json['courseAttributes'],
-      classTimes: classTimes,
-      linkedOfferings: linkedOfferings,
-      status: status,
-      sectionNumber: json['sectionNumber'],
-      id: json['crn'],
-      linkedOfferingsName: json['linkedOfferingsName'],
-      comments: json['comments'],
-      findBooksLink: json['findBooksLink'],
-      days: json['fee'],
-      earliestStartTime: TimeOfDay.fromTimestamp(json['earliestStartTime']),
-      latestEndTime: TimeOfDay.fromTimestamp(json['latestEndTime']),
-    );
-    for (final ct in offering.classTimes) {
-      ct.parent = offering;
-    }
-    return offering;
-  }
-
-  Map<String, dynamic> toJson() => <String, dynamic>{
-        'sectionNumber': sectionNumber,
-        'crn': id,
-        'instructors': instructors,
-        'status': status.toString().split('.').last,
-        'classTimes': classTimes?.map((ClassTime ct) => ct.toJson())?.toList(),
-        'linkedOfferings':
-            linkedOfferings?.map((Offering o) => o.toJson())?.toList(),
-        'linkedOfferingsName': linkedOfferingsName,
-        'comments': comments,
-        'courseAttributes': courseAttributes,
-        'findBooksLink': findBooksLink,
-        'fee': fee,
-        'days': days,
-        'earliestStartTime': earliestStartTime?.timestamp,
-        'latestEndTime': latestEndTime?.timestamp,
-      };
+class School {
+  const School._(this.id, this.domain);
+  final String id;
+  final String domain;
+  static const all = [gwu];
+  static const gwu = School._('gwu', 'gwmail.gwu.edu');
 }
 
-class ClassTime {
-  ClassTime({
-    this.startTime,
-    this.endTime,
-    this.days,
-    this.location,
-    this.parent,
-  });
-
-  final TimeOfDay startTime, endTime;
-  final List<bool> days;
-  final String location;
-  Offering parent;
-
-  @override
-  String toString() {
-    return 'ClassTime{$timeRange, location: $location, sun: ${days[0]}, '
-        'mon: ${days[1]}, tues: ${days[2]}, weds: ${days[3]}, thur: ${days[4]}, '
-        'fri: ${days[5]}, sat: ${days[6]}}';
-  }
-
-  static ClassTime fromJson(Map<String, dynamic> json) {
-    return ClassTime(
-      startTime: TimeOfDay.fromTimestamp(json['startTime']),
-      endTime: TimeOfDay.fromTimestamp(json['endTime']),
-      location: json['location'],
-      days: json['days'],
-    );
-  }
-
-  Map<String, dynamic> toJson() => <String, dynamic>{
-        'startTime': startTime?.timestamp,
-        'endTime': endTime?.timestamp,
-        'location': location,
-        'days': days,
-      };
-
-  String get timeRange {
-    if (startTime == null || endTime == null) {
-      return 'TBA';
-    }
-    return startTime.toString() + '-' + endTime.toString();
-  }
+class Season {
+  const Season._(this.id);
+  final String id;
+  static const all = [summer2019, fall2019];
+  static const summer2019 = Season._('summer2019');
+  static const fall2019 = Season._('fall2019 ');
 }
 
 class TimeOfDay {
@@ -211,10 +136,18 @@ class TimeOfDay {
   })  : assert(hour >= 0 && hour <= 23),
         assert(minute >= 0 && minute <= 59);
 
+  static TimeOfDay fromTimestamp(int timestamp) {
+    final int hour = (timestamp / 60).floor();
+    final int minute = timestamp == 0 ? 0 : timestamp % 60;
+    return TimeOfDay(hour: hour, minute: minute);
+  }
+
+  static int toTimestamp(TimeOfDay timeOfDay) => timeOfDay.timestamp;
+
   final int hour, minute;
 
-  /// Returns a [String] timestamp for the given time on January 1st, 2000.
-  String get timestamp => DateTime(2000, 1, 1, hour, minute).toIso8601String();
+  /// Returns a [int] timestamp that represens the time in minutes
+  int get timestamp => hour * 60 + minute;
 
   @override
   String toString() {
@@ -226,21 +159,13 @@ class TimeOfDay {
     return hourString + ':' + minuteString;
   }
 
-  bool operator <(TimeOfDay time) =>
-      hour < time.hour || (hour == time.hour && minute < time.minute);
+  bool operator <(TimeOfDay time) => timestamp < time.timestamp;
 
   @override
   bool operator ==(dynamic other) {
-    return other is TimeOfDay && hour == other.hour && minute == other.minute;
+    return other is TimeOfDay && timestamp == other.timestamp;
   }
 
   @override
-  int get hashCode => hour * 60 + minute;
-
-  /// Parses a [TimeOfDay] from a properly formatted [String] timestamp,
-  /// such as `2012-02-27 13:27:00`;
-  static TimeOfDay fromTimestamp(String timestamp) {
-    final DateTime date = DateTime.parse(timestamp);
-    return TimeOfDay(hour: date.hour, minute: date.minute);
-  }
+  int get hashCode => timestamp;
 }

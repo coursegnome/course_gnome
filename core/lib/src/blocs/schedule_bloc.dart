@@ -8,7 +8,8 @@ import 'package:color/color.dart';
 import 'package:core/core.dart';
 
 class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
-  ScheduleBloc({this.authBloc, this.scheduleRepository}) {
+  ScheduleBloc({this.scheduleRepository});
+  /*ScheduleBloc({this.authBloc, this.scheduleRepository}) {
     authSub = authBloc.state.listen((state) {
       if (state is LoggedIn) {
         user = state.user;
@@ -18,9 +19,10 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
   }
 
   final AuthBloc authBloc;
+  StreamSubscription authSub;
+  */
   final ScheduleRepository scheduleRepository;
   User user;
-  StreamSubscription authSub;
 
 //  @override
 //  Stream<ScheduleEvent> transform(Stream<ScheduleEvent> events) {
@@ -38,7 +40,7 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
 
   @override
   void dispose() {
-    authSub.cancel();
+    //authSub.cancel();
     super.dispose();
   }
 
@@ -51,14 +53,15 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
       if (event is FetchSchedules) {
         yield SchedulesLoading();
         try {
-          if (user.isAnonymous) {
+          if (event.isNewUser) {
             final String id = await scheduleRepository.addSchedule(
-                scheduleName: Schedule.defaultScheduleName);
+              scheduleName: Schedule.defaultScheduleName,
+            );
             user.schedulesHistory = SchedulesHistory.init(id: id);
           } else {
             final Schedules schedules =
                 await scheduleRepository.getAllSchedules();
-            user.schedulesHistory = SchedulesHistory(schedules: schedules);
+            user.schedulesHistory = SchedulesHistory([schedules]);
           }
           yield SchedulesLoaded(user.schedulesHistory.current);
         } catch (e) {
@@ -73,6 +76,7 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
       if (event is CloseDialog && currentState is DialogState) {
         yield SchedulesLoaded(currentState.schedules);
       }
+
       if (event is ScheduleAdded && currentState is DialogState) {
         yield DialogLoading(currentState.schedules);
         try {
@@ -111,48 +115,17 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
           yield DialogError(currentState.schedules);
         }
       }
-//      if (currentState is SchedulesLoaded) {
-//        if (event is ScheduleAdded) {
-//          schedulesHistory.addSchedule(event.scheduleName, id);
-//          schedules.addSchedule(name: event.scheduleName, id: id);
-//          yield SchedulesLoaded(schedules);
-//          if (event.userId != null) {
-//            schedule_repo.addSchedule(
-//              userId: event.userId,
-//              scheduleId: id,
-//              scheduleName: event.scheduleName,
-//            );
-//          }
-//        }
-//        if (event is ScheduleDeleted) {
-//          yield SchedulesLoaded(
-//            currentState.schedules..removeSchedule(id: event.scheduleId),
-//          );
-//          if (event.userId != null) {
-//            schedule_repo.deleteSchedule(
-//                userId: event.userId, scheduleId: event.scheduleId);
-//          }
-//        }
-//        if (event is OfferingToggled) {
-//          final schedules = currentState.schedules
-//            ..currentSchedule.toggleOffering(event.offering, event.color);
-//          yield SchedulesLoaded(schedules);
-//          if (event.userId != null) {
-//            schedule_repo.updateSchedule(
-//              userId: event.userId,
-//              scheduleId: currentState.schedules.currentSchedule.id,
-//              offerings: schedules.currentSchedule.colorMap,
-//            );
-//          }
-//        }
-//      }
     }
   }
 }
 
 abstract class ScheduleEvent {}
 
-class FetchSchedules extends ScheduleEvent {}
+class FetchSchedules extends ScheduleEvent {
+  FetchSchedules({this.user, this.isNewUser});
+  final User user;
+  final bool isNewUser;
+}
 
 class Undo extends ScheduleEvent {}
 
@@ -169,18 +142,18 @@ class ScheduleAdded extends ScheduleEvent {
 
 // TODO: SchedHist model only supports deleting/editing current sched
 class ScheduleDeleted extends ScheduleEvent {
-  ScheduleDeleted({@required this.scheduleId});
+  ScheduleDeleted({this.scheduleId});
   final String scheduleId;
 }
 
 class ScheduleNameEdited extends ScheduleEvent {
-  ScheduleNameEdited({@required this.name, this.scheduleId});
+  ScheduleNameEdited({this.name, this.scheduleId});
   final String name;
   final String scheduleId;
 }
 
 class OfferingToggled extends ScheduleEvent {
-  OfferingToggled({@required this.offering, @required this.color, this.scheduleId});
+  OfferingToggled({this.offering, this.color, this.scheduleId});
   final Offering offering;
   final Color color;
   final String scheduleId;

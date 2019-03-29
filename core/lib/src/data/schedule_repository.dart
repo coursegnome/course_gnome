@@ -1,37 +1,12 @@
 import 'dart:convert';
+import 'package:http/http.dart';
 import 'package:core/core.dart';
-import 'package:http/http.dart' as http;
-import 'package:meta/meta.dart';
 import 'package:color/color.dart';
 import 'package:algolia/algolia.dart';
 import 'config.dart' as algolia_config;
 
-// These callbacks allow web and native to handle firebase work.
-typedef GetAllSchedules = Future<Map<String, dynamic>> Function();
-typedef AddSchedule = Future<String> Function({String scheduleName});
-typedef DeleteSchedule = Future<void> Function({String scheduleId});
-typedef EditSchedule = Future<void> Function(
-    {String scheduleId, Map<String, Color> offerings});
-
 class ScheduleRepository {
-  ScheduleRepository({
-    this.getAllSchedulesCallback,
-    this.addSchedule,
-    this.deleteSchedule,
-    this.editScheduleCallback,
-  });
- 
-  final GetAllSchedules getAllSchedulesCallback;
-  final AddSchedule addSchedule;
-  final DeleteSchedule deleteSchedule;
-  final EditSchedule editScheduleCallback;
-
   Future<Schedules> getAllSchedules() async {
-    if (getAllSchedulesCallback == null) {
-      //   return null;
-    }
-
-    //final Map<String, dynamic> allSchedules = await getAllSchedulesCallback();
     final List<Schedule> scheduleList = [];
     final List<String> ids = ['2'];
     //for (final scheduleJson in allSchedules.entries) {
@@ -44,7 +19,7 @@ class ScheduleRepository {
     //  ids.add(offering.key);
     //}
     //}
-    final List<Course> courses = [];
+    final List<Offering> courses = [];
     print(ids);
     if (ids.isNotEmpty) {
       const index = 'gwu-201902';
@@ -54,26 +29,32 @@ class ScheduleRepository {
       );
       final String query = 'offerings.crn=${ids.first}';
       for (var i = 0; i < ids.length; ++i) {}
-      final AlgoliaQuery _algQuery = algolia.instance.index(index);
-      _algQuery.setFacetFilter('crn:10732');
+      AlgoliaQuery _algQuery = algolia.instance.index(index);
+      _algQuery = _algQuery
+          .setFacetFilter(['offerings.crn:10099', 'offerings.crn:10912']);
       print(_algQuery.parameters);
       final AlgoliaQuerySnapshot _snap = await _algQuery.getObjects();
-      print(_snap.hits.first.data);
+      print(_snap.hits[1].data);
     }
   }
 
+  Future<String> addSchedule({String scheduleName}) async {}
+  Future<void> deleteSchedule({String scheduleId}) async {}
+  Future<void> updateSchedule({String name}) async {}
+/*
   Future<void> updateSchedule({
-    @required String scheduleId,
-    @required Map<String, Color> offerings,
+    String scheduleId,
+    String name,
+    Map<String, Color> offerings,
   }) async {
     // colors to strings
-    if (editScheduleCallback == null) {
+    if (updateScheduleCallback == null) {
       return;
     }
     Map<String, String> stringOfferings;
     for (final entry in offerings.entries) {
       stringOfferings[entry.key] = entry.value.toString();
     }
-    editScheduleCallback(scheduleId: scheduleId, offerings: offerings);
-  }
+    updateScheduleCallback(scheduleId: scheduleId, offerings: offerings);
+  }*/
 }

@@ -6,7 +6,6 @@ import 'package:equatable/equatable.dart';
 import 'course.dart';
 
 class SchedulesHistory {
-
   SchedulesHistory(this.history);
 
   static SchedulesHistory init({String id}) {
@@ -230,9 +229,9 @@ class GraphicalClassTime {
   final ClassTime classTime;
   final Color color;
   double height() =>
-      classTime.endTime.hour -
-      classTime.startTime.hour +
-      (classTime.endTime.minute - classTime.startTime.minute) / 60;
+      classTime.end.hour -
+      classTime.start.hour +
+      (classTime.end.minute - classTime.start.minute) / 60;
 
-  double offset() => classTime.startTime.hour + classTime.startTime.minute / 60;
+  double offset() => classTime.start.hour + classTime.start.minute / 60;
 }

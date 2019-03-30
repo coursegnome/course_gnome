@@ -13,14 +13,14 @@ class SearchResult {
         assert(totalPages != null),
         assert(page != null);
 
-  final List<Course> courses;
+  final List<Offering> courses;
   final int totalHits;
   final int totalPages;
   final int page;
 
   static SearchResult fromSnapshot(AlgoliaQuerySnapshot snap) {
     return SearchResult(
-        courses: snap.hits.map((hit) => Course.fromJson(hit.data)),
+        courses: snap.hits.map((hit) => Offering.fromJson(hit.data)),
         page: snap.page,
         totalHits: snap.nbHits,
         totalPages: snap.nbPages);

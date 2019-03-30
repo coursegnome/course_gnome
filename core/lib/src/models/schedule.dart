@@ -6,8 +6,10 @@ import 'package:equatable/equatable.dart';
 import 'course.dart';
 
 class SchedulesHistory {
-  SchedulesHistory({Schedules schedules}) {
-    history = schedules != null ? [schedules] : [Schedules.init()];
+  SchedulesHistory(this.history);
+
+  static SchedulesHistory init({String id}) {
+    return SchedulesHistory([Schedules.init(id)]);
   }
 
   /// History of edits made by user to their schedules
@@ -66,9 +68,9 @@ class Schedules extends Equatable {
   /// Quick access to current schedule
   Schedule get currentSchedule => schedules[currentScheduleIndex];
 
-  static Schedules init() {
+  static Schedules init(String id) {
     return Schedules(
-      schedules: [Schedule.init()],
+      schedules: [Schedule.init(id)],
       currentScheduleIndex: 0,
     );
   }
@@ -147,10 +149,10 @@ class Schedule extends Equatable {
   /// Default schedule name if user does not supply
   static String defaultScheduleName = 'My Schedule';
 
-  static Schedule init() {
+  static Schedule init(String id) {
     return Schedule(
       name: defaultScheduleName,
-      id: '0',
+      id: id,
       offerings: {},
     );
   }
@@ -227,9 +229,9 @@ class GraphicalClassTime {
   final ClassTime classTime;
   final Color color;
   double height() =>
-      classTime.endTime.hour -
-      classTime.startTime.hour +
-      (classTime.endTime.minute - classTime.startTime.minute) / 60;
+      classTime.end.hour -
+      classTime.start.hour +
+      (classTime.end.minute - classTime.start.minute) / 60;
 
-  double offset() => classTime.startTime.hour + classTime.startTime.minute / 60;
+  double offset() => classTime.start.hour + classTime.start.minute / 60;
 }

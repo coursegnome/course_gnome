@@ -1,77 +1,54 @@
-import 'dart:async';
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'dart:async';
 import 'package:meta/meta.dart';
 import 'package:core/core.dart';
-import 'config.dart';
-
-class Tokens {
-  Tokens({this.token, this.refreshToken, this.expirationTime});
-  final String token, refreshToken;
-  final DateTime expirationTime;
-}
-
-typedef GetStoredTokens = Future<Tokens> Function();
-typedef StoreTokens = Future<void> Function(Tokens);
+import 'http_wrapper.dart';
 
 class AuthRepository {
-  AuthRepository({
-    @required this.getStoredTokens,
-    @required this.storeTokens,
-    @required this.school,
-  });
-  final GetStoredTokens getStoredTokens;
-  final StoreTokens storeTokens;
-  final School school;
+  AuthRepository({this.userRepository});
 
-  Tokens tokens;
-
-  static const String baseUrl =
-      'https://www.googleapis.com/identitytoolkit/v3/relyingparty/';
-  static const String prefix = '?key=$firebaseKey';
+  UserRepository userRepository;
 
   Future<User> init() async {
-    tokens = await getStoredTokens();
-    if (tokens == null) {
-      // new user
-      return await _signInAnonymously();
+    await userRepository.init();
+    if (userRepository.isAuthenticated) {
+      return await _getUserData();
     }
-    // old user (anon or not)
-    await _refreshTokenIfNeeded();
-    return await _getUserData();
+    await signUpAnonymously();
+    return null;
   }
 
-  Future<User> _signInAnonymously() async {
-    final Map response = await _post(
-      'signupNewUser',
-      {'returnSecureToken': true},
+  Future<void> signUpAnonymously() async {
+    final Map response = await authPost(
+      endpoint: 'signupNewUser',
+      body: <String, dynamic>{'returnSecureToken': true},
     );
-    tokens = Tokens(
-      refreshToken: response['refreshToken'],
-      token: response['idToken'],
-      expirationTime: DateTime.now().add(Duration(minutes: 50)),
+    userRepository.setNewAuth(response);
+    await patchDoc(
+      idToken: await userRepository.idToken,
+      path: 'users/${userRepository.uid}',
+      fields: <String, dynamic>{
+        'schedules': <String, dynamic>{},
+        'isAnonymous': true,
+      },
     );
-    storeTokens(tokens);
-    return User(id: response['localId']);
   }
 
   Future<User> signIn({
-    String username,
-    String password,
+    @required String username,
+    @required String password,
+    @required School school,
   }) async {
     try {
-      final Map response = await _post('verifyPassword', {
-        'returnSecureToken': true,
-        'email': '$username@${school.domain}',
-        'password': password,
-      });
-      tokens = Tokens(
-        refreshToken: response['refreshToken'],
-        token: response['idToken'],
-        expirationTime: DateTime.now().add(Duration(minutes: 50)),
+      await authPost(
+        endpoint: 'verifyPassword',
+        body: <String, dynamic>{
+          'returnSecureToken': true,
+          'email': '$username@${school.domain}',
+          'password': password,
+        },
       );
-      storeTokens(tokens);
-      return _getUserData();
+      return await _getUserData();
     } catch (e) {
       rethrow;
     }
@@ -80,87 +57,105 @@ class AuthRepository {
   Future<User> signUp({
     @required String username,
     @required String password,
+    @required School school,
+    @required UserType userType,
+    String displayName,
+    int year,
   }) async {
-    final bool anonUser = tokens != null;
-    final String endPoint = anonUser ? 'setAccountInfo' : 'signupNewUser';
-    final Map requestBody = {
-      'returnSecureToken': true,
-      'email': '$username@${school.domain}',
-      'password': password,
-    };
-    if (anonUser) {
-      requestBody['idToken'] = tokens.token;
-    }
     try {
-      final Map response = await _post(
-        endPoint,
-        requestBody,
+      final String email = '$username@${school.domain}';
+      final Map response = await authPost(
+        endpoint:
+            userRepository.isAuthenticated ? 'setAccountInfo' : 'signupNewUser',
+        body: <String, dynamic>{
+          'returnSecureToken': true,
+          'email': email,
+          'password': password,
+        },
+        idToken: userRepository.isAuthenticated
+            ? await userRepository.idToken
+            : null,
       );
-      tokens = Tokens(
-        refreshToken: response['refreshToken'],
-        token: response['idToken'],
-        expirationTime: DateTime.now().add(Duration(minutes: 50)),
+      userRepository.setNewAuth(response);
+      User user;
+      if (userType == UserType.Student) {
+        user = Student(
+          advisors: [],
+          displayName: displayName,
+          email: email,
+          emailVerified: false,
+          school: school,
+          username: username,
+          userType: UserType.Student,
+          year: year,
+        );
+      } else {
+        user = Advisor(
+          advisees: [],
+          displayName: displayName,
+          email: email,
+          emailVerified: false,
+          school: school,
+          username: username,
+          userType: UserType.Student,
+        );
+      }
+      await patchDoc(
+        idToken: await userRepository.idToken,
+        path: 'users/${userRepository.uid}',
+        updateMask: userRepository.isAuthenticated
+            ? [
+                'isAnonymous',
+                'school',
+                'displayName',
+                'year',
+                'username',
+                'id',
+                'email',
+                'emailVerified',
+                'userType'
+              ]
+            : [],
+        fields: jsonDecode(jsonEncode(user)),
       );
-      storeTokens(tokens);
-      //_sendVerificationEmail();
-      return _getUserData();
+      return user;
     } catch (e) {
       rethrow;
     }
   }
 
-  _sendVerificationEmail() async {
-    Map e = await _post('getOobConfirmationCode', {
-      'requestType': 'VERIFY_EMAIL',
-      'idToken': tokens.token,
-    });
-    print(e);
-  }
-
-  Future<void> _refreshTokenIfNeeded() async {
-    if (DateTime.now().isBefore(tokens.expirationTime)) {
-      return;
-    }
-    final Map response = await _post(
-      'token',
-      {
-        'grant_type': 'refresh_token',
-        'refresh_token': tokens.refreshToken,
-      },
+  Future<void> _sendVerificationEmail() async {
+    await authPost(
+      endpoint: 'getOobConfirmationCode',
+      idToken: await userRepository.idToken,
+      body: <String, dynamic>{'requestType': 'VERIFY_EMAIL'},
     );
-    tokens = Tokens(
-      refreshToken: response['refresh_token'],
-      token: response['id_token'],
-      expirationTime: DateTime.now().add(Duration(minutes: 50)),
-    );
-    storeTokens(tokens);
   }
 
   Future<User> _getUserData() async {
-    final Map response = await _post('getAccountInfo', {
-      'idToken': tokens.token,
-    });
-    final List users = response['users'];
-    return User.fromJson(users.first);
+    final Map response = await getDoc(
+      idToken: await userRepository.idToken,
+      path: 'users/${userRepository.uid}',
+    );
+    if (response['username'] == null) {
+      return null;
+    }
+    return (response['userType'] == UserType.Student)
+        ? Student.fromJson(response)
+        : Student.fromJson(response);
   }
 
   Future<void> deleteUser() async {
     try {
-      await _post('deleteAccount', {'idToken': tokens.token});
-      return;
+      await authPost(
+        endpoint: 'deleteAccount',
+        idToken: await userRepository.idToken,
+      );
+      await deleteDoc(
+        path: 'users/${userRepository.uid}',
+      );
     } catch (e) {
       rethrow;
     }
-  }
-
-  Future<Map<String, dynamic>> _post(String endPoint, Map body) async {
-    final http.Response response = await http.post(
-      baseUrl + endPoint + prefix,
-      body: jsonEncode(body),
-    );
-    if (response.statusCode == 400) {
-      throw response.reasonPhrase;
-    }
-    return jsonDecode(response.body);
   }
 }

@@ -8,21 +8,17 @@ import 'package:color/color.dart';
 import 'package:core/core.dart';
 
 class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
-  ScheduleBloc({this.scheduleRepository});
-  /*ScheduleBloc({this.authBloc, this.scheduleRepository}) {
+  ScheduleBloc({this.authBloc, this.scheduleRepository, this.userRepository}) {
     authSub = authBloc.state.listen((state) {
-      if (state is LoggedIn) {
-        user = state.user;
-        dispatch(FetchSchedules());
-      }
+      dispatch(FetchSchedules());
     });
   }
 
   final AuthBloc authBloc;
   StreamSubscription authSub;
-  */
+
   final ScheduleRepository scheduleRepository;
-  User user;
+  final UserRepository userRepository;
 
 //  @override
 //  Stream<ScheduleEvent> transform(Stream<ScheduleEvent> events) {
@@ -40,7 +36,7 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
 
   @override
   void dispose() {
-    //authSub.cancel();
+    authSub.cancel();
     super.dispose();
   }
 
@@ -50,20 +46,28 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
     ScheduleEvent event,
   ) async* {
     if (event is ScheduleEvent) {
+      if (event is SwitchSeason) {
+        scheduleRepository.season = event.season;
+        dispatch(FetchSchedules());
+      }
+      if (event is SwitchSchool) {
+        scheduleRepository.switchSchool(event.school);
+        dispatch(FetchSchedules());
+      }
       if (event is FetchSchedules) {
         yield SchedulesLoading();
         try {
-          if (event.isNewUser) {
+          final Schedules schedules =
+              await scheduleRepository.getAllSchedules();
+          if (schedules == null) {
             final String id = await scheduleRepository.addSchedule(
               scheduleName: Schedule.defaultScheduleName,
             );
-            user.schedulesHistory = SchedulesHistory.init(id: id);
+            scheduleRepository.schedulesHistory = SchedulesHistory.init(id: id);
           } else {
-            final Schedules schedules =
-                await scheduleRepository.getAllSchedules();
-            user.schedulesHistory = SchedulesHistory([schedules]);
+            scheduleRepository.schedulesHistory = SchedulesHistory([schedules]);
           }
-          yield SchedulesLoaded(user.schedulesHistory.current);
+          yield SchedulesLoaded(scheduleRepository.schedulesHistory.current);
         } catch (e) {
           yield e is ScheduleLoadError
               ? e
@@ -83,8 +87,9 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
           final String id = await scheduleRepository.addSchedule(
             scheduleName: event.scheduleName,
           );
-          user.schedulesHistory.addSchedule(event.scheduleName, id);
-          yield SchedulesLoaded(user.schedulesHistory.current);
+          scheduleRepository.schedulesHistory
+              .addSchedule(event.scheduleName, id);
+          yield SchedulesLoaded(scheduleRepository.schedulesHistory.current);
         } catch (e) {
           yield DialogError(currentState.schedules);
         }
@@ -96,8 +101,8 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
           await scheduleRepository.deleteSchedule(
             scheduleId: event.scheduleId,
           );
-          user.schedulesHistory.deleteSchedule(event.scheduleId);
-          yield SchedulesLoaded(user.schedulesHistory.current);
+          scheduleRepository.schedulesHistory.deleteSchedule(event.scheduleId);
+          yield SchedulesLoaded(scheduleRepository.schedulesHistory.current);
         } catch (e) {
           yield DialogError(currentState.schedules);
         }
@@ -109,8 +114,8 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
           await scheduleRepository.updateSchedule(
             name: event.name,
           );
-          user.schedulesHistory.editScheduleName(event.name);
-          yield SchedulesLoaded(user.schedulesHistory.current);
+          scheduleRepository.schedulesHistory.editScheduleName(event.name);
+          yield SchedulesLoaded(scheduleRepository.schedulesHistory.current);
         } catch (e) {
           yield DialogError(currentState.schedules);
         }
@@ -121,11 +126,7 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
 
 abstract class ScheduleEvent {}
 
-class FetchSchedules extends ScheduleEvent {
-  FetchSchedules({this.user, this.isNewUser});
-  final User user;
-  final bool isNewUser;
-}
+class FetchSchedules extends ScheduleEvent {}
 
 class Undo extends ScheduleEvent {}
 
@@ -134,6 +135,16 @@ class Redo extends ScheduleEvent {}
 class OpenDialog extends ScheduleEvent {}
 
 class CloseDialog extends ScheduleEvent {}
+
+class SwitchSeason extends ScheduleEvent {
+  SwitchSeason(this.season);
+  final Season season;
+}
+
+class SwitchSchool extends ScheduleEvent {
+  SwitchSchool(this.school);
+  final School school;
+}
 
 class ScheduleAdded extends ScheduleEvent {
   ScheduleAdded({this.scheduleName});

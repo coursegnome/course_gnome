@@ -1,6 +1,5 @@
-export 'course.dart';
-export 'query.dart';
-export 'schedule.dart';
-export 'search_error.dart';
-export 'search_results.dart';
-export 'user.dart';
+export 'auth/user.dart';
+export 'schedule/schedule.dart';
+export 'search/query.dart';
+export 'search/search_results.dart';
+export 'shared/course.dart';

@@ -14,21 +14,38 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthState currentState,
     AuthEvent event,
   ) async* {
+    yield AuthLoading();
     if (event is Init) {
       final User user = await authRepository.init();
-      yield SignedIn(user: user);
+      yield user == null ?
+        SignedOut():
+        SignedIn(user);
     } else if (event is SignIn) {
       try {
-        final User user = await authRepository.signIn();
-        yield SignedIn(user: user);
+        final User user = await authRepository.signIn(
+          username: event.username,
+          password: event.password,
+        );
+        yield SignedIn(user);
       } catch (e) {
         print(e);
         if (currentState is SignedIn) {
-          yield SignInError(user: currentState.user);
+          yield AuthError(user: currentState.user);
         }
       }
-    } else {
-      yield SignedOut();
+    } else if (event is SignUp) {
+      try {
+        final User user = await authRepository.signUp(
+          username: event.username,
+          password: event.password,
+        );
+        yield SignedIn(user);
+      } catch (e) {
+        print(e);
+        if (currentState is SignedIn) {
+          yield AuthError(user: currentState.user);
+        }
+      }
     }
   }
 }
@@ -36,15 +53,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 abstract class AuthState {}
 
 class SignedIn extends AuthState {
-  SignedIn({this.user, this.isNewUser});
+  SignedIn(this.user);
   final User user;
-  final bool isNewUser;
 }
 
-class SignInError extends AuthState {
-  SignInError({this.user});
+class AuthError extends AuthState {
+  AuthError({this.user});
   final User user;
 }
+
+class AuthLoading extends AuthState {}
 
 class SignedOut extends AuthState {}
 

@@ -3,39 +3,47 @@ import 'package:http/http.dart';
 import 'package:core/core.dart';
 import 'package:color/color.dart';
 import 'package:algolia/algolia.dart';
-import 'config.dart' as algolia_config;
+import 'http_wrapper.dart';
+import 'config.dart';
 
 class ScheduleRepository {
+  ScheduleRepository({this.userRepository});
+  School school = School.gwu;
+  Season season = Season.fall2019;
+  SchedulesHistory schedulesHistory;
+  final UserRepository userRepository;
+
   Future<Schedules> getAllSchedules() async {
-    final List<Schedule> scheduleList = [];
+    final List<Schedule> schedules = [];
     final List<String> ids = ['2'];
-    //for (final scheduleJson in allSchedules.entries) {
-//    scheduleList.add(Schedule(
-//      id: scheduleJson.keys.first,
-//      name: scheduleJson.values.first['name'],
-//      offerings: List
-//    ));
-    //for (final offering in scheduleJson.values.first['offerings'].entries) {
-    //  ids.add(offering.key);
-    //}
-    //}
-    final List<Offering> courses = [];
-    print(ids);
+    final List<Map> scheduleMaps = await getDocs(
+      path: 'users/${userRepository.uid}/${school.id}',
+    );
+    if (scheduleMaps.isEmpty) {
+      return null;
+    }
+    for (final schedule in scheduleMaps) {
+      schedule.values.first['offerings'].entries;
+    }
+    for (final scheduleJson in scheduleMaps) {
+      schedules.add(
+        Schedule(
+          id: scheduleJson.keys.first,
+          name: scheduleJson.values.first['name'],
+        ),
+      );
+    }
     if (ids.isNotEmpty) {
       const index = 'gwu-201902';
-      const Algolia algolia = Algolia.init(
-        applicationId: '4AISU681XR',
-        apiKey: algolia_config.apiKey,
-      );
-      final String query = 'offerings.crn=${ids.first}';
       for (var i = 0; i < ids.length; ++i) {}
-      AlgoliaQuery _algQuery = algolia.instance.index(index);
-      _algQuery = _algQuery
-          .setFacetFilter(['offerings.crn:10099', 'offerings.crn:10912']);
-      print(_algQuery.parameters);
-      final AlgoliaQuerySnapshot _snap = await _algQuery.getObjects();
+      final AlgoliaIndexReference _index = algolia.instance.index(index);
+      final AlgoliaQuerySnapshot _snap = await _index.getObjects(['ee']);
       print(_snap.hits[1].data);
     }
+  }
+
+  void switchSchool(School school) {
+    school = school;
   }
 
   Future<String> addSchedule({String scheduleName}) async {}

@@ -3,7 +3,7 @@ import 'dart:collection';
 import 'package:core/core.dart';
 import 'package:algolia/algolia.dart';
 
-import 'config.dart' as algolia_config;
+import 'config.dart';
 
 class SearchRepository {
   final client = SearchClient();
@@ -20,8 +20,6 @@ class SearchRepository {
 
 class SearchClient {
   static const index = 'gwu';
-  static const Algolia algolia =
-      Algolia.init(applicationId: '4AISU681XR', apiKey: algolia_config.apiKey);
 
   Future<SearchResult> search(Query query) async {
     final AlgoliaQuery _algQuery = algolia.instance

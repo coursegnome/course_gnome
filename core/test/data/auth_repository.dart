@@ -4,39 +4,43 @@ import 'package:test/test.dart';
 import 'package:core/core.dart';
 
 void main() {
-  Tokens stored;
+  UserAuth stored;
   User user;
 
-  Future<void> _storeTokens(Tokens tokens) async {
-    stored = tokens;
-  }
+  Future<void> _storeTokens(UserAuth tokens) async => stored = tokens;
+  Future<UserAuth> _getTokens() async => stored;
 
-  Future<Tokens> _getTokens() async => stored;
-
-  final authRepo = AuthRepository(
-    getStoredTokens: _getTokens,
-    storeTokens: _storeTokens,
-    school: School.gwu,
+  final UserRepository userRepository = UserRepository(
+    getStoredTokensCallback: _getTokens,
+    storeTokensCallback: _storeTokens,
   );
 
-  test('Init', () async {
-    user = await authRepo.init();
-    expect(user, isNotNull);
-  });
+  final authRepo = AuthRepository(userRepository: userRepository);
 
-  test('Sign up from anon', () async {
-    user = await authRepo.signUp(
-      username: 'timtraversy',
-      password: 'test123',
-    );
-    expect(user, isNotNull);
-    expect(user.email, 'timtraversy@gwmail.gwu.edu');
-    expect(user.emailVerified, false);
-  });
+  group('Auth Repository', () {
+    test('Init', () async {
+      user = await authRepo.init();
+      expect(user, isNull);
+      expect(userRepository.isAuthenticated, true);
+    });
 
-  test('Signed in on init', () async {
-    user = await authRepo.init();
-    expect(user.email, 'timtraversy@gwmail.gwu.edu');
-    await authRepo.deleteUser();
+    test('Sign up from anon', () async {
+      user = await authRepo.signUp(
+          username: 'timtraversy',
+          password: 'test123',
+          school: School.gwu,
+          userType: UserType.Student,
+          year: 4,
+          displayName: 'Tim Traversy',);
+      expect(user, isNotNull);
+      expect(user.email, 'timtraversy@gwmail.gwu.edu');
+      expect(user.emailVerified, false);
+    });
+
+    test('Signed in on init', () async {
+      user = await authRepo.init();
+      expect(user.email, 'timtraversy@gwmail.gwu.edu');
+      await authRepo.deleteUser();
+    });
   });
 }

@@ -1,5 +1,4 @@
-class Departments {
-  static const departments = [
+  const departments = [
     {'name': 'Accountancy', 'acronym': 'ACCY'},
     {'name': 'American Studies', 'acronym': 'AMST'},
     {'name': 'Anatomy and Regenerative Biology', 'acronym': 'ANAT'},
@@ -131,4 +130,3 @@ class Departments {
     {'name': 'Women\'s, Gender, and Sexuality Studies', 'acronym': 'WGSS'},
     {'name': 'Yiddish', 'acronym': 'YDSH'}
   ];
-}

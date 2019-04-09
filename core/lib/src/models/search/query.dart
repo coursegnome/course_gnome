@@ -3,6 +3,8 @@ import 'package:equatable/equatable.dart';
 
 class Query extends Equatable {
   Query({
+    this.school,
+    this.season,
     this.text,
     this.departments,
     this.statuses,
@@ -10,9 +12,14 @@ class Query extends Equatable {
     this.maxDepartmentNumber,
     this.earliestStartTime,
     this.latestEndTime,
-    this.onlyDays,
-    this.days,
-  }) : super([
+    this.u = false,
+    this.m = false,
+    this.t = false,
+    this.w = false,
+    this.r = false,
+    this.f = false,
+    this.s = false,
+  }) : super(<dynamic>[
           text,
           departments,
           statuses,
@@ -20,22 +27,33 @@ class Query extends Equatable {
           maxDepartmentNumber,
           earliestStartTime,
           latestEndTime,
-          onlyDays,
-          days,
+          u,
+          m,
+          t,
+          w,
+          r,
+          f,
+          s,
         ]);
 
+  // School and season
+  final School school;
+  final Season season;
+
   // search text
-  String text;
+  final String text;
 
   //facets
-  List<String> departments;
-  List<Status> statuses;
+  final List<String> departments;
+  final List<Status> statuses;
 
   // numeric
-  int minDepartmentNumber, maxDepartmentNumber;
-  TimeOfDay earliestStartTime, latestEndTime;
-  bool onlyDays;
-  List<bool> days;
+  final int minDepartmentNumber, maxDepartmentNumber;
+  final TimeOfDay earliestStartTime, latestEndTime;
+  final bool u, m, t, w, r, f, s;
+
+  List<bool> get days => [u, m, t, w, r, f, s];
+  static const dayStrings = ['u', 'm', 't', 'w', 'r', 'f', 's'];
 
   bool get isEmpty =>
       text == null &&
@@ -45,66 +63,5 @@ class Query extends Equatable {
       maxDepartmentNumber == null &&
       earliestStartTime == null &&
       latestEndTime == null &&
-      onlyDays == null &&
-      days == null;
-
-  @override
-  String toString() {
-    String query = '';
-    bool atLeastOneAdded = false;
-
-    void addFilter(String string) {
-      if (atLeastOneAdded) {
-        query += 'AND';
-      }
-      query += ' $string ';
-      atLeastOneAdded = true;
-    }
-
-    if (departments != null) {
-//      addFilter('departmentAcronym:$departmentAcronym');
-    }
-    if (statuses != null) {
-//      addFilter('status:${status.toString().split('.')[1]} ');
-    }
-    if (minDepartmentNumber != null) {
-      addFilter('departmentNumber >= $minDepartmentNumber');
-    }
-    if (maxDepartmentNumber != null) {
-      addFilter('departmentNumber <= $maxDepartmentNumber');
-    }
-    if (earliestStartTime != null) {
-      addFilter('offerings.earliestStartTime > $earliestStartTime');
-    }
-    if (latestEndTime != null) {
-      addFilter('offerings.latestEndTime > $latestEndTime');
-    }
-    return query;
-  }
+      days.every((day) => day == false);
 }
-
-// ```price < 10 AND (category:Book OR NOT category:Ebook)```
-
-//filters: 'attribute:value AND | OR | NOT attribute:value'
-//'numeric_attribute = | != | > | >= | < | <= numeric_value'
-//'attribute:lower_value TO higher_value'
-//'facetName:facetValue'
-//'_tags:value'
-//'attribute:value'
-//
-//var object = {
-//'available': 1,
-//'ornot': {,
-//'category': 'book',
-//
-//}
-//}
-//
-//String filters = new String(
-//    "available = 1"
-//        + " AND (category:Book OR NOT category:Ebook)"
-//        + " AND _tags:published"
-//        + " AND publication_date:1441745506 TO 1441755506"
-//        + " AND inStock > 0"
-//        + " AND author:\"John Doe\""
-//);

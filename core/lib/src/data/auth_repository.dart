@@ -28,7 +28,6 @@ class AuthRepository {
       idToken: await userRepository.idToken,
       path: 'users/${userRepository.uid}',
       fields: <String, dynamic>{
-        'schedules': <String, dynamic>{},
         'isAnonymous': true,
       },
     );
@@ -151,9 +150,9 @@ class AuthRepository {
         endpoint: 'deleteAccount',
         idToken: await userRepository.idToken,
       );
-      await deleteDoc(
-        path: 'users/${userRepository.uid}',
-      );
+//      await deleteDoc(
+//        path: 'users/${userRepository.uid}',
+//      );
     } catch (e) {
       rethrow;
     }

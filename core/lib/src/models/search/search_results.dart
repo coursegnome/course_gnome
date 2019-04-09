@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'package:meta/meta.dart';
 import 'package:core/core.dart';
 import 'package:algolia/algolia.dart';
@@ -5,24 +6,43 @@ import 'package:algolia/algolia.dart';
 class SearchResult {
   SearchResult({
     @required this.courses,
-    @required this.totalHits,
     @required this.totalPages,
-    @required this.page,
-  })  : assert(courses != null),
-        assert(totalHits != null),
-        assert(totalPages != null),
-        assert(page != null);
+    this.page = 0,
+    this.queue,
+  });
 
-  final List<Offering> courses;
-  final int totalHits;
   final int totalPages;
   final int page;
+  final List<List<Offering>> courses;
+  final ListQueue<Offering> queue;
 
-  static SearchResult fromSnapshot(AlgoliaQuerySnapshot snap) {
+  bool get isMaxedOut => page + 1 == totalPages;
+
+  static SearchResult fromSnapshot([
+    AlgoliaQuerySnapshot snap,
+    SearchResult currentResult,
+  ]) {
+    final ListQueue<Offering> queue = currentResult?.queue ?? ListQueue()
+      ..addAll(snap.hits.map((hit) => Offering.fromJson(hit.data)).toList());
+
+    bool sameAsFirst(Offering offering) => queue.first.inSameClassAs(offering);
+
+    final List<List<Offering>> courses = currentResult?.courses ?? [];
+
+    if (queue.isNotEmpty) {
+      while (!queue.every((offering) => sameAsFirst(offering)) ||
+          (snap.page == snap.nbPages - 1 && queue.isNotEmpty)) {
+        courses.add(queue.where((offering) => sameAsFirst(offering)).toList());
+        final Offering course = queue.first;
+        queue.removeWhere((offering) => offering.inSameClassAs(course));
+      }
+    }
+
     return SearchResult(
-        courses: snap.hits.map((hit) => Offering.fromJson(hit.data)),
-        page: snap.page,
-        totalHits: snap.nbHits,
-        totalPages: snap.nbPages);
+      queue: queue,
+      totalPages: snap.nbPages,
+      page: snap.page,
+      courses: courses,
+    );
   }
 }

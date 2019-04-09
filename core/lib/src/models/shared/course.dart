@@ -30,6 +30,8 @@ class Offering {
   final List<ClassTime> classTimes;
   @JsonKey(includeIfNull: false)
   final String objectID;
+
+  bool inSameClassAs(Offering offering) =>  name == offering.name && deptAcr == offering.deptAcr && deptNum == offering.deptNum;
 }
 
 @JsonSerializable()
@@ -126,9 +128,12 @@ class School {
   }
   final String id;
   final String domain;
+//  final dynamic k = GwuSeason.values;
   static const all = [gwu];
   static const gwu = School._('gwu', 'gwmail.gwu.edu');
 }
+
+enum GwuSeason { Summer2019, Fall2019 }
 
 class Season {
   const Season._(this.id);
@@ -165,7 +170,7 @@ class TimeOfDay {
   String toString() {
     String minuteString = minute.toString();
     if (minute < 10) {
-      minuteString += '0';
+      minuteString = '0' + minuteString;
     }
     final String hourString = ((hour - 1) % 12 + 1).toString();
     return hourString + ':' + minuteString;

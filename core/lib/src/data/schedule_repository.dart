@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:http/http.dart';
 import 'package:core/core.dart';
 import 'package:color/color.dart';
 import 'package:algolia/algolia.dart';
@@ -7,19 +6,20 @@ import 'http_wrapper.dart';
 import 'config.dart';
 
 class ScheduleRepository {
-  ScheduleRepository({this.userRepository});
+  ScheduleRepository({this.userRepository, this.school, this.season});
+  final UserRepository userRepository;
   School school = School.gwu;
   Season season = Season.fall2019;
   SchedulesHistory schedulesHistory;
-  final UserRepository userRepository;
 
   Future<Schedules> getAllSchedules() async {
     final List<Schedule> schedules = [];
     final List<String> ids = ['2'];
     final List<Map> scheduleMaps = await getDocs(
+      idToken: await userRepository.idToken,
       path: 'users/${userRepository.uid}/${school.id}',
     );
-    if (scheduleMaps.isEmpty) {
+    if (scheduleMaps == null) {
       return null;
     }
     for (final schedule in scheduleMaps) {
@@ -37,8 +37,8 @@ class ScheduleRepository {
       const index = 'gwu-201902';
       for (var i = 0; i < ids.length; ++i) {}
       final AlgoliaIndexReference _index = algolia.instance.index(index);
-      final AlgoliaQuerySnapshot _snap = await _index.getObjects(['ee']);
-      print(_snap.hits[1].data);
+      //final AlgoliaQuerySnapshot _snap = await _index.getObjects(['ee']);
+     // print(_snap.hits[1].data);
     }
   }
 
@@ -46,7 +46,16 @@ class ScheduleRepository {
     school = school;
   }
 
-  Future<String> addSchedule({String scheduleName}) async {}
+  Future<String> addSchedule({String scheduleName}) async {
+    return await createDoc(
+        idToken: await userRepository.idToken,
+        path: 'users/${userRepository.uid}/${school.id}',
+        fields: <String, dynamic>{
+          'name': scheduleName,
+          'offerings': <String, dynamic>{},
+        });
+  }
+
   Future<void> deleteSchedule({String scheduleId}) async {}
   Future<void> updateSchedule({String name}) async {}
 /*

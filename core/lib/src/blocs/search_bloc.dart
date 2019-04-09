@@ -37,7 +37,7 @@ class SearchBloc extends Bloc<SearchChanged, SearchState> {
       } else {
         yield SearchLoading();
         try {
-          final results = await searchRepository.results(event.query);
+          final results = await searchRepository.search(event.query);
           yield SearchSuccess(results);
         } catch (error) {
           yield error is SearchError

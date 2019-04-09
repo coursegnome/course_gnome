@@ -9,6 +9,8 @@ const String auth =
 const String firestore =
     'https://firestore.googleapis.com/v1/projects/course-gnome/databases/(default)/documents/';
 const String authSuffix = '?key=$firebaseKey';
+const int dbPrefixLength =
+    'projects/course-gnome/databases/(default)/documents/'.length;
 
 enum HttpError { BadRequest, NetworkError }
 
@@ -31,6 +33,29 @@ Future<Map<String, dynamic>> authPost({
       throw HttpError.BadRequest;
     }
     return jsonDecode(response.body);
+  } catch (e) {
+    print('Http Error: ${e.toString()}');
+    throw HttpError.NetworkError;
+  }
+}
+
+Future<String> createDoc({
+  @required String idToken,
+  @required String path,
+  @required Map<String, dynamic> fields,
+}) async {
+  try {
+    final Response response = await post(
+      firestore + path,
+      body: _parseDocumentMap(fields),
+      headers: _buildAuthHeaders(idToken),
+    );
+    if (response.statusCode == 400) {
+      print('Http Error: ${response.reasonPhrase}');
+      throw HttpError.BadRequest;
+    }
+    final String name = jsonDecode(response.body)['name'];
+    return name.substring(dbPrefixLength + path.length + 1);
   } catch (e) {
     print('Http Error: ${e.toString()}');
     throw HttpError.NetworkError;
@@ -102,6 +127,9 @@ Future<List<Map<String, dynamic>>> getDocs({
 }) async {
   final Map response = await getRequest(idToken: idToken, path: path);
   final List<Map> documents = response['documents'];
+  if (response.isEmpty) {
+    return null;
+  }
   for (Map document in documents) {
     document = _parseFields(document);
   }

@@ -7,24 +7,23 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository authRepository;
 
   @override
-  AuthState get initialState => SignedOut();
+  AuthState get initialState => UnitiatedAuth();
 
   @override
   Stream<AuthState> mapEventToState(
     AuthState currentState,
     AuthEvent event,
   ) async* {
-    yield AuthLoading();
     if (event is Init) {
       final User user = await authRepository.init();
-      yield user == null ?
-        SignedOut():
-        SignedIn(user);
+      yield user == null ? SignedOut() : SignedIn(user);
     } else if (event is SignIn) {
+      yield AuthLoading();
       try {
         final User user = await authRepository.signIn(
           username: event.username,
           password: event.password,
+          school: event.school,
         );
         yield SignedIn(user);
       } catch (e) {
@@ -34,10 +33,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         }
       }
     } else if (event is SignUp) {
+      yield AuthLoading();
       try {
         final User user = await authRepository.signUp(
           username: event.username,
           password: event.password,
+          school: event.school,
+          userType: event.userType,
         );
         yield SignedIn(user);
       } catch (e) {
@@ -52,6 +54,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
 abstract class AuthState {}
 
+class UnitiatedAuth extends AuthState {}
+
 class SignedIn extends AuthState {
   SignedIn(this.user);
   final User user;
@@ -64,22 +68,34 @@ class AuthError extends AuthState {
 
 class AuthLoading extends AuthState {}
 
-class SignedOut extends AuthState {}
+class SignedOut extends AuthState {
+
+  SignedOut({this.newUser});
+  final bool newUser;
+}
 
 abstract class AuthEvent {}
 
 class Init extends AuthEvent {}
 
 class SignUp extends AuthEvent {
-  SignUp({this.username, this.password});
+  SignUp({
+    this.username,
+    this.password,
+    this.school,
+    this.userType,
+  });
   final String username, password;
+  final School school;
+  final UserType userType;
 }
 
 class CancelSignUp extends AuthEvent {}
 
 class SignIn extends AuthEvent {
-  SignIn({this.username, this.password});
+  SignIn({this.username, this.password, this.school});
   final String username, password;
+  final School school;
 }
 
 class CancelSignIn extends AuthEvent {}

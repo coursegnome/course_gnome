@@ -35,9 +35,6 @@ end
 target 'Runner' do
   use_frameworks!
 
-	pod 'FacebookCore'
-	pod 'FacebookLogin'
-
   # Prepare symlinks folder. We use symlinks to avoid having Podfile.lock
   # referring to absolute paths on developers' machines.
   system('rm -rf .symlinks')

@@ -1,4 +1,4 @@
-package com.traversy.coursegnome
+package com.example.course_gnome_mobile
 
 import android.os.Bundle
 

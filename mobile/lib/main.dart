@@ -1,24 +1,57 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:course_gnome_mobile/ui/SearchPage.dart';
+import 'package:core/core.dart';
+
+import 'package:course_gnome_mobile/utils/auth.dart';
 import 'package:course_gnome_mobile/ui/LoginPage.dart';
-import 'package:course_gnome_mobile/ui/SchedulingPage.dart';
-import 'package:course_gnome_mobile/utilities/UtilitiesClasses.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  final UserRepository userRepository = UserRepository(
+    getStoredAuth: getStoredAuth,
+    storeAuth: storeAuth,
+  );
+  final AuthRepository authRepository = AuthRepository(
+    userRepository: userRepository,
+  );
+  runApp(App(userRepository, authRepository));
+}
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+class App extends StatefulWidget {
+  App(this.userRepository, this.authRepository);
+  final AuthRepository authRepository;
+  final UserRepository userRepository;
+  @override
+  State<App> createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+  AuthBloc _authBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _authBloc = AuthBloc(authRepository: widget.authRepository);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
+    return BlocProvider(
+        bloc: _authBloc,
+        child:
+    MaterialApp(
       theme: ThemeData(
-        primaryColor: CGColor.cgred,
+        primaryColor: Color(cgRed.toInt),
         fontFamily: 'Lato',
       ),
       home: LoginPage(),
       debugShowCheckedModeBanner: false,
-    );
+    ),);
+  }
+
+  @override
+  void dispose() {
+    _authBloc.dispose();
+    super.dispose();
   }
 }

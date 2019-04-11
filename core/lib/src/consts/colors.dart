@@ -1,4 +1,14 @@
-import 'package:color/color.dart';
+const cgRed = CGColor('d12027');
 
-const cgRed = Color.rgb(195, 40, 43);
-const lightGray = Color.rgb(250, 250, 250);
+class CGColor {
+  const CGColor(this.hex);
+
+  /// Color as hex, i.e. 3H2CC9
+  final String hex;
+
+  /// For Flutter
+  int get toInt => int.parse('0xFF$hex');
+
+  /// For Web
+  String get toString => '#$hex';
+}

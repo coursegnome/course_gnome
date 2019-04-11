@@ -9,20 +9,20 @@ class UserAuth {
   final DateTime expirationTime;
 }
 
-typedef GetStoredTokens = Future<UserAuth> Function();
-typedef StoreTokens = Future<void> Function(UserAuth);
+typedef GetStoredAuth = Future<UserAuth> Function();
+typedef StoreAuth = Future<void> Function(UserAuth);
 
 class UserRepository {
   UserRepository({
-    @required this.getStoredTokensCallback,
-    @required this.storeTokensCallback,
+    @required this.getStoredAuth,
+    @required this.storeAuth,
   });
 
-  final GetStoredTokens getStoredTokensCallback;
-  final StoreTokens storeTokensCallback;
+  final GetStoredAuth getStoredAuth;
+  final StoreAuth storeAuth;
 
   Future<void> init() async {
-    _userAuth = await getStoredTokensCallback();
+    _userAuth = await getStoredAuth();
   }
 
   UserAuth _userAuth;
@@ -46,7 +46,7 @@ class UserRepository {
       idToken: response['id_token'] ?? response['idToken'],
       expirationTime: DateTime.now().add(Duration(minutes: 50)),
     );
-    storeTokensCallback(_userAuth);
+    storeAuth(_userAuth);
   }
 
   Future<void> _refreshTokenIfNeeded() async {
@@ -65,6 +65,6 @@ class UserRepository {
 
   void signOut() {
     _userAuth = null;
-    storeTokensCallback(null);
+    storeAuth(null);
   }
 }

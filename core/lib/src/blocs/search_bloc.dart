@@ -5,7 +5,6 @@ import 'package:rxdart/rxdart.dart';
 import 'package:bloc/bloc.dart';
 
 import 'package:core/core.dart';
-import 'package:equatable/equatable.dart';
 
 class SearchBloc extends Bloc<SearchChanged, SearchState> {
   SearchBloc({@required this.searchRepository});
@@ -49,21 +48,19 @@ class SearchBloc extends Bloc<SearchChanged, SearchState> {
   }
 }
 
-class SearchChanged extends Equatable {
-  SearchChanged(this.query) : super([query]);
+class SearchChanged {
+  SearchChanged(this.query);
   final Query query;
 }
 
-class SearchState extends Equatable {
-  SearchState([List props = const []]) : super(props);
-}
+class SearchState {}
 
 class SearchEmpty extends SearchState {}
 
 class SearchLoading extends SearchState {}
 
 class SearchError extends SearchState {
-  SearchError(this.message) : super([message]);
+  SearchError(this.message);
   final String message;
 }
 

@@ -177,35 +177,35 @@ String _parseDocumentMap(Map<String, dynamic> document) {
 }
 
 Map<String, dynamic> _recursiveParse(Map<String, dynamic> document) {
-  final fields = {};
+  final fields = <String, dynamic>{};
   for (final entry in document.entries) {
     fields[entry.key] = _valueToFBFormat(entry.value);
   }
-  return {'fields': fields};
+  return <String, dynamic>{'fields': fields};
 }
 
 Map<String, dynamic> _valueToFBFormat(dynamic value) {
   if (value == null) {
-    return {'nullValue': value};
+    return <String, dynamic>{'nullValue': value};
   }
   if (value is bool) {
-    return {'booleanValue': value};
+    return <String, dynamic>{'booleanValue': value};
   }
   if (value is int) {
-    return {'integerValue': value};
+    return <String, dynamic>{'integerValue': value};
   }
   if (value is double) {
-    return {'doubleValue': value};
+    return <String, dynamic>{'doubleValue': value};
   }
   if (value is DateTime) {
-    return {'timestampValue': value.toUtc().toIso8601String()};
+    return <String, dynamic>{'timestampValue': value.toUtc().toIso8601String()};
   }
   if (value is String) {
-    return {'stringValue': value};
+    return <String, dynamic>{'stringValue': value};
   }
   if (value is List) {
     final arrayValue = {
-      'arrayValue': {'values': []}
+      'arrayValue': {'values': <dynamic>[]}
     };
     for (final subVal in value) {
       if (subVal is List) {
@@ -217,7 +217,7 @@ Map<String, dynamic> _valueToFBFormat(dynamic value) {
     return arrayValue;
   }
   if (value is Map) {
-    return {'mapValue': _recursiveParse(value)};
+    return <String, dynamic>{'mapValue': _recursiveParse(value)};
   }
   throw ArgumentError('The argument $value is not supported by Firebase');
 }

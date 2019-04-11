@@ -7,8 +7,8 @@ class CGColor {
   final String hex;
 
   /// For Flutter
-  int get toInt => int.parse('0xFF$hex');
+  int get asInt => int.parse('0xFF$hex');
 
   /// For Web
-  String get toString => '#$hex';
+  String get asString => '#$hex';
 }

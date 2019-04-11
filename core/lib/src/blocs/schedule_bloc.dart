@@ -42,7 +42,6 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
 
   @override
   Stream<ScheduleState> mapEventToState(
-    ScheduleState currentState,
     ScheduleEvent event,
   ) async* {
     if (event is ScheduleEvent) {
@@ -75,14 +74,14 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
         }
       }
       if (event is OpenDialog && currentState is SchedulesLoaded) {
-        yield DialogOpen(currentState.schedules);
+        yield DialogOpen((currentState as SchedulesLoaded).schedules);
       }
       if (event is CloseDialog && currentState is DialogState) {
-        yield SchedulesLoaded(currentState.schedules);
+        yield SchedulesLoaded((currentState as DialogState).schedules);
       }
 
       if (event is ScheduleAdded && currentState is DialogState) {
-        yield DialogLoading(currentState.schedules);
+        yield DialogLoading((currentState as DialogState).schedules);
         try {
           final String id = await scheduleRepository.addSchedule(
             scheduleName: event.scheduleName,
@@ -91,12 +90,12 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
               .addSchedule(event.scheduleName, id);
           yield SchedulesLoaded(scheduleRepository.schedulesHistory.current);
         } catch (e) {
-          yield DialogError(currentState.schedules);
+          yield DialogError((currentState as DialogState).schedules);
         }
       }
 
       if (event is ScheduleDeleted && currentState is DialogState) {
-        yield DialogLoading(currentState.schedules);
+        yield DialogLoading((currentState as DialogState).schedules);
         try {
           await scheduleRepository.deleteSchedule(
             scheduleId: event.scheduleId,
@@ -104,12 +103,12 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
           scheduleRepository.schedulesHistory.deleteSchedule(event.scheduleId);
           yield SchedulesLoaded(scheduleRepository.schedulesHistory.current);
         } catch (e) {
-          yield DialogError(currentState.schedules);
+          yield DialogError((currentState as DialogState).schedules);
         }
       }
 
       if (event is ScheduleNameEdited && currentState is DialogState) {
-        yield DialogLoading(currentState.schedules);
+        yield DialogLoading((currentState as DialogState).schedules);
         try {
           await scheduleRepository.updateSchedule(
             name: event.name,
@@ -117,7 +116,7 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
           scheduleRepository.schedulesHistory.editScheduleName(event.name);
           yield SchedulesLoaded(scheduleRepository.schedulesHistory.current);
         } catch (e) {
-          yield DialogError(currentState.schedules);
+          yield DialogError((currentState as DialogState).schedules);
         }
       }
     }

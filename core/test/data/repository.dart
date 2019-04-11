@@ -7,12 +7,12 @@ void main() {
   UserAuth stored;
   User user;
 
-  Future<void> _storeTokens(UserAuth tokens) async => stored = tokens;
-  Future<UserAuth> _getTokens() async => stored;
+  Future<void> _storeAuth(UserAuth tokens) async => stored = tokens;
+  Future<UserAuth> _getAuth() async => stored;
 
   final UserRepository userRepository = UserRepository(
-    getStoredTokensCallback: _getTokens,
-    storeTokensCallback: _storeTokens,
+    getStoredAuth: _getAuth,
+    storeAuth: _storeAuth,
   );
 
   final authRepo = AuthRepository(userRepository: userRepository);

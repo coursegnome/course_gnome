@@ -27,7 +27,6 @@ class SearchBloc extends Bloc<SearchChanged, SearchState> {
 
   @override
   Stream<SearchState> mapEventToState(
-    SearchState currentState,
     SearchChanged event,
   ) async* {
     if (event is SearchChanged) {

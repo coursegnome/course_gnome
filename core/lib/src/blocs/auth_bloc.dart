@@ -11,7 +11,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   @override
   Stream<AuthState> mapEventToState(
-    AuthState currentState,
     AuthEvent event,
   ) async* {
     if (event is Init) {
@@ -29,7 +28,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       } catch (e) {
         print(e);
         if (currentState is SignedIn) {
-          yield AuthError(user: currentState.user);
+          yield AuthError(user: (currentState as SignedIn).user);
         }
       }
     } else if (event is SignUp) {
@@ -45,7 +44,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       } catch (e) {
         print(e);
         if (currentState is SignedIn) {
-          yield AuthError(user: currentState.user);
+          yield AuthError(user: (currentState as SignedIn).user);
         }
       }
     }
@@ -69,7 +68,6 @@ class AuthError extends AuthState {
 class AuthLoading extends AuthState {}
 
 class SignedOut extends AuthState {
-
   SignedOut({this.newUser});
   final bool newUser;
 }

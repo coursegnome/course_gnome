@@ -32,21 +32,22 @@ class _AppState extends State<App> {
   void initState() {
     super.initState();
     _authBloc = AuthBloc(authRepository: widget.authRepository);
+    _authBloc.dispatch(Init());
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-        bloc: _authBloc,
-        child:
-    MaterialApp(
-      theme: ThemeData(
-        primaryColor: Color(cgRed.toInt),
-        fontFamily: 'Lato',
+      bloc: _authBloc,
+      child: MaterialApp(
+        theme: ThemeData(
+          primaryColor: Color(cgRed.asInt),
+          fontFamily: 'Lato',
+        ),
+        home: LoginPage(),
+        debugShowCheckedModeBanner: false,
       ),
-      home: LoginPage(),
-      debugShowCheckedModeBanner: false,
-    ),);
+    );
   }
 
   @override

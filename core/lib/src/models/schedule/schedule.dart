@@ -56,7 +56,7 @@ class SchedulesHistory {
 /// Collection of user's schedules,
 class Schedules extends Equatable {
   Schedules({@required this.schedules, this.currentScheduleIndex = 0})
-      : super([schedules, currentScheduleIndex]);
+      : super(<dynamic>[schedules, currentScheduleIndex]);
 
   /// List of all user's schedules
   final List<Schedule> schedules;
@@ -134,7 +134,7 @@ class Schedules extends Equatable {
 
 class Schedule extends Equatable {
   Schedule({@required this.id, this.name, this.offerings})
-      : super([name, id, offerings]);
+      : super(<dynamic>[name, id, offerings]);
 
   /// The user-given name for the schedule, i.e. "My New Schedule".
   final String name;
@@ -218,7 +218,7 @@ class ColoredOffering {
   @override
   int get hashCode => int.parse(offering.id);
   @override
-  bool operator ==(other) {
+  bool operator ==(dynamic other) {
     return other is ColoredOffering && offering.id == other.offering.id;
   }
 }

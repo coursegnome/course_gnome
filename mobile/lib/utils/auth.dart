@@ -13,11 +13,11 @@ Future<void> storeAuth(UserAuth auth) async {
 
 Future<UserAuth> getStoredAuth() async {
   final spInstance = await SharedPreferences.getInstance();
+  final expirationMillis = await spInstance.getInt('expirationTime');
   return UserAuth(
     idToken: await spInstance.getString('idToken'),
     refreshToken: await spInstance.getString('refreshToken'),
-    expirationTime: DateTime.fromMillisecondsSinceEpoch(
-        await spInstance.getInt('expirationTime')),
+    expirationTime: DateTime.fromMillisecondsSinceEpoch(expirationMillis),
     uid: await spInstance.getString('uid'),
   );
 }

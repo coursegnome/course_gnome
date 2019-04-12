@@ -4,6 +4,7 @@ import 'package:http/http.dart';
 import 'package:meta/meta.dart';
 import 'config.dart';
 
+const String refreshUrl = 'https://securetoken.googleapis.com/v1/';
 const String auth =
     'https://www.googleapis.com/identitytoolkit/v3/relyingparty/';
 const String firestore =
@@ -25,10 +26,10 @@ Future<Map<String, dynamic>> authPost({
   }
   try {
     final Response response = await post(
-      auth + endpoint + authSuffix,
+      (endpoint == 'token' ? refreshUrl : auth) + endpoint + authSuffix,
       body: jsonEncode(body),
     );
-    if (response.statusCode == 400) {
+    if (response.statusCode != 200) {
       print('Http Error: ${response.reasonPhrase}');
       throw HttpError.BadRequest;
     }
@@ -50,7 +51,7 @@ Future<String> createDoc({
       body: _parseDocumentMap(fields),
       headers: _buildAuthHeaders(idToken),
     );
-    if (response.statusCode == 400) {
+    if (response.statusCode != 200) {
       print('Http Error: ${response.reasonPhrase}');
       throw HttpError.BadRequest;
     }
@@ -74,7 +75,7 @@ Future<Map<String, dynamic>> patchDoc({
       body: _parseDocumentMap(fields),
       headers: _buildAuthHeaders(idToken),
     );
-    if (response.statusCode == 400) {
+    if (response.statusCode != 200) {
       print('Http Error: ${response.reasonPhrase}');
       throw HttpError.BadRequest;
     }
@@ -103,7 +104,7 @@ Future<Map<String, dynamic>> getRequest({String idToken, String path}) async {
       firestore + path,
       headers: _buildAuthHeaders(idToken),
     );
-    if (response.statusCode == 400) {
+    if (response.statusCode != 200) {
       print('Http Error: ${response.reasonPhrase}');
       throw HttpError.BadRequest;
     }
@@ -141,7 +142,7 @@ Future<void> deleteDoc({@required String path}) async {
     final Response response = await delete(
       firestore + path,
     );
-    if (response.statusCode == 400) {
+    if (response.statusCode != 200) {
       print('Http Error: ${response.reasonPhrase}');
       throw HttpError.BadRequest;
     }

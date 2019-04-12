@@ -13,18 +13,21 @@ Future<void> storeAuth(UserAuth auth) async {
 
 Future<UserAuth> getStoredAuth() async {
   final spInstance = await SharedPreferences.getInstance();
-  final expirationMillis = await spInstance.getInt('expirationTime');
+  if (spInstance.getString('idToken') == null) {
+    return null;
+  }
   return UserAuth(
-    idToken: await spInstance.getString('idToken'),
-    refreshToken: await spInstance.getString('refreshToken'),
-    expirationTime: DateTime.fromMillisecondsSinceEpoch(expirationMillis),
-    uid: await spInstance.getString('uid'),
+    idToken: spInstance.getString('idToken'),
+    refreshToken: spInstance.getString('refreshToken'),
+    expirationTime: DateTime.fromMillisecondsSinceEpoch(
+        spInstance.getInt('expirationTime')),
+    uid: spInstance.getString('uid'),
   );
 }
 
 Future<bool> isFirstTimeUser() async {
   final spInstance = await SharedPreferences.getInstance();
-  return await spInstance.getBool('firstTime') == null;
+  return spInstance.getBool('firstTime') == null;
 }
 
 Future<void> setFirstTimeStatus(bool status) async {

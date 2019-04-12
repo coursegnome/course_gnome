@@ -1,4 +1,5 @@
 const cgRed = CGColor('d12027');
+const lightGray = CGColor('F7F7F7');
 
 class CGColor {
   const CGColor(this.hex);

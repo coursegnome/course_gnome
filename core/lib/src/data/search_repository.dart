@@ -94,5 +94,5 @@ class SearchClient {
   String _stringForStatus(Status status) => _enumValue(status.toString());
 
   String _enumValue(String enumString) =>
-      enumString.substring(enumString.toString().indexOf('.') + 1);
+      enumString.substring(enumString.indexOf('.') + 1);
 }

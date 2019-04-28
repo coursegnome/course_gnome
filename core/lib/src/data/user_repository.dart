@@ -4,7 +4,15 @@ import 'http_wrapper.dart';
 enum UserError { NotAuthenticated }
 
 class UserAuth {
-  UserAuth({this.idToken, this.refreshToken, this.expirationTime, this.uid});
+  UserAuth(
+      {@required this.idToken,
+      @required this.refreshToken,
+      @required this.expirationTime,
+      @required this.uid})
+      : assert(idToken != null),
+        assert(refreshToken != null),
+        assert(expirationTime != null),
+        assert(uid != null);
   final String idToken, refreshToken, uid;
   final DateTime expirationTime;
 }
@@ -16,12 +24,16 @@ class UserRepository {
   UserRepository({
     @required this.getStoredAuth,
     @required this.storeAuth,
-  });
+  })  : assert(getStoredAuth != null),
+        assert(storeAuth != null);
+
+  static String tag = 'UserRepository';
 
   final GetStoredAuth getStoredAuth;
   final StoreAuth storeAuth;
 
   Future<void> init() async {
+    print('$tag - init');
     _userAuth = await getStoredAuth();
   }
 
@@ -30,29 +42,39 @@ class UserRepository {
   String get uid => _userAuth.uid;
 
   Future<String> get idToken async {
+    print('$tag - get idToken');
     if (!isAuthenticated) {
       throw UserError.NotAuthenticated;
     }
     await _refreshTokenIfNeeded();
+    print('$tag - getToken - got idToken: ${_userAuth.idToken}');
     return _userAuth.idToken;
   }
 
   bool get isAuthenticated => _userAuth != null;
 
   void setNewAuth(Map response) {
+    print('$tag - setNewAuth -  with response: $response');
+    DateTime dateFromStringSec(String sec) =>
+        DateTime.now().add(Duration(seconds: int.parse(sec)));
     _userAuth = UserAuth(
       uid: response['user_id'] ?? response['localId'],
       refreshToken: response['refresh_token'] ?? response['refreshToken'],
       idToken: response['id_token'] ?? response['idToken'],
-      expirationTime: DateTime.now().add(Duration(minutes: 50)),
+      expirationTime:
+          dateFromStringSec(response['expires_in'] ?? response['expiresIn']),
     );
+    print('$tag - setNewAuth - storeAuth: $_userAuth');
     storeAuth(_userAuth);
   }
 
   Future<void> _refreshTokenIfNeeded() async {
+    print('$tag - refreshToken');
     if (DateTime.now().isBefore(_userAuth.expirationTime)) {
+      print('$tag - refreshToken - refresh not needed');
       return;
     }
+    print('$tag - refreshToken - refreshing');
     final Map response = await authPost(
       endpoint: 'token',
       body: <String, dynamic>{
@@ -60,10 +82,12 @@ class UserRepository {
         'refresh_token': _userAuth.refreshToken,
       },
     );
+    print('$tag - refreshToken - setting new auth');
     setNewAuth(response);
   }
 
   void signOut() {
+    print('$tag - signOut');
     _userAuth = null;
     storeAuth(null);
   }

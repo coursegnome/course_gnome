@@ -1,21 +1,35 @@
 import 'package:angular/angular.dart';
+import 'package:angular_router/angular_router.dart';
 
-import 'package:core/controller/SchedulingPageController.dart';
+import 'package:core/core.dart';
 
-import 'src/search_page/search_page_components.dart';
+import 'src/routes/routes.dart';
+import 'src/utils/auth.dart';
 
 @Component(
-    selector: 'my-app',
-    templateUrl: 'app_component.html',
-    styleUrls: ['app_component.css'],
-    directives: [coreDirectives, SearchPageComponent],
-    providers: [ClassProvider(SchedulingPageController)])
-class AppComponent {
-  final SchedulingPageController schedulingPageController;
-  AppComponent(this.schedulingPageController);
+  selector: 'my-app',
+  template: '',
+  directives: [routerDirectives],
+  exports: [Routes],
+)
+class AppComponent implements OnInit, OnDestroy {
+  AuthBloc _authBloc;
 
+  @override
   void ngOnInit() {
-    // TODO: save local json
-    schedulingPageController.initCalendars(null);
+    final UserRepository userRepository = UserRepository(
+      getStoredAuth: getStoredAuth,
+      storeAuth: storeAuth,
+    );
+    final AuthRepository authRepository = AuthRepository(
+      userRepository: userRepository,
+    );
+    _authBloc = AuthBloc(authRepository: authRepository);
+    //_authBloc.dispatch(Init());
+  }
+
+  @override
+  void ngOnDestroy() {
+    _authBloc.dispose();
   }
 }

@@ -1,14 +1,12 @@
 import 'package:angular/angular.dart';
 import 'package:angular_router/angular_router.dart';
 
-import 'package:core/core.dart';
-
-import 'src/routes/routes.dart';
-import 'src/utils/auth.dart';
+import 'routes/routes.dart';
 
 @Component(
   selector: 'home',
-  template: '',
+  templateUrl: 'home_component.html',
+  styleUrls: ['home_component.css'],
   directives: [routerDirectives],
   exports: [Routes],
 )

@@ -7,8 +7,9 @@ import 'src/routes/routes.dart';
 import 'src/utils/auth.dart';
 
 @Component(
-  selector: 'my-app',
-  template: '',
+  selector: 'app',
+  templateUrl: 'app_component.html',
+  styleUrls: ['app_component.css'],
   directives: [routerDirectives],
   exports: [Routes],
 )
@@ -17,19 +18,19 @@ class AppComponent implements OnInit, OnDestroy {
 
   @override
   void ngOnInit() {
-    final UserRepository userRepository = UserRepository(
-      getStoredAuth: getStoredAuth,
-      storeAuth: storeAuth,
-    );
-    final AuthRepository authRepository = AuthRepository(
-      userRepository: userRepository,
-    );
-    _authBloc = AuthBloc(authRepository: authRepository);
+    // final UserRepository userRepository = UserRepository(
+    //   getStoredAuth: getStoredAuth,
+    //   storeAuth: storeAuth,
+    // );
+    // final AuthRepository authRepository = AuthRepository(
+    //   userRepository: userRepository,
+    // );
+    // _authBloc = AuthBloc(authRepository: authRepository);
     //_authBloc.dispatch(Init());
   }
 
   @override
   void ngOnDestroy() {
-    _authBloc.dispose();
+    // _authBloc.dispose();
   }
 }

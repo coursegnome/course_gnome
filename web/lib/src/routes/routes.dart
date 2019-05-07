@@ -8,14 +8,9 @@ import '../home_component/home_component.template.dart'
 class RoutePaths {
   static final login = RoutePath(path: 'login');
   static final home = RoutePath(path: ':school/:season');
-  // static final home = RoutePath(path: ':school/:season');
 }
 
 class Routes {
-  // static final baseRedirect = RouteDefinition.redirect(
-  //   path: '',
-  //   redirectTo: Routes.login.toUrl(),
-  // );
   // static final notFound = RouteDefinition.redirect(
   //   path: '.+',
   //   redirectTo: Routes.login.toUrl(),
@@ -28,10 +23,15 @@ class Routes {
     routePath: RoutePaths.home,
     component: home_component_template.HomeComponentNgFactory,
   );
+  static final baseRedirect = RouteDefinition.redirect(
+    path: '',
+    redirectTo: Routes.login.toUrl(),
+  );
   static final all = <RouteDefinition>[
     login,
     // baseRedirect,
     // notFound,
     home,
+    baseRedirect,
   ];
 }

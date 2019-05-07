@@ -5,8 +5,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:core/core.dart';
 
-import 'package:course_gnome_mobile/utils/auth.dart';
-//import 'package:course_gnome_mobile/ui/SchedulingPage.dart';
+import '../../utils/auth.dart';
+import '../scheduling/scheduling_page.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -16,55 +16,47 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   bool _checkingFirstTimeUser = true;
   bool _keyboardIsOpen = false;
+  double _currentPage = 0;
+
   final PageController _pageController = PageController();
+
+  void _onPageChanged() {
+    setState(() {
+      _currentPage = _pageController.page;
+    });
+  }
 
   @override
   initState() {
     super.initState();
     _checkFirstTimeUser();
-  }
-
-  _checkFirstTimeUser() async {
-    if (await isFirstTimeUser()) {
-      setState(() {
-        _checkingFirstTimeUser = false;
-      });
-    } else {
-      _goToSearchPage();
-    }
-  }
-
-  _onKeyboardStateChanged(bool isOpen) {
-    setState(() {
-      _keyboardIsOpen = isOpen;
-    });
+    _pageController.addListener(_onPageChanged);
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder(
       bloc: BlocProvider.of<AuthBloc>(context),
-      builder: (_, state) {
+      builder: (_, AuthState authState) {
         return Scaffold(
           backgroundColor: Colors.white,
           body: SafeArea(
             child: Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 50.0),
-                child: _checkingFirstTimeUser
-                    ? _checkingUserLoader()
+              child: Container(
+                child: _checkingFirstTimeUser || authState is UninitiatedAuth
+                    ? _loaderWidget()
                     : Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
-                          !_keyboardIsOpen
-                              ? Image(
-                                  image: AssetImage('assets/images/logo.png',
-                                      package: 'core'),
-                                  width: 100,
-                                  height: 100,
-                                )
-                              : Container(),
+                          // !_keyboardIsOpen
+                          //     ? Image(
+                          //         image: AssetImage('assets/images/logo.png',
+                          //             package: 'core'),
+                          //         width: 100,
+                          //         height: 100,
+                          //       )
+                          // : Container(),
                           LoginPager(
                             keyboardOpen: _onKeyboardStateChanged,
                             pageController: _pageController,
@@ -73,16 +65,21 @@ class _LoginPageState extends State<LoginPage> {
                               ? Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Text('Don\'t have an account?'),
+                                    Text(_currentPage == 2
+                                        ? 'Already have an account?'
+                                        : 'Don\'t have an account?'),
                                     FlatButton(
                                       onPressed: () =>
                                           _pageController.animateToPage(
-                                            2,
+                                            _currentPage == 2 ? 1 : 2,
                                             duration:
                                                 Duration(milliseconds: 350),
                                             curve: Curves.fastOutSlowIn,
                                           ),
-                                      child: Text('Sign Up',
+                                      child: Text(
+                                          _currentPage == 2
+                                              ? 'Sign in'
+                                              : 'Sign up',
                                           style: Theme.of(context)
                                               .textTheme
                                               .body1
@@ -107,14 +104,28 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _checkingUserLoader() {
-    return Container();
+  _checkFirstTimeUser() async {
+    if (await isFirstTimeUser()) {
+      setState(() {
+        _checkingFirstTimeUser = false;
+      });
+    } else {
+      _goToSearchPage();
+    }
   }
 
+  _onKeyboardStateChanged(bool isOpen) {
+    // setState(() {
+    //   _keyboardIsOpen = isOpen;
+    // });
+  }
+
+  Widget _loaderWidget() => CircularProgressIndicator(
+      valueColor: AlwaysStoppedAnimation<Color>(Color(cgRed.asInt)));
   _goToSearchPage() {
     setFirstTimeStatus(true);
-//    Navigator.pushReplacement(context,
-//        MaterialPageRoute(builder: (BuildContext context) => SchedulingPage()));
+    Navigator.pushReplacement(context,
+        MaterialPageRoute(builder: (BuildContext context) => SchedulingPage()));
   }
 }
 
@@ -132,6 +143,9 @@ class _LoginPagerState extends State<LoginPager>
   final _signUpFormKey = GlobalKey<FormState>();
   final _emailFocusNode = FocusNode();
   final _passwordFocusNode = FocusNode();
+
+  bool _googleLoading = false;
+  bool _signInLoading = false;
 
   PageController get _pageController => widget.pageController;
 
@@ -158,9 +172,7 @@ class _LoginPagerState extends State<LoginPager>
         physics: NeverScrollableScrollPhysics(),
         children: <Widget>[
           _startPage(),
-          _form(
-            signIn: true,
-          ),
+          _form(signIn: true),
           _form(signIn: false)
         ],
       ),
@@ -169,6 +181,9 @@ class _LoginPagerState extends State<LoginPager>
 
   Widget _startPage() {
     void _signInWithGoogle() async {
+      setState(() {
+        _googleLoading = true;
+      });
       try {
         final GoogleSignInAccount account = await GoogleSignIn(
           scopes: [
@@ -176,6 +191,13 @@ class _LoginPagerState extends State<LoginPager>
             'profile',
           ],
         ).signIn();
+        if (account != null) {
+          final auth = await account.authentication;
+          auth.accessToken;
+        }
+        setState(() {
+          _googleLoading = false;
+        });
       } catch (e) {
         print(e);
       }
@@ -223,17 +245,25 @@ class _LoginPagerState extends State<LoginPager>
             width: 250,
             child: MaterialButton(
               padding: const EdgeInsets.all(14.0),
-              onPressed: () {},
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Icon(FontAwesomeIcons.google),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: Text('Sign in with Google'),
-                  ),
-                ],
-              ),
+              onPressed: _signInWithGoogle,
+              child: _googleLoading
+                  ? Container(
+                      height: 20.0,
+                      width: 20.0,
+                      child: CircularProgressIndicator(
+                          strokeWidth: 3.0,
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.black54)))
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Icon(FontAwesomeIcons.google),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Text('Sign in with Google'),
+                        ),
+                      ],
+                    ),
               color: Color(lightGray.asInt),
               textColor: Colors.black54,
             ),
@@ -244,6 +274,17 @@ class _LoginPagerState extends State<LoginPager>
   }
 
   Widget _form({bool signIn}) {
+    void _signInWithEmail({bool signIn}) async {
+      setState(() {
+        _signInLoading = true;
+      });
+      await Future.delayed(Duration(seconds: 1));
+      // BlocProvider.of<AuthBloc>(context).dispatch();
+      setState(() {
+        _signInLoading = false;
+      });
+    }
+
     return Form(
       key: signIn ? _signInFormKey : _signUpFormKey,
       child: Padding(
@@ -254,8 +295,12 @@ class _LoginPagerState extends State<LoginPager>
             !signIn
                 ? DropdownButtonFormField(
                     decoration: InputDecoration(
-                        icon: Icon(Icons.school), labelText: 'SCHOOL'),
-                    items: [DropdownMenuItem(child: Text('GWU'))],
+                      icon: Icon(Icons.school),
+                    ),
+                    items: [
+                      DropdownMenuItem(
+                          child: Text('George Washington University'))
+                    ],
                   )
                 : Container(),
             Padding(
@@ -279,7 +324,7 @@ class _LoginPagerState extends State<LoginPager>
             TextFormField(
               focusNode: _passwordFocusNode,
               decoration: InputDecoration(
-                icon: Icon(Icons.vpn_key),
+                icon: Icon(Icons.lock),
                 labelText: 'PASSWORD',
               ),
               obscureText: true,
@@ -297,7 +342,18 @@ class _LoginPagerState extends State<LoginPager>
                             curve: Curves.fastOutSlowIn,
                           )),
                   RaisedButton(
-                    child: Text(signIn ? 'Sign In' : 'Sign Up'),
+                    color: Color(cgRed.asInt),
+                    textColor: Colors.white,
+                    child: _signInLoading
+                        ? Container(
+                            height: 20.0,
+                            width: 20.0,
+                            child: CircularProgressIndicator(
+                                strokeWidth: 3.0,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.white)))
+                        : Text(signIn ? 'Sign In' : 'Sign Up'),
+                    onPressed: () => _signInWithEmail(signIn: signIn),
                   )
                 ],
               ),

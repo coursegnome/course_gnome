@@ -7,7 +7,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository authRepository;
 
   @override
-  AuthState get initialState => UnitiatedAuth();
+  AuthState get initialState => UninitiatedAuth();
 
   @override
   Stream<AuthState> mapEventToState(
@@ -53,7 +53,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
 abstract class AuthState {}
 
-class UnitiatedAuth extends AuthState {}
+class UninitiatedAuth extends AuthState {}
 
 class SignedIn extends AuthState {
   SignedIn(this.user);

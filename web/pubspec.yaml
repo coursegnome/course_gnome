@@ -5,13 +5,17 @@ description: A web app that uses AngularDart Components
 # author: timtraversy <email@example.com>
 
 environment:
-  sdk: '>=2.2.0 <3.0.0'
+  sdk: ">=2.2.0 <3.0.0"
 
 dependencies:
   angular: ^5.2.0
   angular_components: ^0.11.0
   angular_bloc: ^0.6.0
   angular_router: 2.0.0-alpha+21
+  angular_forms: ^2.0.0
+
+  googleapis_auth: ^0.2.7
+
   core:
     path: ../core
 

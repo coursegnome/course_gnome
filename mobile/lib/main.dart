@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:core/core.dart';
 
-import 'package:course_gnome_mobile/utils/auth.dart';
-import 'package:course_gnome_mobile/ui/LoginPage.dart';
+import 'utils/auth.dart';
+import 'ui/login/login_page.dart';
 
 void main() {
   final UserRepository userRepository = UserRepository(

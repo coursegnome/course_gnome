@@ -30,7 +30,7 @@ Future<Map<String, dynamic>> authPost({
       body: jsonEncode(body),
     );
     if (response.statusCode != 200) {
-      print('Http Error: ${response.reasonPhrase}');
+      print(response.reasonPhrase);
       throw HttpError.BadRequest;
     }
     return jsonDecode(response.body);

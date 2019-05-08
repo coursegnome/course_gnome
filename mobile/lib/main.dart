@@ -32,7 +32,7 @@ class _AppState extends State<App> {
   void initState() {
     super.initState();
     _authBloc = AuthBloc(authRepository: widget.authRepository);
-    _authBloc.dispatch(Init());
+    // _authBloc.dispatch(Init());
   }
 
   @override
@@ -40,10 +40,7 @@ class _AppState extends State<App> {
     return BlocProvider(
       bloc: _authBloc,
       child: MaterialApp(
-        theme: ThemeData(
-          primaryColor: Color(cgRed.asInt),
-          fontFamily: 'Lato',
-        ),
+        theme: _buildTheme(),
         home: LoginPage(),
         debugShowCheckedModeBanner: false,
       ),
@@ -54,5 +51,33 @@ class _AppState extends State<App> {
   void dispose() {
     _authBloc.dispose();
     super.dispose();
+  }
+
+  ThemeData _buildTheme() {
+    final ThemeData base = ThemeData.light();
+    return base.copyWith(
+      primaryColor: Color(cgRed.asInt),
+      textTheme: _buildTextTheme(base.textTheme),
+    );
+  }
+
+  TextTheme _buildTextTheme(TextTheme base) {
+    return base
+        .apply(
+          fontFamily: 'Lato',
+          bodyColor: Color(0xff4D4D4D),
+        )
+        .copyWith(
+          button: base.button.copyWith(fontSize: 16),
+          body1: base.body1.copyWith(fontSize: 16),
+          display1: base.display1
+              .apply(
+                fontFamily: 'Merriweather',
+              )
+              .copyWith(
+                fontSize: 24.0,
+                color: Color(0xff4D4D4D),
+              ),
+        );
   }
 }

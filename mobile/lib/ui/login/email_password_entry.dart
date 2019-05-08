@@ -1,3 +1,4 @@
+import 'package:course_gnome_mobile/ui/scheduling/scheduling_page.dart';
 import 'package:flutter/material.dart';
 
 import '../shared/shared.dart';
@@ -22,6 +23,8 @@ class _EmailPasswordEntryState extends State<EmailPasswordEntry> {
     setState(() {
       _loading = false;
     });
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (_) => SchedulingPage()));
   }
 
   @override

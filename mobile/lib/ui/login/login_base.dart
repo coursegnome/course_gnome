@@ -37,11 +37,14 @@ class LoginBase extends StatelessWidget {
                   ),
                 ),
               ),
-              FlatButton(
-                child: Text('Back'),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
+              Container(
+                width: 40.0,
+                child: FlatButton(
+                  child: Text('Back'),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
               ),
             ],
           ),

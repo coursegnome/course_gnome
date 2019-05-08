@@ -5,6 +5,7 @@ import 'package:core/core.dart';
 
 import 'utils/auth.dart';
 import 'ui/login/login_page.dart';
+import 'ui/scheduling/scheduling_page.dart';
 
 void main() {
   final UserRepository userRepository = UserRepository(

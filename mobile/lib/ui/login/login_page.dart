@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/services.dart';
 
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:core/core.dart';
@@ -23,6 +24,8 @@ class _LoginPageState extends State<LoginPage> {
   @override
   initState() {
     super.initState();
+    SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(statusBarColor: Colors.black87));
     _checkFirstTimeUser();
   }
 
@@ -89,9 +92,6 @@ class _LoginPageState extends State<LoginPage> {
                               ],
                             ),
                           ),
-                          FlatButton(
-                            child: Text('Continue as guest'),
-                          )
                         ],
                       ),
               ),

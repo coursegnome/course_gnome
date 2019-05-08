@@ -9,11 +9,14 @@ class CGButton extends StatelessWidget {
     this.icon,
     this.primary = false,
     this.loading = false,
+    this.customColor,
   });
   final VoidCallback onPressed;
   final String text;
   final IconData icon;
   final bool primary, loading;
+  final Color customColor;
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -39,8 +42,9 @@ class CGButton extends StatelessWidget {
                   ),
                 ],
               ),
-        color:
-            primary ? Theme.of(context).primaryColor : Color(lightGray.asInt),
+        color: customColor != null
+            ? customColor
+            : primary ? Theme.of(context).primaryColor : Color(lightGray.asInt),
         textColor: primary ? Colors.white : Colors.black54,
       ),
     );

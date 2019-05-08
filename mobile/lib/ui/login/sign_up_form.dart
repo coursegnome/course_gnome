@@ -13,10 +13,16 @@ class _SignUpFormState extends State<SignUpForm> {
   final _formKey = GlobalKey<FormState>();
   String _school;
   int _year;
+  bool _validatedOnce = false;
 
   void _goToSignUpOptionsPage() {
-    Navigator.push(context,
-        MaterialPageRoute(builder: (BuildContext context) => SignUpOptions()));
+    _validatedOnce = true;
+    if (_formKey.currentState.validate()) {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (BuildContext context) => SignUpOptions()));
+    }
   }
 
   @override
@@ -27,12 +33,18 @@ class _SignUpFormState extends State<SignUpForm> {
         title: 'Tell us about yourself',
         children: <Widget>[
           DropdownButtonFormField(
+            validator: (val) {
+              if (val == null) {
+                return 'Please choose a school.';
+              }
+            },
             decoration: InputDecoration(
               suffixIcon: Icon(Icons.school),
               labelText: 'School',
             ),
             value: _school,
             onChanged: (val) => setState(() {
+                  if (_validatedOnce) _formKey.currentState.validate();
                   _school = val;
                 }),
             items: [
@@ -48,7 +60,13 @@ class _SignUpFormState extends State<SignUpForm> {
               labelText: 'Year',
             ),
             value: _year,
+            validator: (val) {
+              if (val == null) {
+                return 'Please choose a year.';
+              }
+            },
             onChanged: (val) => setState(() {
+                  if (_validatedOnce) _formKey.currentState.validate();
                   _year = val;
                 }),
             items: [
@@ -65,6 +83,22 @@ class _SignUpFormState extends State<SignUpForm> {
               labelText: 'Name',
             ),
             textCapitalization: TextCapitalization.words,
+            // onEditingComplete: () {
+            //   print('i');
+            //   return true;
+            // },
+            onFieldSubmitted: (x) {
+              if (_validatedOnce) _formKey.currentState.validate();
+              print('ee');
+            },
+            validator: (val) {
+              if (val == "") {
+                return 'Please enter your name.';
+              }
+            },
+            // onSaved: (String i) {
+            //   _formKey.currentState.validate();
+            // },
           ),
           CGButton(
             primary: true,

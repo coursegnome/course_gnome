@@ -25,7 +25,7 @@ class _LoginPageState extends State<LoginPage> {
   initState() {
     super.initState();
     SystemChrome.setSystemUIOverlayStyle(
-        SystemUiOverlayStyle(statusBarColor: Colors.black87));
+        SystemUiOverlayStyle(statusBarBrightness: Brightness.dark));
     _checkFirstTimeUser();
   }
 

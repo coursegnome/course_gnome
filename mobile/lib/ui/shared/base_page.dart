@@ -1,23 +1,25 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart' as prefix0;
 
 import '../profile/profile_page.dart';
 import '../advising/advising_page.dart';
 import '../schedules/schedules_page.dart';
 import '../scheduling/scheduling_page.dart';
 
-enum Page { Scheduling, Schedules, Advising, Profile }
+enum Page { Calendar, Search, Schedules, Advising, Profile }
 
 class BasePage extends StatelessWidget {
   BasePage({
     @required this.page,
     @required this.body,
     this.showDrawer = true,
+    this.actionIcons,
+    this.actionCallbacks,
   });
   final Page page;
   final Widget body;
   final bool showDrawer;
+  final List<IconData> actionIcons;
+  final List<VoidCallback> actionCallbacks;
 
   void _goToProfilePage(BuildContext context) {
     Navigator.push(context, MaterialPageRoute(builder: (_) => ProfilePage()));
@@ -25,7 +27,7 @@ class BasePage extends StatelessWidget {
 
   void _goToSchedulingPage(BuildContext context) {
     Navigator.pop(context);
-    if (page == Page.Scheduling) return;
+    if (page == Page.Search) return;
     Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (_) => SchedulingPage()));
   }
@@ -46,14 +48,16 @@ class BasePage extends StatelessWidget {
 
   String _getTitle() {
     switch (page) {
-      case Page.Scheduling:
-        return 'Create';
       case Page.Schedules:
         return 'Your Schedules';
       case Page.Advising:
         return 'Advising';
       case Page.Profile:
         return 'Profile';
+      case Page.Calendar:
+        return 'Calendar';
+      case Page.Search:
+        return 'Search';
       default:
         return 'Title';
     }
@@ -62,9 +66,17 @@ class BasePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xfff2f2f2),
       appBar: AppBar(
-        title: Text(_getTitle()),
-      ),
+          title: Text(_getTitle()),
+          actions: actionIcons != null
+              ? List.generate(actionIcons.length, (i) {
+                  return IconButton(
+                    icon: Icon(actionIcons[i]),
+                    onPressed: actionCallbacks[i],
+                  );
+                })
+              : null),
       drawer: showDrawer
           ? Drawer(
               child: ListView(

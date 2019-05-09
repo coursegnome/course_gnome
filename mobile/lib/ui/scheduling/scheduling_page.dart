@@ -3,7 +3,8 @@ import 'package:flutter/services.dart';
 
 import 'package:core/core.dart';
 
-import '../shared/shared.dart';
+import '../scheduling/search/search_page.dart';
+import '../scheduling/calendar/calendar_page.dart';
 
 class SchedulingPage extends StatefulWidget {
   @override
@@ -15,14 +16,25 @@ class _SchedulingPageState extends State<SchedulingPage> {
   void initState() {
     super.initState();
     SystemChrome.setSystemUIOverlayStyle(
-        SystemUiOverlayStyle(statusBarColor: Colors.white));
+        SystemUiOverlayStyle(statusBarBrightness: Brightness.light));
   }
 
   @override
   Widget build(BuildContext context) {
-    return BasePage(
-      page: Page.Scheduling,
-      body: Container(),
-    );
+    final bool twoColumn = MediaQuery.of(context).size.width > 500;
+    return twoColumn
+        ? Row(children: [
+            Expanded(
+                child: SearchPage(
+              singleColumn: false,
+            )),
+            Expanded(
+                child: CalendarPage(
+              singleColumn: false,
+            )),
+          ])
+        : SearchPage(
+            singleColumn: true,
+          );
   }
 }

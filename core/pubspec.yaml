@@ -8,8 +8,7 @@ dependencies:
   meta: ^1.1.6
   bloc: ^0.11.2
   equatable: ^0.1.10
-  algolia:
-    path: ../../dart_algolia
+  algolia: ^0.1.6+1
   json_annotation: ^2.0.0
 dev_dependencies:
   test: ^1.5.3

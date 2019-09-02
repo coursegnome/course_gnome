@@ -1,6 +1,7 @@
 import 'package:meta/meta.dart';
 
 import 'package:course_gnome/state/auth/auth.dart';
+import 'package:course_gnome/state/shared/utilites/firebase_io.dart';
 
 enum UserError { NotAuthenticated }
 

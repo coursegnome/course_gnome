@@ -4,6 +4,7 @@ import 'package:meta/meta.dart';
 
 import 'package:course_gnome/state/auth/auth.dart';
 import 'package:course_gnome/state/shared/models/course.dart';
+import 'package:course_gnome/state/shared/utilites/firebase_io.dart';
 
 class AuthRepository {
   AuthRepository({@required this.userRepository})

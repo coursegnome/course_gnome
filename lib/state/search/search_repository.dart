@@ -2,9 +2,9 @@ import 'dart:collection';
 
 import 'package:algolia/algolia.dart';
 
-import '../logic.dart';
-
-import 'config.dart';
+import 'package:course_gnome/state/search/search.dart';
+import 'package:course_gnome/state/shared/models/course.dart';
+import 'package:course_gnome/state/shared/config/config.dart';
 
 /*
    1. On search, check cache to see if query has been searched. If so, return.

@@ -1,7 +1,7 @@
-// import 'dart:convert';
-// import 'dart:io';
+import 'dart:convert';
+import 'dart:io';
+import 'package:http/http.dart';
 import 'package:meta/meta.dart';
-import 'package:firebase/firebase_io.dart';
 
 import 'package:course_gnome/state/shared/config/config.dart';
 

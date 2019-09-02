@@ -22,11 +22,18 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
+  AuthBloc _authBloc;
+  @override
+  void initState() {
+    super.initState();
+    _authBloc = AuthBloc(authRepository: widget.authRepository);
+    _authBloc.dispatch(Init());
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      builder: (BuildContext context) =>
-          AuthBloc(authRepository: widget.authRepository),
+      builder: (BuildContext context) => _authBloc,
       child: MaterialApp(
         theme: _buildTheme(),
         home: LoginPage(),

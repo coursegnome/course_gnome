@@ -23,7 +23,7 @@ class _EmailPasswordEntryState extends State<EmailPasswordEntry> {
     setState(() {
       _loading = false;
     });
-    Navigator.pushReplacement(
+    await Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (_) => SchedulingPage()));
   }
 

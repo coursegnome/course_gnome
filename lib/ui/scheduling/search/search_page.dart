@@ -12,7 +12,7 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  static const EdgeInsets _padding = const EdgeInsets.all(15.0);
+  static const EdgeInsets _padding = EdgeInsets.all(15.0);
 
   _goToCalendar() {
     Navigator.push(context,

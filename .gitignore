@@ -1,5 +1,13 @@
-# Keys
-core/lib/src/data/config.dart
+# Me
+_confi.yaml
+.idea/codeStyles/Project.xml
+.idea/libraries/Dart_Packages.xml
+.idea/libraries/Dart_SDK.xml
+.idea/libraries/Dart_Packages.xml
+course_gnome_web/.idea/workspace.xml
+course_gnome_web/.idea/workspace.xml
+
+lib/state/shared/config/*
 
 # Miscellaneous
 *.class
@@ -94,10 +102,3 @@ unlinked_spec.ds
 !**/ios/**/default.pbxuser
 !**/ios/**/default.perspectivev3
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
-.idea/codeStyles/Project.xml
-.idea/libraries/Dart_Packages.xml
-.idea/libraries/Dart_SDK.xml
-.idea/libraries/Dart_Packages.xml
-course_gnome_web/.idea/workspace.xml
-course_gnome_web/.idea/workspace.xml
-core/lib/src/data/config.dart

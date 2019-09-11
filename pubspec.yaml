@@ -33,20 +33,20 @@ dev_dependencies:
     sdk: flutter
   flutter_launcher_icons: ^0.7.2+1
   json_serializable: ^3.2.2
-  pedantic: ^1.8.0+1
+  pedantic: ^1.7.0
+  migrate_to_web: ^0.0.1
 
 flutter_icons:
   android: true
   ios: true
-  image_path_android: "../core/assets/icons/android.png"
-  image_path_ios: "../core/assets/icons/ios.jpg"
+  image_path_android: "assets/icons/android.png"
+  image_path_ios: "assets/icons/ios.jpg"
   adaptive_icon_background: "#ffffff"
 
 flutter:
   uses-material-design: true
 
   assets:
-    - packages/core/assets/images/logo.png
     - assets/images/
   #    - packages/core/assets/images/algolia
 

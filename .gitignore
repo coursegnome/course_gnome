@@ -1,11 +1,5 @@
 # Me
 _confi.yaml
-.idea/codeStyles/Project.xml
-.idea/libraries/Dart_Packages.xml
-.idea/libraries/Dart_SDK.xml
-.idea/libraries/Dart_Packages.xml
-course_gnome_web/.idea/workspace.xml
-course_gnome_web/.idea/workspace.xml
 
 lib/state/shared/config/*
 
@@ -31,7 +25,7 @@ lib/state/shared/config/*
 .vscode/
 
 # Android studio
-.idea
+.idea/
 
 # Flutter repo-specific
 /bin/cache/
@@ -93,8 +87,12 @@ unlinked_spec.ds
 **/ios/Flutter/app.flx
 **/ios/Flutter/app.zip
 **/ios/Flutter/flutter_assets/
+**/ios/Flutter/flutter_export_environment.sh
 **/ios/ServiceDefinitions.json
 **/ios/Runner/GeneratedPluginRegistrant.*
+
+# Coverage
+coverage/
 
 # Exceptions to above rules.
 !**/ios/**/default.mode1v3

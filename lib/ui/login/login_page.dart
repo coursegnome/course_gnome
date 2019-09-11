@@ -28,74 +28,76 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder(
-      bloc: BlocProvider.of<AuthBloc>(context),
-      builder: (_, AuthState authState) {
-        return Scaffold(
-          resizeToAvoidBottomInset: false,
-          backgroundColor: Colors.white,
-          body: SafeArea(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 40.0),
-                child: _checkingFirstTimeUser //|| authState is UninitiatedAuth
-                    ? _loaderWidget()
-                    : Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Image(
-                            image: AssetImage('assets/images/logo.png',
-                                package: 'core'),
-                            width: 100,
-                            height: 100,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 30.0),
-                            child: Text(
-                              'Find classes and build schedules with Course Gnome.',
-                              style: Theme.of(context).textTheme.display1,
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                          CGButton(
-                            onPressed: _signInWithGoogle,
-                            text: 'Sign in with Google',
-                            // icon: FontAwesomeIcons.google,
-                            primary: true,
-                            loading: _googleSignInLoading,
-                          ),
-                          CGButton(
-                            onPressed: _goToSignInPage,
-                            text: 'Sign in with email',
-                            icon: Icons.mail,
-                            primary: false,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 30.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text('Don\'t have an account?'),
-                                FlatButton(
-                                  onPressed: _goToSignUpPage,
-                                  child: Text('Sign up',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .body1
-                                          .copyWith(
-                                              fontWeight: FontWeight.bold)),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
+        bloc: BlocProvider.of<AuthBloc>(context),
+        builder: (_, AuthState authState) => Scaffold(
+              resizeToAvoidBottomInset: false,
+              backgroundColor: Colors.white,
+              body: SafeArea(
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 40.0),
+                    child:
+                        _checkingFirstTimeUser //|| authState is UninitiatedAuth
+                            ? _loaderWidget()
+                            : Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  Image(
+                                    image: AssetImage('assets/images/logo.png',
+                                        package: 'core'),
+                                    width: 100,
+                                    height: 100,
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 30.0),
+                                    child: Text(
+                                      'Find classes and build schedules with Course Gnome.',
+                                      style:
+                                          Theme.of(context).textTheme.display1,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                  CGButton(
+                                    onPressed: _signInWithGoogle,
+                                    text: 'Sign in with Google',
+                                    // icon: FontAwesomeIcons.google,
+                                    primary: true,
+                                    loading: _googleSignInLoading,
+                                  ),
+                                  CGButton(
+                                    onPressed: _goToSignInPage,
+                                    text: 'Sign in with email',
+                                    icon: Icons.mail,
+                                    primary: false,
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 30.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text('Don\'t have an account?'),
+                                        FlatButton(
+                                          onPressed: _goToSignUpPage,
+                                          child: Text('Sign up',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .body1
+                                                  .copyWith(
+                                                      fontWeight:
+                                                          FontWeight.bold)),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                  ),
+                ),
               ),
-            ),
-          ),
-        );
-      },
-    );
+            ));
   }
 
   _checkFirstTimeUser() async {

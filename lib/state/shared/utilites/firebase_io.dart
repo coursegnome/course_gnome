@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:http/http.dart';
 import 'package:meta/meta.dart';
 
@@ -96,7 +95,7 @@ String fieldMask(List<String> fields) {
 }
 
 Map<String, String> _buildAuthHeaders(String idToken) {
-  return {HttpHeaders.authorizationHeader: 'Bearer $idToken'};
+  return {'authorization': 'Bearer $idToken'};
 }
 
 Future<Map<String, dynamic>> getRequest({String idToken, String path}) async {

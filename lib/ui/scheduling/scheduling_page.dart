@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../scheduling/search/search_page.dart';
-import '../scheduling/calendar/calendar_page.dart';
+import 'package:course_gnome/ui/shared/shared.dart';
+import 'package:course_gnome/ui/scheduling/scheduling.dart';
+import 'package:course_gnome/ui/search/search.dart';
 
 class SchedulingPage extends StatefulWidget {
   @override
@@ -17,22 +18,38 @@ class _SchedulingPageState extends State<SchedulingPage> {
         SystemUiOverlayStyle(statusBarBrightness: Brightness.light));
   }
 
+  _goToCalendar() {
+    Navigator.push(context, MaterialPageRoute(builder: (_) => CalendarPage()));
+  }
+
   @override
   Widget build(BuildContext context) {
     final bool twoColumn = MediaQuery.of(context).size.width > 500;
+    List<IconData> actionIcons = [Icons.filter_list];
+    if (!twoColumn) {
+      actionIcons.add(Icons.calendar_today);
+    }
     return twoColumn
-        ? Row(children: [
-            Expanded(
-                child: SearchPage(
-              singleColumn: false,
-            )),
-            Expanded(
-                child: CalendarPage(
-              singleColumn: false,
-            )),
-          ])
-        : SearchPage(
-            singleColumn: true,
+        ? Row(
+            children: [
+              Expanded(
+                child: BasePage(
+                  page: Page.Create,
+                  body: Row(
+                    children: <Widget>[
+                      Expanded(child: SearchPage(), flex: 2),
+                      Expanded(child: CalendarPage(), flex: 1)
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          )
+        : BasePage(
+            body: SearchPage(),
+            page: Page.Search,
+            actionIcons: actionIcons,
+            actionCallbacks: [() {}, _goToCalendar],
           );
   }
 }

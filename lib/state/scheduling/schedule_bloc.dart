@@ -8,14 +8,18 @@ import 'package:course_gnome/state/scheduling/scheduling.dart';
 import 'package:course_gnome/state/shared/models/course.dart';
 
 class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
-  ScheduleBloc({this.authBloc, this.scheduleRepository, this.userRepository}) {
-    authSub = authBloc.state.listen((state) {
-      dispatch(FetchSchedules());
-    });
+  ScheduleBloc(
+      {
+      // @required this.authBloc,
+      @required this.scheduleRepository,
+      @required this.userRepository}) {
+    // authSub = authBloc.state.listen((state) {
+    //   dispatch(FetchSchedules());
+    // });
   }
 
-  final AuthBloc authBloc;
-  StreamSubscription authSub;
+  // final AuthBloc authBloc;
+  // StreamSubscription authSub;
 
   final ScheduleRepository scheduleRepository;
   final UserRepository userRepository;
@@ -36,7 +40,7 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
 
   @override
   void dispose() {
-    authSub.cancel();
+    // authSub.cancel();
     super.dispose();
   }
 

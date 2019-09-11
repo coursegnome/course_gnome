@@ -1,76 +1,71 @@
+import 'package:course_gnome/state/search/search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 
-import '../../shared/shared.dart';
-import '../calendar/calendar_page.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'package:course_gnome/ui/shared/shared.dart';
+import 'package:course_gnome/ui/scheduling/scheduling.dart';
+import 'package:course_gnome/ui/search/search.dart';
 
 class SearchPage extends StatefulWidget {
-  SearchPage({@required this.singleColumn});
-  final bool singleColumn;
   @override
   _SearchPageState createState() => _SearchPageState();
 }
 
 class _SearchPageState extends State<SearchPage> {
   static const EdgeInsets _padding = EdgeInsets.all(15.0);
-
-  _goToCalendar() {
-    Navigator.push(context,
-        MaterialPageRoute(builder: (_) => CalendarPage(singleColumn: true)));
-  }
+  final SearchRepository searchRepository = SearchRepository();
 
   @override
   Widget build(BuildContext context) {
-    return BasePage(
-      page: Page.Search,
-      body: Column(
+    return BlocProvider(
+      builder: (_) => SearchBloc(searchRepository: searchRepository),
+      child: Row(
         children: <Widget>[
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-            ),
+          Expanded(child: Filters(), flex: 1),
+          Expanded(
             child: Column(
               children: <Widget>[
-                _searchField(),
-                _filterButtons(),
+                Container(
+                  decoration: BoxDecoration(color: Colors.white),
+                  child: Column(
+                    children: <Widget>[_searchField(), _filterButtons()],
+                  ),
+                ),
+                Stack(
+                  children: <Widget>[
+                    ListView(
+                      padding: _padding,
+                      children: <Widget>[Text('hello'), Text('eha')],
+                      shrinkWrap: true,
+                    ),
+                    // Container(
+                    //   margin: _padding.copyWith(right: 80),
+                    //   height: 300,
+                    //   decoration: BoxDecoration(
+                    //       color: Colors.white,
+                    //       borderRadius: BorderRadius.circular(5)),
+                    //   child: ListView(
+                    //     shrinkWrap: true,
+                    //     children: List.generate(departments.entries.length, (i) {
+                    //       return CheckboxListTile(
+                    //         value: false,
+                    //         title: Text(departments.entries.toList()[i].value),
+                    //         onChanged: (x) {},
+                    //         dense: true,
+                    //         controlAffinity: ListTileControlAffinity.leading,
+                    //       );
+                    //     }),
+                    //   ),
+                    // ),
+                  ],
+                ),
               ],
             ),
           ),
-          Stack(
-            children: <Widget>[
-              ListView(
-                padding: _padding,
-                children: <Widget>[Text('hello'), Text('eha')],
-                shrinkWrap: true,
-              ),
-              Container(
-                margin: _padding.copyWith(right: 80),
-                height: 300,
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(5)),
-                child: ListView(
-                  shrinkWrap: true,
-                  children: List.generate(departments.entries.length, (i) {
-                    return CheckboxListTile(
-                      value: false,
-                      title: Text(departments.entries.toList()[i].value),
-                      onChanged: (x) {},
-                      dense: true,
-                      controlAffinity: ListTileControlAffinity.leading,
-                    );
-                  }),
-                ),
-              ),
-            ],
-          ),
         ],
       ),
-      actionIcons: [Icons.filter_list, Icons.calendar_today],
-      actionCallbacks: [
-        () {},
-        _goToCalendar,
-      ],
     );
   }
 

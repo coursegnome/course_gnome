@@ -1,4 +1,4 @@
-package com.example.course_gnome_mobile
+package com.example.course_gnome
 
 import android.os.Bundle
 

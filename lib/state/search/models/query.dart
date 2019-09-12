@@ -6,19 +6,19 @@ class Query extends Equatable {
     this.school,
     this.season,
     this.text,
-    this.departments = const [],
-    this.statuses = const [],
+    this.departments,
+    this.statuses,
     this.minDepartmentNumber,
     this.maxDepartmentNumber,
     this.earliestStartTime,
     this.latestEndTime,
-    this.u = false,
-    this.m = false,
-    this.t = false,
-    this.w = false,
-    this.r = false,
-    this.f = false,
-    this.s = false,
+    this.u,
+    this.m,
+    this.t,
+    this.w,
+    this.r,
+    this.f,
+    this.s,
   }) : super(<dynamic>[
           text,
           departments,
@@ -35,6 +35,24 @@ class Query extends Equatable {
           f,
           s,
         ]);
+
+  Query.initial()
+      : school = null,
+        season = null,
+        text = null,
+        departments = const [],
+        statuses = const [],
+        minDepartmentNumber = 1000,
+        maxDepartmentNumber = 10000,
+        earliestStartTime = TimeOfDay.min,
+        latestEndTime = TimeOfDay.max,
+        this.u = false,
+        this.m = false,
+        this.t = false,
+        this.w = false,
+        this.r = false,
+        this.f = false,
+        this.s = false;
 
   // School and season
   final School school;
@@ -64,4 +82,13 @@ class Query extends Equatable {
       earliestStartTime == null &&
       latestEndTime == null &&
       days.every((day) => day == false);
+
+  @override
+  String toString() {
+    return '''School: $school, season: $season, department: $departments, 
+    text: $text, statuses: $statuses, minDepNum: $minDepartmentNumber, 
+    maxDepNum: $maxDepartmentNumber, earliestTime:$earliestStartTime, latestTime: $latestEndTime,
+    days: $days,
+    ''';
+  }
 }

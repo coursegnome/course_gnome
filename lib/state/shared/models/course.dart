@@ -149,11 +149,14 @@ class TimeOfDay {
   /// A timestamp made up of an hour and a minute value.
   ///
   /// Uses 24 hour time. Defaults to midnight if no parameters are passed in.
-  TimeOfDay({
+  const TimeOfDay({
     this.hour = 0,
     this.minute = 0,
   })  : assert(hour >= 0 && hour <= 23),
         assert(minute >= 0 && minute <= 59);
+
+  static const TimeOfDay min = TimeOfDay(hour: 8, minute: 0);
+  static const TimeOfDay max = TimeOfDay(hour: 22, minute: 00);
 
   static TimeOfDay fromTimestamp(int timestamp) {
     final int hour = (timestamp / 60).floor();

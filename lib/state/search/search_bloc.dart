@@ -11,21 +11,34 @@ class SearchBloc extends Bloc<SearchChanged, SearchState> {
 
   final SearchRepository searchRepository;
 
+  // Debounce text, course number, time
+  bool _shouldDebounceEvent(SearchChanged event) {
+    return (event.queryUpdate.text != null ||
+        event.queryUpdate.minDepartmentNumber != null ||
+        event.queryUpdate.maxDepartmentNumber != null ||
+        event.queryUpdate.earliestStartTime != null ||
+        event.queryUpdate.latestEndTime != null);
+  }
+
   @override
   Stream<SearchState> transformEvents(Stream<SearchChanged> events,
       Stream<SearchState> Function(SearchChanged event) next) {
-    return (events as Observable<SearchChanged>)
-        .debounceTime(Duration(milliseconds: 500))
-        .switchMap(next);
+    final observableStream = events as Observable<SearchChanged>;
+    final nonDebounceStream =
+        observableStream.where((event) => !_shouldDebounceEvent(event));
+    final debounceStream = observableStream
+        .where((event) => _shouldDebounceEvent(event))
+        .debounceTime(Duration(milliseconds: 300));
+    return nonDebounceStream.mergeWith([debounceStream]).switchMap(next);
   }
 
   @override
   void onTransition(Transition<SearchChanged, SearchState> transition) {
-    print('Search transition:  $transition');
+    // print(transition.currentState.query.toString());
   }
 
   @override
-  SearchState get initialState => SearchEmpty(Query());
+  SearchState get initialState => SearchEmpty(Query.initial());
 
   @override
   Stream<SearchState> mapEventToState(
@@ -40,6 +53,7 @@ class SearchBloc extends Bloc<SearchChanged, SearchState> {
         try {
           // final results = await searchRepository.search(newQuery);
           // yield SearchSuccess(results, newQuery);
+          print('Search Result');
           yield SearchSuccess(SearchResult(), newQuery);
         } catch (error) {
           yield error is SearchError

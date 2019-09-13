@@ -24,7 +24,8 @@ dev_dependencies:
   flutter_launcher_icons: ^0.7.2+1
   json_serializable: ^3.2.2
   pedantic: ^1.7.0
-  migrate_to_web: ^0.0.1
+  migrate_to_web: 
+    path: ../../Flutter/migrate_to_web
 
 flutter_icons:
   android: true

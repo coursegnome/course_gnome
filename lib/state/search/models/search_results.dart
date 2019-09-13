@@ -1,50 +1,65 @@
 import 'dart:collection';
 
-import 'package:meta/meta.dart';
 import 'package:algolia/algolia.dart';
+import 'package:meta/meta.dart';
 
 import 'package:course_gnome/state/shared/models/course.dart';
 
 class SearchResult {
   SearchResult({
     @required this.courses,
-    @required this.totalPages,
-    this.page = 0,
-    this.queue,
+    @required this.moreResults,
   });
+  final List<List<Offering>> courses;
+  final bool moreResults;
+}
 
+class CachedSearchResult {
+  CachedSearchResult({this.result, this.totalPages, this.page, this.queue});
+  final SearchResult result;
   final int totalPages;
   final int page;
-  final List<List<Offering>> courses;
   final ListQueue<Offering> queue;
 
-  bool get isMaxedOut => page + 1 == totalPages;
+  bool get isMaxedOut => page == totalPages - 1;
 
-  static SearchResult fromSnapshot([
+// Pull courses into queue. Construct list of lists of offerings for each course.
+// Whatever isn't used is left in the queue for the next pull.
+  static CachedSearchResult fromSnapshot({
     AlgoliaQuerySnapshot snap,
-    SearchResult currentResult,
-  ]) {
+    CachedSearchResult currentResult,
+  }) {
+    // Add all hits to queue as Offerings
     final ListQueue<Offering> queue = currentResult?.queue ?? ListQueue()
       ..addAll(snap.hits.map((hit) => Offering.fromJson(hit.data)).toList());
 
-    bool sameAsFirst(Offering offering) => queue.first.inSameClassAs(offering);
+    // Create courses array
+    final List<List<Offering>> courses = currentResult?.result?.courses ?? [];
 
-    final List<List<Offering>> courses = currentResult?.courses ?? [];
+    // Pop off offerings and combine them into courses
+    bool someOfferingsInDifferentClass() =>
+        queue.any((offering) => !queue.first.inSameClassAs(offering));
+    bool onLastPage() => snap.page == snap.nbPages - 1 && queue.isNotEmpty;
 
-    if (queue.isNotEmpty) {
-      while (!queue.every((offering) => sameAsFirst(offering)) ||
-          (snap.page == snap.nbPages - 1 && queue.isNotEmpty)) {
-        courses.add(queue.where((offering) => sameAsFirst(offering)).toList());
-        final Offering course = queue.first;
-        queue.removeWhere((offering) => offering.inSameClassAs(course));
+    while (someOfferingsInDifferentClass() || onLastPage()) {
+      final firstOffering = queue.removeFirst();
+      final List<Offering> course = [firstOffering];
+      if (queue.isNotEmpty) {
+        while (queue.first.inSameClassAs(firstOffering)) {
+          course.add(queue.removeFirst());
+        }
       }
+      courses.add(course);
     }
 
-    return SearchResult(
+    return CachedSearchResult(
       queue: queue,
       totalPages: snap.nbPages,
       page: snap.page,
-      courses: courses,
+      result: SearchResult(
+        moreResults: snap.nbPages - 1 == snap.page,
+        courses: courses,
+      ),
     );
   }
 }

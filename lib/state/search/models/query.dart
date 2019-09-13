@@ -37,9 +37,11 @@ class Query extends Equatable {
         ]);
 
   Query.initial()
-      : school = null,
-        season = null,
-        text = null,
+      : school = School.gwu,
+        // : school = null,
+        season = Season.fall2019,
+        // season = null,
+        text = '',
         departments = const [],
         statuses = const [],
         minDepartmentNumber = 1000,
@@ -74,13 +76,13 @@ class Query extends Equatable {
   static const dayStrings = ['u', 'm', 't', 'w', 'r', 'f', 's'];
 
   bool get isEmpty =>
-      text == null &&
-      departments == null &&
-      statuses == null &&
-      minDepartmentNumber == null &&
-      maxDepartmentNumber == null &&
-      earliestStartTime == null &&
-      latestEndTime == null &&
+      text == '' &&
+      departments.isEmpty &&
+      statuses.isEmpty &&
+      minDepartmentNumber == 1000 &&
+      maxDepartmentNumber == 10000 &&
+      earliestStartTime == TimeOfDay.min &&
+      latestEndTime == TimeOfDay.max &&
       days.every((day) => day == false);
 
   @override

@@ -11,6 +11,8 @@ class SchedulingPage extends StatefulWidget {
 }
 
 class _SchedulingPageState extends State<SchedulingPage> {
+  bool _filtersAreOpen = false;
+
   @override
   void initState() {
     super.initState();
@@ -37,8 +39,18 @@ class _SchedulingPageState extends State<SchedulingPage> {
                   page: Page.Create,
                   body: Row(
                     children: <Widget>[
-                      Expanded(child: SearchPage(), flex: 2),
-                      Expanded(child: CalendarPage(), flex: 1)
+                      Expanded(
+                          child: SearchPage(
+                            filtersAreOpen: _filtersAreOpen,
+                            filtersToggled: () => setState(
+                                () => _filtersAreOpen = !_filtersAreOpen),
+                          ),
+                          flex: 5),
+                      Expanded(
+                          child: CalendarPage(
+                            filtersAreOpen: _filtersAreOpen,
+                          ),
+                          flex: _filtersAreOpen ? 1 : 5)
                     ],
                   ),
                 ),

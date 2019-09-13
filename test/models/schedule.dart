@@ -38,7 +38,7 @@ void main() {
     schedulesHistory.toggleOffering(offering, color);
     expect(schedulesHistory.currentHistoryIndex, 2);
     expect(schedulesHistory.current.schedules.length, 2);
-    expect(schedulesHistory.current.schedules[1].offerings.first.offering.id,
+    expect(schedulesHistory.current.schedules[1].offerings.first.offerings.id,
         '12212');
     expect(schedulesHistory.current.currentScheduleIndex, 1);
 

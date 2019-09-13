@@ -7,6 +7,8 @@ import 'package:course_gnome/state/scheduling/scheduling.dart';
 import 'package:course_gnome/ui/shared/shared.dart';
 
 class CalendarPage extends StatefulWidget {
+  CalendarPage({this.filtersAreOpen});
+  final bool filtersAreOpen;
   @override
   _CalendarPageState createState() => _CalendarPageState();
 }

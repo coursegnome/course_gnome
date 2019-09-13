@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
+import 'package:course_gnome_data/models.dart';
+import 'package:course_gnome_data/models.dart' as cg;
+
 import 'package:course_gnome/ui/shared/shared.dart';
 import 'package:course_gnome/state/search/search.dart';
-import 'package:course_gnome/state/shared/models/course.dart';
-import 'package:course_gnome/state/shared/models/course.dart' as cg;
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 

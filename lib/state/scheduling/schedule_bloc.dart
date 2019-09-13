@@ -3,9 +3,10 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:bloc/bloc.dart';
 
+import 'package:course_gnome_data/models.dart';
+
 import 'package:course_gnome/state/auth/auth.dart';
 import 'package:course_gnome/state/scheduling/scheduling.dart';
-import 'package:course_gnome/state/shared/models/course.dart';
 
 class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
   ScheduleBloc(

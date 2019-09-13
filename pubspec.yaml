@@ -10,6 +10,8 @@ dependencies:
   flutter:
     sdk: flutter
 
+  course_gnome_data: 
+    path: ../course_gnome_data
   flutter_bloc: ^0.21.0
   shared_preferences: ^0.5.3+4
   http: ^0.12.0+2

@@ -3,7 +3,7 @@ import 'dart:collection';
 import 'package:algolia/algolia.dart';
 import 'package:meta/meta.dart';
 
-import 'package:course_gnome/state/shared/models/course.dart';
+import 'package:course_gnome_data/models.dart';
 
 class SearchResult {
   SearchResult({

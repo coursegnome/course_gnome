@@ -1,12 +1,13 @@
-import 'package:course_gnome/state/search/search.dart';
-import 'package:course_gnome/state/shared/models/course.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'package:course_gnome_data/models.dart';
+
 import 'package:course_gnome/ui/shared/shared.dart';
 import 'package:course_gnome/ui/search/search.dart';
+import 'package:course_gnome/state/search/search.dart';
 
 class SearchPage extends StatefulWidget {
   SearchPage({this.filtersAreOpen, this.filtersToggled});

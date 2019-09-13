@@ -1,7 +1,8 @@
-import 'package:course_gnome/state/shared/models/course.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
+
+import 'package:course_gnome_data/models.dart';
 
 class SchedulesHistory {
   SchedulesHistory(this.history);

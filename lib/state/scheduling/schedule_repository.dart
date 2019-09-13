@@ -1,8 +1,9 @@
 import 'package:algolia/algolia.dart';
 
+import 'package:course_gnome_data/models.dart';
+
 import 'package:course_gnome/state/auth/auth.dart';
 import 'package:course_gnome/state/scheduling/scheduling.dart';
-import 'package:course_gnome/state/shared/models/course.dart';
 import 'package:course_gnome/state/shared/config/config.dart';
 import 'package:course_gnome/state/shared/utilites/firebase_io.dart';
 

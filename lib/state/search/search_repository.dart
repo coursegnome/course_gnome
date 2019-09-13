@@ -2,8 +2,9 @@ import 'dart:collection';
 
 import 'package:algolia/algolia.dart';
 
+import 'package:course_gnome_data/models.dart';
+
 import 'package:course_gnome/state/search/search.dart';
-import 'package:course_gnome/state/shared/models/course.dart';
 import 'package:course_gnome/state/shared/config/config.dart';
 
 /*

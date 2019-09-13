@@ -1,5 +1,6 @@
-import 'package:course_gnome/state/shared/models/course.dart';
 import 'package:equatable/equatable.dart';
+
+import 'package:course_gnome_data/models.dart';
 
 class Query extends Equatable {
   Query({

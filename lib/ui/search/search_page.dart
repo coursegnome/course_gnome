@@ -418,3 +418,97 @@ class ClassTimeRow extends StatelessWidget {
 }
 
 // class ExtraInfoContainer extends StatelessWidget {
+//   final FlutterTriColor color;
+//   final Offering offering;
+//   final Course course;
+
+//   ExtraInfoContainer(this.color, this.offering, this.course);
+
+//   openCoursePage() async {
+//     final url = course.bulletinLink;
+//     if (await canLaunch(url)) {
+//       await launch(url);
+//     } else {
+//       throw 'Could not launch $url';
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final spaceAllowance =
+//         Breakpoints.allowance(MediaQuery.of(context).size.width);
+//     bool hasLocation = false;
+//     String locationString =
+//         offering.classTimes.length > 1 ? 'Locations: ' : 'Location: ';
+//     offering.classTimes.forEach((time) {
+//       locationString += time.location + ', ';
+//       hasLocation = true;
+//     });
+//     locationString = Helper.removeLastChars(2, locationString);
+//     return Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: <Widget>[
+//         Padding(
+//           padding: const EdgeInsets.fromLTRB(15, 0, 15, 10),
+//           child: Column(
+//             crossAxisAlignment: CrossAxisAlignment.start,
+//             children: <Widget>[
+//               offering.instructors != null && spaceAllowance < 3
+//                   ? Text(
+//                       'Instructors: ' + offering.instructors.join(", "),
+//                       style: TextStyle(color: color.med),
+//                     )
+//                   : Container(),
+//               hasLocation && spaceAllowance < 4
+//                   ? Text(
+//                       locationString,
+//                       style: TextStyle(color: color.med),
+//                     )
+//                   : Container(),
+//             ],
+//           ),
+//         ),
+//         offering.linkedOfferings != null
+//             ? Container(
+//                 padding: EdgeInsets.fromLTRB(15, 10, 15, 5),
+//                 color: CGColor.lightGray,
+//                 child: Column(
+//                   crossAxisAlignment: CrossAxisAlignment.start,
+//                   children: <Widget>[
+//                     Text(
+//                       'Choose a Linked Course',
+//                       style: TextStyle(color: color.med),
+//                     ),
+//                     Column(
+//                       crossAxisAlignment: CrossAxisAlignment.stretch,
+//                       children: List.generate(
+//                         offering.linkedOfferings.length,
+//                         (i) => FlatButton(
+// //                              color: color.light,
+//                               onPressed: () {},
+//                               child: OfferingRow(color.med, offering),
+//                             ),
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//               )
+//             : Container(),
+//         course.bulletinLink != null
+//             ? FlatButton.icon(
+//                 padding: EdgeInsets.only(left: 15),
+//                 icon: Icon(
+//                   Icons.open_in_browser,
+//                   color: color.med,
+//                 ),
+//                 label: Text(
+//                   'See More',
+//                   style: TextStyle(color: color.med),
+//                 ),
+//                 onPressed: () => openCoursePage(),
+//               )
+//             : Container(),
+//       ],
+//     );
+//   }
+// }

@@ -197,7 +197,7 @@ class _CalendarPageState extends State<CalendarPage> {
       builder: (_, ScheduleState state) {
         return (state is SchedulesLoaded)
             ? DefaultTabController(
-                length: 2,
+                length: state.schedules.schedules.length,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
@@ -227,67 +227,41 @@ class _CalendarPageState extends State<CalendarPage> {
                     ),
                     Expanded(
                       child: TabBarView(
-                        children: <Widget>[
-                          Text('hello'),
-                          Text('hello2'),
-                        ],
+                        children: List.generate(
+                          state.schedules.schedules.length,
+                          (i) => Column(
+                            children: <Widget>[
+                              DayList(7, dayWidth, dayController),
+                              Expanded(
+                                child: SafeArea(
+                                  right: false,
+                                  child: Row(
+                                    children: <Widget>[
+                                      HourList(
+                                          14, 8, hourHeight, hourController),
+                                      CalendarView(
+                                        7,
+                                        14,
+                                        2,
+                                        dayWidth,
+                                        hourHeight,
+                                        horizontalCalController,
+                                        verticalCalController,
+                                        state.schedules.schedules[i],
+                                        // widget.removeOffering,
+                                        scaleStart,
+                                        scaleUpdate,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
                   ],
-                  // return DefaultTabController(length:1,child: TabBar(
-                  //       controller: widget.tabController,
-                  //       isScrollable: true,
-                  //       indicatorColor: Colors.white,
-                  //       tabs: List.generate(
-                  //         widget.schedulingPageController.calendars.list.length,
-                  //         (i) => Tab(
-                  //             text: widget.schedulingPageController.calendars.list[i].name),
-                  //       ),
-                  //     ),
-                  //   ),
-                  //   body: TabBarView(
-                  //     physics: NeverScrollableScrollPhysics(),
-                  //     controller: widget.tabController,
-                  //     children: List.generate(
-                  //       widget.schedulingPageController.calendars.list.length,
-                  //       (i) => Column(
-                  //         children: <Widget>[
-                  //           DayList(
-                  //               CalendarValues.dayCount,
-                  //               widget.schedulingPageController.calendarValues.dayWidth,
-                  //               dayController),
-                  //           Expanded(
-                  //             child: SafeArea(
-                  //               right: false,
-                  //               child: Row(
-                  //                 children: <Widget>[
-                  //                   HourList(
-                  //                       CalendarValues.hourCount,
-                  //                       CalendarValues.startHour,
-                  //                       widget.schedulingPageController.calendarValues
-                  //                           .hourHeight,
-                  //                       hourController),
-                  //                   CalendarView(
-                  //                     CalendarValues.dayCount,
-                  //                     CalendarValues.hourCount,
-                  //                     CalendarValues.startHour,
-                  //                     widget.schedulingPageController.calendarValues.dayWidth,
-                  //                     widget
-                  //                         .schedulingPageController.calendarValues.hourHeight,
-                  //                     horizontalCalController,
-                  //                     verticalCalController,
-                  //                     widget.schedulingPageController.calendars.list[i],
-                  //                     widget.removeOffering,
-                  //                     scaleStart,
-                  //                     scaleUpdate,
-                  //                   ),
-                  //                 ],
-                  //               ),
-                  //             ),
-                  //           ),
-                  //         ],
-                  //       ),
-                  //     ),
                 ),
               )
             : Container();
@@ -301,7 +275,7 @@ class CalendarView extends StatefulWidget {
   final double dayWidth, hourHeight;
   final ScrollController horizontalCalController, verticalCalController;
   final Schedule schedule;
-  final Function removeOffering;
+  // final Function removeOffering;
   final Function scaleStart, scaleUpdate;
 
   CalendarView(
@@ -313,7 +287,7 @@ class CalendarView extends StatefulWidget {
     this.horizontalCalController,
     this.verticalCalController,
     this.schedule,
-    this.removeOffering,
+    // this.removeOffering,
     this.scaleStart,
     this.scaleUpdate,
   );

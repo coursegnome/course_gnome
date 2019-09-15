@@ -21,15 +21,22 @@ class _SchedulingPageState extends State<SchedulingPage> {
   }
 
   _goToCalendar() {
-    Navigator.push(context, MaterialPageRoute(builder: (_) => CalendarPage()));
+    Navigator.pushNamed(context, 'calendar');
   }
 
   @override
   Widget build(BuildContext context) {
     final bool twoColumn = MediaQuery.of(context).size.width > 500;
-    List<IconData> actionIcons = [Icons.filter_list];
-    if (!twoColumn) {
-      actionIcons.add(Icons.calendar_today);
+    List<IconData> actionIcons;
+    if (twoColumn) {
+      actionIcons = [
+        Icons.edit,
+        Icons.content_copy,
+        Icons.remove_circle_outline,
+        Icons.add_circle_outline,
+      ];
+    } else {
+      actionIcons = [Icons.calendar_today];
     }
     final SearchPage searchPage = SearchPage(
       filtersAreOpen: _filtersAreOpen,
@@ -41,6 +48,8 @@ class _SchedulingPageState extends State<SchedulingPage> {
               Expanded(
                 child: BasePage(
                   page: Page.Create,
+                  actionIcons: actionIcons,
+                  actionCallbacks: [() {}, () {}, () {}, () {}],
                   body: Row(
                     children: <Widget>[
                       Expanded(child: searchPage, flex: 5),

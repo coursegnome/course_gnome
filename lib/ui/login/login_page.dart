@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:course_gnome/state/auth/auth.dart';
+import 'package:course_gnome/state/shared/utilites/native_storage.dart';
 import 'package:course_gnome/ui/login/login.dart';
 import 'package:course_gnome/ui/scheduling/scheduling.dart';
 import 'package:course_gnome/ui/shared/shared.dart';

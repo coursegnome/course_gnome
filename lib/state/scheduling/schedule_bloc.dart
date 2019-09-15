@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/widgets.dart';
 import 'package:bloc/bloc.dart';
@@ -15,7 +14,7 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
 
   @override
   void onTransition(Transition<ScheduleEvent, ScheduleState> transition) {
-    print('Schedule transition:  $transition');
+    // print('Schedule transition:  $transition');
   }
 
   @override
@@ -37,14 +36,20 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
       if (event is FetchSchedules) {
         yield SchedulesLoading();
         try {
+          print('x');
           final Schedules schedules =
               await scheduleRepository.getAllSchedules();
           if (schedules == null) {
-            final String id = await scheduleRepository.addSchedule(
-              scheduleName: Schedule.defaultScheduleName,
-            );
-            scheduleRepository.schedulesHistory = SchedulesHistory.init(id: id);
+            print('two');
+            scheduleRepository.schedulesHistory =
+                SchedulesHistory.init(id: 'foo');
+            print('her');
+            // final String id = await scheduleRepository.addSchedule(
+            //   scheduleName: Schedule.defaultScheduleName,
+            // );
+            // scheduleRepository.schedulesHistory = SchedulesHistory.init(id: id);
           } else {
+            print('3');
             scheduleRepository.schedulesHistory = SchedulesHistory([schedules]);
           }
           yield SchedulesLoaded(scheduleRepository.schedulesHistory.current);

@@ -10,7 +10,7 @@ import 'package:course_gnome/ui/search/search.dart';
 import 'package:course_gnome/state/search/search.dart';
 
 class SearchPage extends StatefulWidget {
-  SearchPage({this.filtersAreOpen, this.filtersToggled});
+  SearchPage({@required this.filtersAreOpen, @required this.filtersToggled});
   final bool filtersAreOpen;
   final VoidCallback filtersToggled;
   @override
@@ -22,19 +22,13 @@ class _SearchPageState extends State<SearchPage> {
   final ScrollController resultsScrollController = ScrollController();
   bool loadingMore = false;
 
-  void overscrolled() async {
-    setState(() => loadingMore = true);
-    await Future.delayed(Duration(seconds: 2));
-    setState(() => loadingMore = false);
-  }
-
   @override
   void initState() {
     super.initState();
     resultsScrollController.addListener(() {
       if (resultsScrollController.offset >
-          resultsScrollController.position.maxScrollExtent + 100) {
-        overscrolled();
+          resultsScrollController.position.maxScrollExtent - 600) {
+        print('here we go');
       }
     });
   }

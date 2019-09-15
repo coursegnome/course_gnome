@@ -31,6 +31,10 @@ class _SchedulingPageState extends State<SchedulingPage> {
     if (!twoColumn) {
       actionIcons.add(Icons.calendar_today);
     }
+    final SearchPage searchPage = SearchPage(
+      filtersAreOpen: _filtersAreOpen,
+      filtersToggled: () => setState(() => _filtersAreOpen = !_filtersAreOpen),
+    );
     return twoColumn
         ? Row(
             children: [
@@ -39,13 +43,7 @@ class _SchedulingPageState extends State<SchedulingPage> {
                   page: Page.Create,
                   body: Row(
                     children: <Widget>[
-                      Expanded(
-                          child: SearchPage(
-                            filtersAreOpen: _filtersAreOpen,
-                            filtersToggled: () => setState(
-                                () => _filtersAreOpen = !_filtersAreOpen),
-                          ),
-                          flex: 5),
+                      Expanded(child: searchPage, flex: 5),
                       Expanded(
                           child: CalendarPage(
                             filtersAreOpen: _filtersAreOpen,
@@ -58,7 +56,7 @@ class _SchedulingPageState extends State<SchedulingPage> {
             ],
           )
         : BasePage(
-            body: SearchPage(),
+            body: searchPage,
             page: Page.Search,
             actionIcons: actionIcons,
             actionCallbacks: [() {}, _goToCalendar],

@@ -19,6 +19,7 @@ dependencies:
   equatable: ^0.5.1
   algolia: ^0.1.6+1
   json_annotation: ^3.0.0
+  js: ^0.6.1+1
 
 dev_dependencies:
   flutter_test:

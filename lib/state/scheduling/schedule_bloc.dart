@@ -1,35 +1,17 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/widgets.dart';
 import 'package:bloc/bloc.dart';
 
 import 'package:course_gnome_data/models.dart';
 
-import 'package:course_gnome/state/auth/auth.dart';
 import 'package:course_gnome/state/scheduling/scheduling.dart';
 
 class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
-  ScheduleBloc(
-      {
-      // @required this.authBloc,
-      @required this.scheduleRepository,
-      @required this.userRepository}) {
-    // authSub = authBloc.state.listen((state) {
-    //   dispatch(FetchSchedules());
-    // });
-  }
-
-  // final AuthBloc authBloc;
-  // StreamSubscription authSub;
+  ScheduleBloc({@required this.scheduleRepository});
 
   final ScheduleRepository scheduleRepository;
-  final UserRepository userRepository;
-
-//  @override
-//  Stream<ScheduleEvent> transform(Stream<ScheduleEvent> events) {
-//    return (events as Observable<ScheduleEvent>)
-//        .debounce(Duration(milliseconds: 500));
-//  }
 
   @override
   void onTransition(Transition<ScheduleEvent, ScheduleState> transition) {
@@ -38,12 +20,6 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
 
   @override
   ScheduleState get initialState => SchedulesLoading();
-
-  @override
-  void dispose() {
-    // authSub.cancel();
-    super.dispose();
-  }
 
   @override
   Stream<ScheduleState> mapEventToState(

@@ -49,6 +49,12 @@ class _AppState extends State<App> {
         theme: _buildTheme(),
         home: SchedulingPage(),
         debugShowCheckedModeBanner: false,
+        initialRoute: '/create',
+        routes: {
+          '/create': (context) => SchedulingPage(),
+          '/schedules': (context) => SchedulesPage(),
+          '/profile': (context) => ProfilePage(),
+        },
       ),
     );
   }

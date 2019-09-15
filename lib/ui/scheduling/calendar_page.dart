@@ -195,7 +195,7 @@ class _CalendarPageState extends State<CalendarPage> {
     return BlocBuilder(
       bloc: BlocProvider.of<ScheduleBloc>(context),
       builder: (_, ScheduleState state) {
-        return !(state is SchedulesLoaded)
+        return (state is SchedulesLoaded)
             ? DefaultTabController(
                 length: 2,
                 child: Column(
@@ -205,19 +205,25 @@ class _CalendarPageState extends State<CalendarPage> {
                       alignment: Alignment.center,
                       color: cgRed,
                       child: TabBar(
-                        indicatorColor: Colors.white,
-                        isScrollable: true,
-                        tabs: [
-                          Tab(child: Text('My Calendar')),
-                          Tab(child: Text('Computer Science')),
-                        ],
-                        // tabs: List.generate(
-                        //   calendars.list.length,
-                        //   (i) => Tab(
-                        //       text: widget.schedulingPageController.calendars
-                        //           .list[i].name),
-                        // ),
-                      ),
+                          indicatorColor: Colors.white,
+                          isScrollable: true,
+                          tabs: List.generate(
+                              state.schedules.schedules.length,
+                              (i) => Tab(
+                                    child:
+                                        Text(state.schedules.schedules[i].name),
+                                  ))
+                          // tabs: [
+                          //   Tab(child: Text('My Calendar')),
+                          //   Tab(child: Text('Computer Science')),
+                          // ],
+                          // tabs: List.generate(
+                          //   calendars.list.length,
+                          //   (i) => Tab(
+                          //       text: widget.schedulingPageController.calendars
+                          //           .list[i].name),
+                          // ),
+                          ),
                     ),
                     Expanded(
                       child: TabBarView(

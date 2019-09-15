@@ -21,7 +21,7 @@ class BasePage extends StatelessWidget {
   final List<VoidCallback> actionCallbacks;
 
   void _goToProfilePage(BuildContext context) {
-    Navigator.push(context, MaterialPageRoute(builder: (_) => ProfilePage()));
+    Navigator.pushNamed(context, '/profile', arguments: 'Hello');
   }
 
   void _goToSchedulingPage(BuildContext context) {

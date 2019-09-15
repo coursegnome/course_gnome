@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../profile/profile_page.dart';
-import '../advising/advising_page.dart';
-import '../schedules/schedules_page.dart';
-import '../scheduling/scheduling_page.dart';
+import 'package:course_gnome/ui/profile/profile_page.dart';
+import 'package:course_gnome/ui/advising/advising_page.dart';
+import 'package:course_gnome/ui/scheduling/scheduling.dart';
 
-enum Page { Calendar, Search, Schedules, Advising, Profile }
+enum Page { Create, Calendar, Search, Schedules, Advising, Profile }
 
 class BasePage extends StatelessWidget {
   BasePage({
@@ -22,12 +21,14 @@ class BasePage extends StatelessWidget {
   final List<VoidCallback> actionCallbacks;
 
   void _goToProfilePage(BuildContext context) {
-    Navigator.push(context, MaterialPageRoute(builder: (_) => ProfilePage()));
+    Navigator.pushNamed(context, '/profile', arguments: 'Hello');
   }
 
   void _goToSchedulingPage(BuildContext context) {
     Navigator.pop(context);
-    if (page == Page.Search) return;
+    if (page == Page.Search || page == Page.Calendar || page == Page.Create) {
+      return;
+    }
     Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (_) => SchedulingPage()));
   }
@@ -48,6 +49,8 @@ class BasePage extends StatelessWidget {
 
   String _getTitle() {
     switch (page) {
+      case Page.Create:
+        return 'Create';
       case Page.Schedules:
         return 'Your Schedules';
       case Page.Advising:

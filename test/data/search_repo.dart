@@ -40,9 +40,9 @@ void main() {
     test('Search', () async {
       SearchResult res = await repo.search(query);
       while (!res.isMaxedOut) {
-        res = await repo.fetchMore(query);
+        res = await repo.loadMore(query);
       }
-      for (final List list in res.courses) {
+      for (final List list in res.offerings) {
         for (final Offering o in list) {
           print(o.name + ' - ' + list.length.toString());
         }

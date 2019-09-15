@@ -1,7 +1,8 @@
-import 'package:course_gnome/state/shared/models/course.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
+
+import 'package:course_gnome_data/models.dart';
 
 class SchedulesHistory {
   SchedulesHistory(this.history);
@@ -190,11 +191,11 @@ class Schedule extends Equatable {
     return map;
   }
 
-  Set<GraphicalClassTime> graphicsForDay(int i) {
+  List<GraphicalClassTime> graphicsForDay(int i) {
     if (i < 0 || i > 6) {
       return null;
     }
-    final Set<GraphicalClassTime> graphics = {};
+    final List<GraphicalClassTime> graphics = [];
     for (final offering in offerings) {
       for (final classTime
           in offering.offering.classTimes.where((ct) => ct.days[i])) {
@@ -226,10 +227,10 @@ class GraphicalClassTime {
   GraphicalClassTime({@required this.classTime, @required this.color});
   final ClassTime classTime;
   final Color color;
-  double height() =>
+  double get height =>
       classTime.end.hour -
       classTime.start.hour +
       (classTime.end.minute - classTime.start.minute) / 60;
 
-  double offset() => classTime.start.hour + classTime.start.minute / 60;
+  double get offset => classTime.start.hour + classTime.start.minute / 60;
 }

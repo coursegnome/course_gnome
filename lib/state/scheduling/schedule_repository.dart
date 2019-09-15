@@ -1,9 +1,11 @@
-import 'package:algolia/algolia.dart';
+// import 'package:algolia/algolia.dart';
+
+import 'package:course_gnome_data/models.dart';
 
 import 'package:course_gnome/state/auth/auth.dart';
+import 'package:course_gnome/state/shared/utilites/native_storage.dart';
 import 'package:course_gnome/state/scheduling/scheduling.dart';
-import 'package:course_gnome/state/shared/models/course.dart';
-import 'package:course_gnome/state/shared/config/config.dart';
+// import 'package:course_gnome/state/shared/config/config.dart';
 import 'package:course_gnome/state/shared/utilites/firebase_io.dart';
 
 class ScheduleRepository {
@@ -14,33 +16,34 @@ class ScheduleRepository {
   SchedulesHistory schedulesHistory;
 
   Future<Schedules> getAllSchedules() async {
-    final List<Schedule> schedules = [];
-    final List<String> ids = ['2'];
-    final List<Map> scheduleMaps = await getDocs(
-      idToken: await userRepository.idToken,
-      path: 'users/${userRepository.uid}/${school.id}',
-    );
-    if (scheduleMaps == null) {
-      return null;
-    }
-    for (final schedule in scheduleMaps) {
-      schedule.values.first['offerings'].entries;
-    }
-    for (final scheduleJson in scheduleMaps) {
-      schedules.add(
-        Schedule(
-          id: scheduleJson.keys.first,
-          name: scheduleJson.values.first['name'],
-        ),
-      );
-    }
-    if (ids.isNotEmpty) {
-      const index = 'gwu-201902';
-      for (var i = 0; i < ids.length; ++i) {}
-      final AlgoliaIndexReference _index = algolia.instance.index(index);
-      //final AlgoliaQuerySnapshot _snap = await _index.getObjects(['ee']);
-      // print(_snap.hits[1].data);
-    }
+    return getStoredSchedules();
+    // final List<Schedule> schedules = [];
+    // final List<String> ids = ['2'];
+    // final List<Map> scheduleMaps = await getDocs(
+    //   idToken: await userRepository.idToken,
+    //   path: 'users/${userRepository.uid}/${school.id}',
+    // );
+    // if (scheduleMaps == null) {
+    //   return null;
+    // }
+    // for (final schedule in scheduleMaps) {
+    //   schedule.values.first['offerings'].entries;
+    // }
+    // for (final scheduleJson in scheduleMaps) {
+    //   schedules.add(
+    //     Schedule(
+    //       id: scheduleJson.keys.first,
+    //       name: scheduleJson.values.first['name'],
+    //     ),
+    //   );
+    // }
+    // if (ids.isNotEmpty) {
+    //   const index = 'gwu-201902';
+    //   for (var i = 0; i < ids.length; ++i) {}
+    //   final AlgoliaIndexReference _index = algolia.instance.index(index);
+    //   //final AlgoliaQuerySnapshot _snap = await _index.getObjects(['ee']);
+    //   // print(_snap.hits[1].data);
+    // }
   }
 
   void switchSchool(School school) {
@@ -48,13 +51,13 @@ class ScheduleRepository {
   }
 
   Future<String> addSchedule({String scheduleName}) async {
-    return await createDoc(
-        idToken: await userRepository.idToken,
-        path: 'users/${userRepository.uid}/${school.id}',
-        fields: <String, dynamic>{
-          'name': scheduleName,
-          'offerings': <String, dynamic>{},
-        });
+    // return await createDoc(
+    //     idToken: await userRepository.idToken,
+    //     path: 'users/${userRepository.uid}/${school.id}',
+    //     fields: <String, dynamic>{
+    //       'name': scheduleName,
+    //       'offerings': <String, dynamic>{},
+    //     });
   }
 
   Future<void> deleteSchedule({String scheduleId}) async {}

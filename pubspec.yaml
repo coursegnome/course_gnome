@@ -10,45 +10,39 @@ dependencies:
   flutter:
     sdk: flutter
 
+  course_gnome_data: 
+    path: ../course_gnome_data
   flutter_bloc: ^0.21.0
-
-  # url_launcher: ^4.0.2
-  # font_awesome_flutter: ^8.2.0
-
-  # firebase_core: ^0.3.1+1
-  # google_sign_in: ^3.0.4
-  
-  # color: ^2.1.1
-  # meta: ^1.1.6
-
   shared_preferences: ^0.5.3+4
   http: ^0.12.0+2
   bloc: ^0.15.0
   equatable: ^0.5.1
   algolia: ^0.1.6+1
   json_annotation: ^3.0.0
+  js: ^0.6.1+1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  build_runner: ^1.0.0
   flutter_launcher_icons: ^0.7.2+1
   json_serializable: ^3.2.2
-  pedantic: ^1.8.0+1
+  pedantic: ^1.7.0
+  migrate_to_web: 
+    path: ../../Flutter/migrate_to_web
 
 flutter_icons:
   android: true
   ios: true
-  image_path_android: "../core/assets/icons/android.png"
-  image_path_ios: "../core/assets/icons/ios.jpg"
+  image_path_android: "assets/icons/android.png"
+  image_path_ios: "assets/icons/ios.jpg"
   adaptive_icon_background: "#ffffff"
 
 flutter:
   uses-material-design: true
 
   assets:
-    - packages/core/assets/images/logo.png
     - assets/images/
-  #    - packages/core/assets/images/algolia
 
   fonts:
     - family: Lato

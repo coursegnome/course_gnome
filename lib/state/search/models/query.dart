@@ -1,5 +1,6 @@
-import 'package:course_gnome/state/shared/models/course.dart';
 import 'package:equatable/equatable.dart';
+
+import 'package:course_gnome_data/models.dart';
 
 class Query extends Equatable {
   Query({
@@ -12,13 +13,13 @@ class Query extends Equatable {
     this.maxDepartmentNumber,
     this.earliestStartTime,
     this.latestEndTime,
-    this.u = false,
-    this.m = false,
-    this.t = false,
-    this.w = false,
-    this.r = false,
-    this.f = false,
-    this.s = false,
+    this.u,
+    this.m,
+    this.t,
+    this.w,
+    this.r,
+    this.f,
+    this.s,
   }) : super(<dynamic>[
           text,
           departments,
@@ -35,6 +36,26 @@ class Query extends Equatable {
           f,
           s,
         ]);
+
+  Query.initial()
+      : school = School.gwu,
+        // : school = null,
+        season = Season.fall2019,
+        // season = null,
+        text = '',
+        departments = const [],
+        statuses = const [],
+        minDepartmentNumber = 1000,
+        maxDepartmentNumber = 10000,
+        earliestStartTime = TimeOfDay.min,
+        latestEndTime = TimeOfDay.max,
+        this.u = false,
+        this.m = false,
+        this.t = false,
+        this.w = false,
+        this.r = false,
+        this.f = false,
+        this.s = false;
 
   // School and season
   final School school;
@@ -56,12 +77,21 @@ class Query extends Equatable {
   static const dayStrings = ['u', 'm', 't', 'w', 'r', 'f', 's'];
 
   bool get isEmpty =>
-      text == null &&
-      departments == null &&
-      statuses == null &&
-      minDepartmentNumber == null &&
-      maxDepartmentNumber == null &&
-      earliestStartTime == null &&
-      latestEndTime == null &&
+      text == '' &&
+      departments.isEmpty &&
+      statuses.isEmpty &&
+      minDepartmentNumber == 1000 &&
+      maxDepartmentNumber == 10000 &&
+      earliestStartTime == TimeOfDay.min &&
+      latestEndTime == TimeOfDay.max &&
       days.every((day) => day == false);
+
+  @override
+  String toString() {
+    return '''School: $school, season: $season, department: $departments, 
+    text: $text, statuses: $statuses, minDepNum: $minDepartmentNumber, 
+    maxDepNum: $maxDepartmentNumber, earliestTime:$earliestStartTime, latestTime: $latestEndTime,
+    days: $days,
+    ''';
+  }
 }

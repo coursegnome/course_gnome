@@ -1,15 +1,19 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 
+import 'package:course_gnome_data/models.dart';
+
 import 'package:course_gnome/state/auth/auth.dart';
-import 'package:course_gnome/state/shared/models/course.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc({this.authRepository});
   final AuthRepository authRepository;
 
   @override
-  AuthState get initialState => UninitiatedAuth();
+  AuthState get initialState {
+    // dispatch(Init());
+    return UninitiatedAuth();
+  }
 
   @override
   Stream<AuthState> mapEventToState(

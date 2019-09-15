@@ -3,42 +3,22 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:bloc/bloc.dart';
 
-import 'package:course_gnome/state/auth/auth.dart';
+import 'package:course_gnome_data/models.dart';
+
 import 'package:course_gnome/state/scheduling/scheduling.dart';
-import 'package:course_gnome/state/shared/models/course.dart';
 
 class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
-  ScheduleBloc({this.authBloc, this.scheduleRepository, this.userRepository}) {
-    authSub = authBloc.state.listen((state) {
-      dispatch(FetchSchedules());
-    });
-  }
-
-  final AuthBloc authBloc;
-  StreamSubscription authSub;
+  ScheduleBloc({@required this.scheduleRepository});
 
   final ScheduleRepository scheduleRepository;
-  final UserRepository userRepository;
-
-//  @override
-//  Stream<ScheduleEvent> transform(Stream<ScheduleEvent> events) {
-//    return (events as Observable<ScheduleEvent>)
-//        .debounce(Duration(milliseconds: 500));
-//  }
 
   @override
   void onTransition(Transition<ScheduleEvent, ScheduleState> transition) {
-    print('Schedule transition:  $transition');
+    // print('Schedule transition:  $transition');
   }
 
   @override
   ScheduleState get initialState => SchedulesLoading();
-
-  @override
-  void dispose() {
-    authSub.cancel();
-    super.dispose();
-  }
 
   @override
   Stream<ScheduleState> mapEventToState(
@@ -56,14 +36,20 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
       if (event is FetchSchedules) {
         yield SchedulesLoading();
         try {
+          print('x');
           final Schedules schedules =
               await scheduleRepository.getAllSchedules();
           if (schedules == null) {
-            final String id = await scheduleRepository.addSchedule(
-              scheduleName: Schedule.defaultScheduleName,
-            );
-            scheduleRepository.schedulesHistory = SchedulesHistory.init(id: id);
+            print('two');
+            scheduleRepository.schedulesHistory =
+                SchedulesHistory.init(id: 'foo');
+            print('her');
+            // final String id = await scheduleRepository.addSchedule(
+            //   scheduleName: Schedule.defaultScheduleName,
+            // );
+            // scheduleRepository.schedulesHistory = SchedulesHistory.init(id: id);
           } else {
+            print('3');
             scheduleRepository.schedulesHistory = SchedulesHistory([schedules]);
           }
           yield SchedulesLoaded(scheduleRepository.schedulesHistory.current);

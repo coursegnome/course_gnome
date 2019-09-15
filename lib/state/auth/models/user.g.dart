@@ -8,17 +8,18 @@ part of 'user.dart';
 
 Student _$StudentFromJson(Map<String, dynamic> json) {
   return Student(
-      year: json['year'] as int,
-      advisors: (json['advisors'] as List)?.map((e) => e as String)?.toList(),
-      userType: _$enumDecodeNullable(_$UserTypeEnumMap, json['userType']),
-      school: json['school'] == null
-          ? null
-          : School.fromJson(json['school'] as String),
-      displayName: json['displayName'] as String,
-      username: json['username'] as String,
-      photoUrl: json['photoUrl'] as String,
-      email: json['email'] as String,
-      emailVerified: json['emailVerified'] as bool);
+    year: json['year'] as int,
+    advisors: (json['advisors'] as List)?.map((e) => e as String)?.toList(),
+    userType: _$enumDecodeNullable(_$UserTypeEnumMap, json['userType']),
+    school: json['school'] == null
+        ? null
+        : School.fromJson(json['school'] as String),
+    displayName: json['displayName'] as String,
+    username: json['username'] as String,
+    photoUrl: json['photoUrl'] as String,
+    email: json['email'] as String,
+    emailVerified: json['emailVerified'] as bool,
+  );
 }
 
 Map<String, dynamic> _$StudentToJson(Student instance) => <String, dynamic>{
@@ -30,49 +31,62 @@ Map<String, dynamic> _$StudentToJson(Student instance) => <String, dynamic>{
       'email': instance.email,
       'emailVerified': instance.emailVerified,
       'year': instance.year,
-      'advisors': instance.advisors
+      'advisors': instance.advisors,
     };
 
-T _$enumDecode<T>(Map<T, dynamic> enumValues, dynamic source) {
+T _$enumDecode<T>(
+  Map<T, dynamic> enumValues,
+  dynamic source, {
+  T unknownValue,
+}) {
   if (source == null) {
     throw ArgumentError('A value must be provided. Supported values: '
         '${enumValues.values.join(', ')}');
   }
-  return enumValues.entries
-      .singleWhere((e) => e.value == source,
-          orElse: () => throw ArgumentError(
-              '`$source` is not one of the supported values: '
-              '${enumValues.values.join(', ')}'))
-      .key;
+
+  final value = enumValues.entries
+      .singleWhere((e) => e.value == source, orElse: () => null)
+      ?.key;
+
+  if (value == null && unknownValue == null) {
+    throw ArgumentError('`$source` is not one of the supported values: '
+        '${enumValues.values.join(', ')}');
+  }
+  return value ?? unknownValue;
 }
 
-T _$enumDecodeNullable<T>(Map<T, dynamic> enumValues, dynamic source) {
+T _$enumDecodeNullable<T>(
+  Map<T, dynamic> enumValues,
+  dynamic source, {
+  T unknownValue,
+}) {
   if (source == null) {
     return null;
   }
-  return _$enumDecode<T>(enumValues, source);
+  return _$enumDecode<T>(enumValues, source, unknownValue: unknownValue);
 }
 
-const _$UserTypeEnumMap = <UserType, dynamic>{
+const _$UserTypeEnumMap = {
   UserType.Student: 'Student',
-  UserType.Advisor: 'Advisor'
+  UserType.Advisor: 'Advisor',
 };
 
 Advisor _$AdvisorFromJson(Map<String, dynamic> json) {
   return Advisor(
-      advisees: (json['advisees'] as List)
-          ?.map((e) =>
-              e == null ? null : Advisee.fromJson(e as Map<String, dynamic>))
-          ?.toList(),
-      userType: _$enumDecodeNullable(_$UserTypeEnumMap, json['userType']),
-      school: json['school'] == null
-          ? null
-          : School.fromJson(json['school'] as String),
-      displayName: json['displayName'] as String,
-      username: json['username'] as String,
-      photoUrl: json['photoUrl'] as String,
-      email: json['email'] as String,
-      emailVerified: json['emailVerified'] as bool);
+    advisees: (json['advisees'] as List)
+        ?.map((e) =>
+            e == null ? null : Advisee.fromJson(e as Map<String, dynamic>))
+        ?.toList(),
+    userType: _$enumDecodeNullable(_$UserTypeEnumMap, json['userType']),
+    school: json['school'] == null
+        ? null
+        : School.fromJson(json['school'] as String),
+    displayName: json['displayName'] as String,
+    username: json['username'] as String,
+    photoUrl: json['photoUrl'] as String,
+    email: json['email'] as String,
+    emailVerified: json['emailVerified'] as bool,
+  );
 }
 
 Map<String, dynamic> _$AdvisorToJson(Advisor instance) => <String, dynamic>{
@@ -83,15 +97,17 @@ Map<String, dynamic> _$AdvisorToJson(Advisor instance) => <String, dynamic>{
       'photoUrl': instance.photoUrl,
       'email': instance.email,
       'emailVerified': instance.emailVerified,
-      'advisees': instance.advisees
+      'advisees': instance.advisees,
     };
 
 Advisee _$AdviseeFromJson(Map<String, dynamic> json) {
   return Advisee(
-      uid: json['uid'] as String,
-      schedules:
-          (json['schedules'] as List)?.map((e) => e as String)?.toList());
+    uid: json['uid'] as String,
+    schedules: (json['schedules'] as List)?.map((e) => e as String)?.toList(),
+  );
 }
 
-Map<String, dynamic> _$AdviseeToJson(Advisee instance) =>
-    <String, dynamic>{'uid': instance.uid, 'schedules': instance.schedules};
+Map<String, dynamic> _$AdviseeToJson(Advisee instance) => <String, dynamic>{
+      'uid': instance.uid,
+      'schedules': instance.schedules,
+    };

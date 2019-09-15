@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../shared/shared.dart';
+import 'package:course_gnome/ui/shared/shared.dart';
 
 class AdvisingPage extends StatefulWidget {
   @override

@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
-import 'package:course_gnome/state/shared/models/course.dart';
+import 'package:course_gnome_data/models.dart';
 
 part 'user.g.dart';
 

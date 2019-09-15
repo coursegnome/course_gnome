@@ -1,43 +1,64 @@
+import 'package:course_gnome/state/scheduling/scheduling.dart';
+import 'package:course_gnome/ui/search/search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:course_gnome/state/auth/auth.dart';
-import 'package:course_gnome/ui/login/login_page.dart';
+import 'package:course_gnome/ui/scheduling/scheduling.dart';
 import 'package:course_gnome/ui/shared/colors.dart';
+import 'package:course_gnome/ui/profile/profile_page.dart';
 
 void main() {
   final UserRepository userRepository = UserRepository();
   final AuthRepository authRepository = AuthRepository(
     userRepository: userRepository,
   );
-  runApp(App(userRepository, authRepository));
+  final ScheduleRepository scheduleRepository = ScheduleRepository();
+  runApp(App(userRepository, authRepository, scheduleRepository));
 }
 
 class App extends StatefulWidget {
-  App(this.userRepository, this.authRepository);
+  App(
+    this.userRepository,
+    this.authRepository,
+    this.scheduleRepository,
+  );
   final AuthRepository authRepository;
   final UserRepository userRepository;
+  final ScheduleRepository scheduleRepository;
   @override
   State<App> createState() => _AppState();
 }
 
 class _AppState extends State<App> {
-  AuthBloc _authBloc;
-  @override
-  void initState() {
-    super.initState();
-    _authBloc = AuthBloc(authRepository: widget.authRepository);
-    _authBloc.dispatch(Init());
-  }
-
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      builder: (BuildContext context) => _authBloc,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<AuthBloc>(
+          builder: (_) => AuthBloc(
+            authRepository: widget.authRepository,
+          ),
+        ),
+        BlocProvider<ScheduleBloc>(
+          builder: (_) => ScheduleBloc(
+            scheduleRepository: widget.scheduleRepository,
+            // userRepository: widget.userRepository,
+          )..dispatch(FetchSchedules()),
+        )
+      ],
       child: MaterialApp(
         theme: _buildTheme(),
-        home: LoginPage(),
+        home: SchedulingPage(),
         debugShowCheckedModeBanner: false,
+        initialRoute: '/create',
+        routes: {
+          '/create': (context) => SchedulingPage(),
+          '/search': (context) => SearchPage(),
+          '/calendar': (context) => CalendarPage(),
+          '/schedules': (context) => SchedulesPage(),
+          '/profile': (context) => ProfilePage(),
+        },
       ),
     );
   }

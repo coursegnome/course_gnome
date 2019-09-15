@@ -2,8 +2,9 @@ import 'dart:collection';
 
 import 'package:algolia/algolia.dart';
 
+import 'package:course_gnome_data/models.dart';
+
 import 'package:course_gnome/state/search/search.dart';
-import 'package:course_gnome/state/shared/models/course.dart';
 import 'package:course_gnome/state/shared/config/config.dart';
 
 /*
@@ -15,31 +16,35 @@ import 'package:course_gnome/state/shared/config/config.dart';
 */
 
 class SearchRepository {
-  static const hitCount = 30;
+  Query currentQuery;
+
   final SearchClient _client = SearchClient();
-  final HashMap<Query, SearchResult> _cache = HashMap<Query, SearchResult>();
+  final HashMap<Query, CachedSearchResult> _cache =
+      HashMap<Query, CachedSearchResult>();
 
   Future<SearchResult> search(Query query) async {
+    currentQuery = query;
     if (!_cache.containsKey(query)) {
-      _cache[query] = SearchResult.fromSnapshot(await _client.search(query, 0));
+      _cache[query] = CachedSearchResult.fromSnapshot(
+        snap: await _client.search(query, 0),
+      );
     }
-    return _cache[query];
+    return _cache[query].result;
   }
 
-  Future<SearchResult> fetchMore(Query query) async {
-    final SearchResult result = _cache[query];
-    if (result.isMaxedOut) {
-      return result;
-    }
-    _cache[query] = SearchResult.fromSnapshot(
-        await _client.search(query, result.page + 1), result);
-    return _cache[query];
+  Future<SearchResult> loadMore() async {
+    CachedSearchResult currentResult = _cache[currentQuery];
+    currentResult = CachedSearchResult.fromSnapshot(
+      snap: await _client.search(currentQuery, currentResult.page + 1),
+      currentResult: currentResult,
+    );
+    return _cache[currentQuery].result;
   }
 }
 
 class SearchClient {
   Future<AlgoliaQuerySnapshot> search(Query query, int page) async {
-    String index = '';
+    String index = 'offerings';
     AlgoliaQuery _query = algolia.index(index);
     _query = query.text != null ? _query.search(query.text) : _query;
     _query = _query.setFilters(_buildFilterString(query));
@@ -51,7 +56,7 @@ class SearchClient {
     String _string =
         'school: ${query.school.id} AND season: ${query.season.id}';
 
-    if (query.departments != null) {
+    if (query.departments.isNotEmpty) {
       _string += ' AND (deptAcr:${query.departments.first}';
       for (final department
           in query.departments.sublist(1, query.departments.length)) {
@@ -60,7 +65,7 @@ class SearchClient {
       _string += ')';
     }
 
-    if (query.statuses != null) {
+    if (query.statuses.isNotEmpty) {
       _string += ' AND (status:${_stringForStatus(query.statuses.first)}';
       for (final status in query.statuses.sublist(1, query.statuses.length)) {
         _string += ' OR deptAcr:${_stringForStatus(status)}';
@@ -89,7 +94,6 @@ class SearchClient {
         _string += ' AND NOT range.${Query.dayStrings[i]}';
       }
     }
-
     return _string;
   }
 

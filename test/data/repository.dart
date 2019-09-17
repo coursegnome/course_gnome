@@ -1,19 +1,14 @@
 @TestOn('vm')
 
 import 'package:test/test.dart';
-import 'package:core/core.dart';
+import 'package:course_gnome_data/models.dart';
+import 'package:course_gnome/state/auth/auth.dart';
+import 'package:course_gnome/state/scheduling/scheduling.dart';
 
 void main() {
-  UserAuth stored;
   User user;
 
-  Future<void> _storeAuth(UserAuth tokens) async => stored = tokens;
-  Future<UserAuth> _getAuth() async => stored;
-
-  final UserRepository userRepository = UserRepository(
-    getStoredAuth: _getAuth,
-    storeAuth: _storeAuth,
-  );
+  final UserRepository userRepository = UserRepository();
 
   final authRepo = AuthRepository(userRepository: userRepository);
 

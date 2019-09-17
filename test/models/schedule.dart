@@ -1,8 +1,8 @@
+import 'package:flutter/rendering.dart';
 @TestOn('vm')
-
 import 'package:test/test.dart';
-import 'package:color/color.dart';
-import 'package:core/core.dart';
+import 'package:course_gnome_data/models.dart';
+import 'package:course_gnome/state/scheduling/scheduling.dart';
 
 void main() {
   test('Schedules History', () {
@@ -34,11 +34,11 @@ void main() {
     // Toggle
     final Offering offering =
         Offering(id: '12212', section: '10', status: Status.Waitlist);
-    final Color color = Color.hex('ffffff');
+    final Color color = Color(0xffffffff);
     schedulesHistory.toggleOffering(offering, color);
     expect(schedulesHistory.currentHistoryIndex, 2);
     expect(schedulesHistory.current.schedules.length, 2);
-    expect(schedulesHistory.current.schedules[1].offerings.first.offerings.id,
+    expect(schedulesHistory.current.schedules[1].offerings.first.offering.id,
         '12212');
     expect(schedulesHistory.current.currentScheduleIndex, 1);
 

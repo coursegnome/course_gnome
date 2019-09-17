@@ -1,6 +1,8 @@
 @Timeout(Duration(minutes: 2))
+
 import 'package:test/test.dart';
-import 'package:core/core.dart';
+import 'package:course_gnome_data/models.dart';
+import 'package:course_gnome/state/search/search.dart';
 
 void main() {
   final Query query = Query(
@@ -39,10 +41,10 @@ void main() {
     final SearchRepository repo = SearchRepository();
     test('Search', () async {
       SearchResult res = await repo.search(query);
-      while (!res.isMaxedOut) {
-        res = await repo.loadMore(query);
+      while (res.moreResults) {
+        res = await repo.loadMore();
       }
-      for (final List list in res.offerings) {
+      for (final List list in res.courses) {
         for (final Offering o in list) {
           print(o.name + ' - ' + list.length.toString());
         }

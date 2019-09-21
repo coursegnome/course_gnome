@@ -8,10 +8,11 @@ import 'package:course_gnome_data/models.dart';
 class SearchResult {
   SearchResult({
     @required this.courses,
-    @required this.moreResults,
+    @required this.totalCount,
   });
   final List<List<Offering>> courses;
-  final bool moreResults;
+  final int totalCount;
+  bool get moreResults => courses.fold(0, (a, b) => a + b.length) < totalCount;
 }
 
 class CachedSearchResult {
@@ -57,7 +58,7 @@ class CachedSearchResult {
       totalPages: snap.nbPages,
       page: snap.page,
       result: SearchResult(
-        moreResults: snap.nbPages - 1 == snap.page,
+        totalCount: snap.nbHits,
         courses: courses,
       ),
     );

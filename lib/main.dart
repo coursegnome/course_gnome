@@ -1,4 +1,5 @@
 import 'package:course_gnome/state/scheduling/scheduling.dart';
+import 'package:course_gnome/ui/search/offering_detail_page.dart';
 import 'package:course_gnome/ui/search/search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -58,6 +59,7 @@ class _AppState extends State<App> {
           '/calendar': (context) => CalendarPage(),
           '/schedules': (context) => SchedulesPage(),
           '/profile': (context) => ProfilePage(),
+          '/offeringDetail': (context) => OfferingDetailPage(),
         },
       ),
     );

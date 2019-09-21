@@ -4,7 +4,15 @@ import 'package:course_gnome/ui/profile/profile_page.dart';
 import 'package:course_gnome/ui/advising/advising_page.dart';
 import 'package:course_gnome/ui/scheduling/scheduling.dart';
 
-enum Page { Create, Calendar, Search, Schedules, Advising, Profile }
+enum Page {
+  Create,
+  Calendar,
+  Search,
+  Schedules,
+  Advising,
+  Profile,
+  OfferingDetail
+}
 
 class BasePage extends StatelessWidget {
   BasePage({
@@ -61,6 +69,8 @@ class BasePage extends StatelessWidget {
         return 'Calendar';
       case Page.Search:
         return 'Search';
+      case Page.OfferingDetail:
+        return 'Offering Detail';
       default:
         return 'Title';
     }

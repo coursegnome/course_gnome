@@ -1,3 +1,5 @@
+import 'package:course_gnome/state/scheduling/models/schedule.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 
@@ -8,6 +10,7 @@ import 'package:course_gnome_data/models.dart';
 import 'package:course_gnome/ui/shared/shared.dart';
 import 'package:course_gnome/ui/search/search.dart';
 import 'package:course_gnome/state/search/search.dart';
+import 'package:course_gnome/ui/shared/breakpoints.dart' as breakpoints;
 
 class SearchPage extends StatefulWidget {
   SearchPage({@required this.filtersAreOpen, @required this.filtersToggled});
@@ -27,42 +30,147 @@ class _SearchPageState extends State<SearchPage> {
     super.initState();
     resultsScrollController.addListener(() {
       if (resultsScrollController.offset >
-          resultsScrollController.position.maxScrollExtent - 600) {
-        print('here we go');
-      }
+          resultsScrollController.position.maxScrollExtent - 600) {}
     });
+  }
+
+  String _resultsText(SearchState searchState) {
+    if (searchState is SearchSuccess) {
+      return '${searchState.searchResult.totalCount} Results';
+    }
+    if (searchState is SearchLoading || searchState is LoadMoreLoading) {
+      return 'Loading';
+    }
+    return '';
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      builder: (BuildContext context) =>
-          SearchBloc(searchRepository: searchRepository),
-      child: Column(
-        children: <Widget>[
-          SearchField(
-            filtersAreOpen: widget.filtersAreOpen,
-            filtersToggled: widget.filtersToggled,
-          ),
-          Expanded(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                widget.filtersAreOpen
-                    ? Expanded(child: Filters(), flex: 2)
-                    : Container(),
-                Expanded(
-                  child: Results(
-                    scrollController: resultsScrollController,
-                    loadingMore: loadingMore,
+    final double width = MediaQuery.of(context).size.width;
+    return Navigator(
+      initialRoute: 'create/results',
+      onGenerateRoute: (RouteSettings settings) {
+        WidgetBuilder builder;
+        switch (settings.name) {
+          case ('create/results'):
+            builder = (BuildContext _) => BlocProvider(
+                  builder: (BuildContext context) =>
+                      SearchBloc(searchRepository: searchRepository),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        SearchField(
+                          filtersAreOpen: widget.filtersAreOpen,
+                          filtersToggled: widget.filtersToggled,
+                        ),
+                        BlocBuilder<SearchBloc, SearchState>(
+                            builder: (_, searchState) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: Row(
+                              children: <Widget>[
+                                Expanded(
+                                  child: Row(
+                                    children: <Widget>[
+                                      Flexible(
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Text(
+                                            _resultsText(searchState),
+                                            style:
+                                                TextStyle(color: Colors.black),
+                                          ),
+                                        ),
+                                      ),
+                                      searchState is SearchLoading ||
+                                              searchState is LoadMoreLoading
+                                          ? Container(
+                                              width: 13,
+                                              height: 13,
+                                              child: CircularProgressIndicator(
+                                                valueColor:
+                                                    AlwaysStoppedAnimation(
+                                                        Colors.black87),
+                                                strokeWidth: 2,
+                                              ),
+                                            )
+                                          : Container(),
+                                    ],
+                                  ),
+                                ),
+                                searchState is! SearchEmpty
+                                    ? FlatButton(
+                                        child: Text('RESET FILTERS'),
+                                        onPressed: () {},
+                                      )
+                                    : Container()
+                              ],
+                            ),
+                          );
+                        }),
+                        Expanded(
+                          child: Stack(
+                            children: <Widget>[
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: <Widget>[
+                                  widget.filtersAreOpen
+                                      ? Expanded(child: Filters(), flex: 10)
+                                      : Container(),
+                                  !widget.filtersAreOpen ||
+                                          width > breakpoints.sm
+                                      ? Expanded(
+                                          child: Results(
+                                            scrollController:
+                                                resultsScrollController,
+                                            loadingMore: loadingMore,
+                                            filtersToggled:
+                                                widget.filtersToggled,
+                                          ),
+                                          flex: 3,
+                                        )
+                                      : Container(),
+                                ],
+                              ),
+                              kIsWeb ||
+                                      MediaQuery.of(context).size.width >
+                                          breakpoints.sm
+                                  ? Container()
+                                  : Positioned(
+                                      bottom: 0,
+                                      right: 0,
+                                      child: SafeArea(
+                                        child: Container(
+                                          margin: EdgeInsets.all(20.0),
+                                          child: FloatingActionButton(
+                                            onPressed: widget.filtersToggled,
+                                            backgroundColor: cgRed,
+                                            foregroundColor: Colors.white,
+                                            child: Icon(
+                                              widget.filtersAreOpen
+                                                  ? Icons.done
+                                                  : Icons.filter_list,
+                                              // Icons.filter
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  flex: 3,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+                );
+            break;
+          case ('search/offeringDetail'):
+        }
+        return MaterialPageRoute(builder: builder, settings: settings);
+      },
     );
   }
 }
@@ -73,17 +181,20 @@ class SearchField extends StatelessWidget {
   final VoidCallback filtersToggled;
   @override
   Widget build(BuildContext context) {
+    final double width = MediaQuery.of(context).size.width;
     final searchBloc = BlocProvider.of<SearchBloc>(context);
     final bool detatched = MediaQuery.of(context).size.width > sm;
     return Padding(
       padding: EdgeInsets.all(detatched ? 10.0 : 0.0),
       child: Row(
         children: <Widget>[
-          FlatButton(
-            child: Text(filtersAreOpen ? 'Hide' : 'Filter'),
-            onPressed: filtersToggled,
-            textColor: cgRed,
-          ),
+          width > breakpoints.sm
+              ? FlatButton(
+                  child: Text(filtersAreOpen ? 'Hide' : 'Filter'),
+                  onPressed: filtersToggled,
+                  textColor: cgRed,
+                )
+              : Container(),
           Expanded(
             child: TextField(
               onChanged: (text) {
@@ -94,8 +205,7 @@ class SearchField extends StatelessWidget {
                 fillColor: Colors.white,
                 prefixIcon: Icon(Icons.search),
                 enabledBorder: UnderlineInputBorder(
-                  borderRadius:
-                      BorderRadius.all(Radius.circular(detatched ? 10 : 0)),
+                  borderRadius: BorderRadius.all(Radius.circular(3.0)),
                   borderSide: BorderSide(
                     color: Colors.transparent,
                   ),
@@ -115,82 +225,64 @@ class SearchField extends StatelessWidget {
 }
 
 class Results extends StatelessWidget {
-  Results({this.scrollController, this.loadingMore});
+  Results({this.scrollController, this.loadingMore, this.filtersToggled});
 
   final ScrollController scrollController;
   final bool loadingMore;
+  final VoidCallback filtersToggled;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: BlocBuilder<SearchBloc, SearchState>(
-        builder: (_, searchState) {
-          if (searchState is SearchLoading) {
-            return Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation(cgRed),
-                strokeWidth: 5,
-              ),
-            );
-          }
-          if (searchState is SearchError) {
-            return Text('An error occured');
-          }
-          if (searchState is SearchSuccess) {
-            List<Widget> listChildren() {
-              final List<Widget> list = List.generate(
-                searchState.searchResult.courses.length,
-                (i) => Theme(
+    return BlocBuilder<SearchBloc, SearchState>(
+      builder: (_, searchState) {
+        if (searchState is SearchLoading) {
+          return Container();
+        }
+        if (searchState is SearchError) {
+          return Container();
+        }
+        if (searchState is SearchSuccess) {
+          List<Widget> listChildren() {
+            final List<Widget> list =
+                List.generate(searchState.searchResult.courses.length, (i) {
+              return Hero(
+                transitionOnUserGestures: true,
+                tag: searchState.searchResult.courses[i].first.id,
+                child: Theme(
                   data: Theme.of(context).copyWith(
                       textTheme: Theme.of(context).textTheme.apply(
                           bodyColor:
                               scheduleColors[i % scheduleColors.length])),
                   child: CourseCard(
-                    searchState.searchResult.courses[i],
+                    courses: searchState.searchResult.courses[i],
                   ),
                 ),
               );
-              list.add(Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text('Load More'),
-                  loadingMore
-                      ? Container(
-                          margin: EdgeInsets.only(left: 10.0),
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation(Colors.black87),
-                          ),
-                          width: 15,
-                          height: 15,
-                        )
-                      : Icon(Icons.arrow_downward),
-                ],
-              ));
-              return list;
-            }
+            });
 
-            return searchState.searchResult.courses.isEmpty
-                ? Text('No results!')
-                : ListView(
-                    physics: AlwaysScrollableScrollPhysics(),
-                    controller: scrollController,
-                    padding: const EdgeInsets.all(15.0),
-                    children: listChildren(),
-                  );
+            list.add(
+              Container(height: 80),
+            );
+            return list;
           }
-          // empty
-          return Text('Please enter a search term or select a filter');
-        },
-      ),
+
+          return ListView(
+            physics: AlwaysScrollableScrollPhysics(),
+            controller: scrollController,
+            children: listChildren(),
+          );
+        }
+        // empty
+        return Container();
+      },
     );
   }
 }
 
 class CourseCard extends StatelessWidget {
-  CourseCard(this.courses);
+  CourseCard({this.courses, this.extraInfo});
   final List<Offering> courses;
+  final Widget extraInfo;
 
   @override
   Widget build(BuildContext context) {
@@ -213,61 +305,53 @@ class CourseCard extends StatelessWidget {
               bottomRight: Radius.circular(5),
             ),
           ),
-          margin: EdgeInsets.all(0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                padding: EdgeInsets.all(7),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text('${course.deptAcr} ${course.deptNum}'),
-                        Text(
-                          course.credit == '0'
-                              ? course.credit + ' credit'
-                              : course.credit + ' credits',
-                        ),
-                      ],
-                    ),
-                    Text(course.name,
-                        style: Theme.of(context)
-                            .textTheme
-                            .title
-                            .copyWith(fontWeight: FontWeight.bold)),
-                  ],
-                ),
-              ),
-              Column(
-                children: List.generate(
-                  courses.length,
-                  (j) => ExpansionTile(
-                    title: OfferingRow(courses[j]),
-                    // color: currentCalendar.ids.contains(offering.offerings[j].id)
-                    //     ? color.med.withOpacity(0.1)
-                    //     : Colors.transparent,
-                    // child: ExpansionTile(
-                    // key: PageStorageKey<String>(offering.offerings[j].id),
-                    // onLongPress: () {
-                    //   HapticFeedback.selectionClick();
-                    //   toggleOffering(
-                    //       offering, offering.offerings[j], color.toTriColor());
-                    // },
-                    // title: GestureDetector(
-                    // child: OfferingRow(color.med, offering.offerings[j]),
-                    // ),
-                    // children: [
-                    // ExtraInfoContainer(color, offering.offerings[j], offering)
-                    // ],
-                    // ),
+          margin: EdgeInsets.all(0.0),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 5.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 5.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Text('${course.deptAcr} ${course.deptNum}'),
+                          Text(
+                            course.credit == '0'
+                                ? course.credit + ' credit'
+                                : course.credit + ' credits',
+                          ),
+                        ],
+                      ),
+                      Text(course.name,
+                          style: Theme.of(context)
+                              .textTheme
+                              .title
+                              .copyWith(fontWeight: FontWeight.bold)),
+                    ],
                   ),
                 ),
-              ),
-            ],
+                Column(
+                  children: List.generate(
+                    courses.length,
+                    (j) => Container(
+                      decoration: BoxDecoration(
+                        border: Border(top: BorderSide(color: lightGray)),
+                      ),
+                      child: OfferingRow(
+                        offering: courses[j],
+                        expanded: extraInfo != null,
+                      ),
+                    ),
+                  ),
+                ),
+                extraInfo ?? Container(),
+              ],
+            ),
           ),
         ),
       ),
@@ -276,53 +360,78 @@ class CourseCard extends StatelessWidget {
 }
 
 class OfferingRow extends StatelessWidget {
+  OfferingRow({this.offering, this.expanded});
   final Offering offering;
-
-  OfferingRow(this.offering);
+  final bool expanded;
 
   @override
   Widget build(BuildContext context) {
-    final spaceAllowance = allowance(MediaQuery.of(context).size.width);
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          flex: 1,
-          child: Text(
-            offering.section,
-          ),
-        ),
-        Expanded(
-          flex: 3,
-          child: Padding(
-            padding: EdgeInsets.only(right: 20),
-            child: Text(
-              offering.teachers != null ? offering.teachers.join(', ') : 'TBA',
-              overflow: TextOverflow.ellipsis,
+    // final spaceAllowance = allowance(MediaQuery.of(context).size.width);
+    return MouseRegion(
+      // onEnter: (_) => print('Enter'),
+      child: Padding(
+        padding: const EdgeInsets.only(
+            right: 5.0, left: 5.0, top: 10.0, bottom: 10.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              flex: 1,
+              child: Text(
+                offering.section,
+              ),
             ),
-          ),
-        ),
-        Expanded(
-          flex: 5,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: List.generate(
-              offering.classTimes.length,
-              (k) => ClassTimeRow(offering.classTimes[k]),
-            ),
-          ),
-        ),
-        offering.id != null
-            ? Expanded(
-                flex: 2,
+            Expanded(
+              flex: 3,
+              child: Padding(
+                padding: EdgeInsets.only(right: 20),
                 child: Text(
-                  offering.id,
-                  textAlign: TextAlign.right,
+                  offering.teachers != null
+                      ? offering.teachers.join(', ')
+                      : 'TBA',
+                  overflow: TextOverflow.ellipsis,
                 ),
-              )
-            : Container(),
-      ],
+              ),
+            ),
+            Expanded(
+              flex: 5,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: List.generate(
+                  offering.classTimes.length,
+                  (k) => ClassTimeRow(offering.classTimes[k]),
+                ),
+              ),
+            ),
+            offering.id != null
+                ? Expanded(
+                    flex: 2,
+                    child: Text(
+                      offering.id,
+                      textAlign: TextAlign.right,
+                    ),
+                  )
+                : Container(),
+            InkWell(
+              onTap: () => expanded
+                  ? Navigator.of(context).pop()
+                  : Navigator.of(context).pushNamed(
+                      'create/offeringDetail',
+                      arguments: ColoredOffering(
+                        color: Theme.of(context).textTheme.body1.color,
+                        offering: offering,
+                      ),
+                    ),
+              customBorder: CircleBorder(),
+              child: Icon(
+                expanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                color: Theme.of(context).textTheme.body1.color,
+                size: 30.0,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -410,99 +519,3 @@ class ClassTimeRow extends StatelessWidget {
     }
   }
 }
-
-// class ExtraInfoContainer extends StatelessWidget {
-//   final FlutterTriColor color;
-//   final Offering offering;
-//   final Course course;
-
-//   ExtraInfoContainer(this.color, this.offering, this.course);
-
-//   openCoursePage() async {
-//     final url = course.bulletinLink;
-//     if (await canLaunch(url)) {
-//       await launch(url);
-//     } else {
-//       throw 'Could not launch $url';
-//     }
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final spaceAllowance =
-//         Breakpoints.allowance(MediaQuery.of(context).size.width);
-//     bool hasLocation = false;
-//     String locationString =
-//         offering.classTimes.length > 1 ? 'Locations: ' : 'Location: ';
-//     offering.classTimes.forEach((time) {
-//       locationString += time.location + ', ';
-//       hasLocation = true;
-//     });
-//     locationString = Helper.removeLastChars(2, locationString);
-//     return Column(
-//       crossAxisAlignment: CrossAxisAlignment.start,
-//       children: <Widget>[
-//         Padding(
-//           padding: const EdgeInsets.fromLTRB(15, 0, 15, 10),
-//           child: Column(
-//             crossAxisAlignment: CrossAxisAlignment.start,
-//             children: <Widget>[
-//               offering.instructors != null && spaceAllowance < 3
-//                   ? Text(
-//                       'Instructors: ' + offering.instructors.join(", "),
-//                       style: TextStyle(color: color.med),
-//                     )
-//                   : Container(),
-//               hasLocation && spaceAllowance < 4
-//                   ? Text(
-//                       locationString,
-//                       style: TextStyle(color: color.med),
-//                     )
-//                   : Container(),
-//             ],
-//           ),
-//         ),
-//         offering.linkedOfferings != null
-//             ? Container(
-//                 padding: EdgeInsets.fromLTRB(15, 10, 15, 5),
-//                 color: CGColor.lightGray,
-//                 child: Column(
-//                   crossAxisAlignment: CrossAxisAlignment.start,
-//                   children: <Widget>[
-//                     Text(
-//                       'Choose a Linked Course',
-//                       style: TextStyle(color: color.med),
-//                     ),
-//                     Column(
-//                       crossAxisAlignment: CrossAxisAlignment.stretch,
-//                       children: List.generate(
-//                         offering.linkedOfferings.length,
-//                         (i) => FlatButton(
-// //                              color: color.light,
-//                               onPressed: () {},
-//                               child: OfferingRow(color.med, offering),
-//                             ),
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//               )
-//             : Container(),
-//         course.bulletinLink != null
-//             ? FlatButton.icon(
-//                 padding: EdgeInsets.only(left: 15),
-//                 icon: Icon(
-//                   Icons.open_in_browser,
-//                   color: color.med,
-//                 ),
-//                 label: Text(
-//                   'See More',
-//                   style: TextStyle(color: color.med),
-//                 ),
-//                 onPressed: () => openCoursePage(),
-//               )
-//             : Container(),
-//       ],
-//     );
-//   }
-// }

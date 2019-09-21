@@ -29,6 +29,16 @@ class _FiltersState extends State<Filters> {
       RangeLabels(earliestStartTime.toString(), latestEndTime.toString());
 
   @override
+  void initState() {
+    super.initState();
+    final searchBloc = BlocProvider.of<SearchBloc>(context);
+    minDepartmentNumber = searchBloc.currentState.query.minDepartmentNumber;
+    maxDepartmentNumber = searchBloc.currentState.query.maxDepartmentNumber;
+    earliestStartTime = searchBloc.currentState.query.earliestStartTime;
+    latestEndTime = searchBloc.currentState.query.latestEndTime;
+  }
+
+  @override
   Widget build(BuildContext context) {
     final searchBloc = BlocProvider.of<SearchBloc>(context);
     return BlocBuilder<SearchBloc, SearchState>(
@@ -44,7 +54,6 @@ class _FiltersState extends State<Filters> {
       }
 
       return ListView(
-        padding: const EdgeInsets.all(20.0),
         children: <Widget>[
           FilterSection(
             title: 'Status',
@@ -69,15 +78,21 @@ class _FiltersState extends State<Filters> {
             expansionToggled: () => setState(
               () => departmentsExpanded = !departmentsExpanded,
             ),
-            child: Column(
-              children: List.generate(
-                  departmentsExpanded ? departments.length : 10,
-                  (i) => FilterCheckbox(
-                      title: departments.keys.elementAt(i),
-                      value: query.departments
-                          .contains(departments.keys.elementAt(i)),
-                      onChanged: (val) =>
-                          updateDepartments(departments.keys.elementAt(i)))),
+            child: Container(
+              height: 300,
+              child: GridView.count(
+                crossAxisCount: 2,
+                childAspectRatio: 5,
+                children: List.generate(
+                    // departmentsExpanded ? departments.length : 10,
+                    departments.length,
+                    (i) => FilterCheckbox(
+                        title: departments.keys.elementAt(i),
+                        value: query.departments
+                            .contains(departments.keys.elementAt(i)),
+                        onChanged: (val) =>
+                            updateDepartments(departments.keys.elementAt(i)))),
+              ),
             ),
           ),
           FilterSection(
@@ -135,14 +150,18 @@ class _FiltersState extends State<Filters> {
           ),
           FilterSection(
             title: 'Days',
-            child: Row(
-              children: List.generate(
-                  7,
-                  (i) => DayCheckbox(
-                        day: i,
-                        searchBloc: searchBloc,
-                        query: query,
-                      )),
+            child: SizedBox(
+              height: 150,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: List.generate(
+                    7,
+                    (i) => DayCheckbox(
+                          day: i,
+                          searchBloc: searchBloc,
+                          query: query,
+                        )),
+              ),
             ),
           ),
         ],
@@ -159,25 +178,23 @@ class FilterSection extends StatelessWidget {
   final Widget child;
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 10.0),
-      child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Row(
-              children: <Widget>[
-                Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
-                expanded != null
-                    ? FlatButton(
-                        child: Text('Show ${expanded ? 'Less' : 'More'}'),
-                        onPressed: expansionToggled,
-                      )
-                    : Container(),
-              ],
-            ),
-            child,
-          ]),
-    );
+    return Column(children: <Widget>[
+      Row(
+        children: <Widget>[
+          Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
+          // expanded != null
+          //     ? FlatButton(
+          //         child: Text('Show ${expanded ? 'Less' : 'More'}'),
+          //         onPressed: expansionToggled,
+          //       )
+          //     : Container(),
+        ],
+      ),
+      Container(
+        margin: const EdgeInsets.only(top: 2.0, bottom: 20.0),
+        child: child,
+      ),
+    ]);
   }
 }
 

@@ -226,37 +226,40 @@ class _CalendarPageState extends State<CalendarPage> {
                           ),
                     ),
                     Expanded(
-                      child: TabBarView(
-                        children: List.generate(
-                          state.schedules.schedules.length,
-                          (i) => Column(
-                            children: <Widget>[
-                              DayList(7, dayWidth, dayController),
-                              Expanded(
-                                child: SafeArea(
-                                  right: false,
-                                  child: Row(
-                                    children: <Widget>[
-                                      HourList(
-                                          14, 8, hourHeight, hourController),
-                                      CalendarView(
-                                        7,
-                                        14,
-                                        2,
-                                        dayWidth,
-                                        hourHeight,
-                                        horizontalCalController,
-                                        verticalCalController,
-                                        state.schedules.schedules[i],
-                                        // widget.removeOffering,
-                                        scaleStart,
-                                        scaleUpdate,
-                                      ),
-                                    ],
+                      child: Container(
+                        color: Colors.white,
+                        child: TabBarView(
+                          children: List.generate(
+                            state.schedules.schedules.length,
+                            (i) => Column(
+                              children: <Widget>[
+                                DayList(7, dayWidth, dayController),
+                                Expanded(
+                                  child: SafeArea(
+                                    right: false,
+                                    child: Row(
+                                      children: <Widget>[
+                                        HourList(
+                                            14, 8, hourHeight, hourController),
+                                        CalendarView(
+                                          7,
+                                          14,
+                                          2,
+                                          dayWidth,
+                                          hourHeight,
+                                          horizontalCalController,
+                                          verticalCalController,
+                                          state.schedules.schedules[i],
+                                          // widget.removeOffering,
+                                          scaleStart,
+                                          scaleUpdate,
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),

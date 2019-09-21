@@ -44,7 +44,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
   }
 
   @override
-  SearchState get initialState => SearchEmpty(Query.initial());
+  SearchState get initialState => SearchEmpty(query: Query.initial());
 
   @override
   Stream<SearchState> mapEventToState(
@@ -53,26 +53,36 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     if (event is SearchChanged) {
       final newQuery = transformQuery(currentState.query, event.queryUpdate);
       if (newQuery.isEmpty) {
-        yield SearchEmpty(newQuery);
+        yield SearchEmpty(query: newQuery);
       } else {
-        yield SearchLoading(newQuery);
+        yield SearchLoading(
+            searchResult: currentState.searchResult, query: newQuery);
         try {
           final result = await searchRepository.search(newQuery);
-          yield SearchSuccess(result, newQuery);
+          yield SearchSuccess(searchResult: result, query: newQuery);
         } catch (error) {
           yield error is SearchError
-              ? SearchError(error.message, newQuery)
-              : SearchError('something went wrong', newQuery);
+              ? SearchError(
+                  message: error.message,
+                  searchResult: currentState.searchResult,
+                  query: newQuery)
+              : SearchError(
+                  message: 'Something went wrong.',
+                  searchResult: currentState.searchResult,
+                  query: newQuery);
         }
       }
     }
     if (event is LoadMoreResults) {
       yield LoadMoreLoading(
-        (currentState as SearchSuccess).searchResult,
-        (currentState as SearchSuccess).query,
+        searchResult: currentState.searchResult,
+        query: currentState.query,
       );
       final SearchResult result = await searchRepository.loadMore();
-      yield SearchSuccess(result, currentState.query);
+      yield SearchSuccess(searchResult: result, query: currentState.query);
+    }
+    if (event is ClearQuery) {
+      yield SearchEmpty(query: Query.initial());
     }
   }
 
@@ -101,6 +111,8 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
 
 class SearchEvent {}
 
+class ClearQuery extends SearchEvent {}
+
 class SearchChanged extends SearchEvent {
   SearchChanged(this.queryUpdate);
   final Query queryUpdate;
@@ -109,29 +121,38 @@ class SearchChanged extends SearchEvent {
 class LoadMoreResults extends SearchEvent {}
 
 class SearchState {
-  SearchState(this.query);
+  SearchState(this.searchResult, this.query);
   final Query query;
-}
-
-class SearchEmpty extends SearchState {
-  SearchEmpty(Query query) : super(query);
-}
-
-class SearchLoading extends SearchState {
-  SearchLoading(Query query) : super(query);
-}
-
-class LoadMoreLoading extends SearchState {
-  LoadMoreLoading(this.searchResult, Query query) : super(query);
   final SearchResult searchResult;
 }
 
+class SearchEmpty extends SearchState {
+  SearchEmpty({Query query})
+      : super(
+            SearchResult(
+              courses: [],
+              totalCount: 0,
+            ),
+            query);
+}
+
+class SearchLoading extends SearchState {
+  SearchLoading({SearchResult searchResult, Query query})
+      : super(searchResult, query);
+}
+
+class LoadMoreLoading extends SearchState {
+  LoadMoreLoading({SearchResult searchResult, Query query})
+      : super(searchResult, query);
+}
+
 class SearchError extends SearchState {
-  SearchError(this.message, Query query) : super(query);
+  SearchError({this.message, SearchResult searchResult, Query query})
+      : super(searchResult, query);
   final String message;
 }
 
 class SearchSuccess extends SearchState {
-  SearchSuccess(this.searchResult, Query query) : super(query);
-  final SearchResult searchResult;
+  SearchSuccess({SearchResult searchResult, Query query})
+      : super(searchResult, query);
 }

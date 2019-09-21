@@ -36,20 +36,16 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
       if (event is FetchSchedules) {
         yield SchedulesLoading();
         try {
-          print('x');
           final Schedules schedules =
               await scheduleRepository.getAllSchedules();
           if (schedules == null) {
-            print('two');
             scheduleRepository.schedulesHistory =
                 SchedulesHistory.init(id: 'foo');
-            print('her');
             // final String id = await scheduleRepository.addSchedule(
             //   scheduleName: Schedule.defaultScheduleName,
             // );
             // scheduleRepository.schedulesHistory = SchedulesHistory.init(id: id);
           } else {
-            print('3');
             scheduleRepository.schedulesHistory = SchedulesHistory([schedules]);
           }
           yield SchedulesLoaded(scheduleRepository.schedulesHistory.current);

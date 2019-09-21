@@ -25,7 +25,6 @@ const String schedulesKey = 'schedules';
 
 Future<Schedules> getStoredSchedules() async {
   if (kIsWeb) {
-    print('test');
     final schedulesJson = localStorage.getItem(schedulesKey);
     if (schedulesJson == null) {
       return null;

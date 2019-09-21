@@ -22,6 +22,7 @@ class _SchedulingPageState extends State<SchedulingPage> {
 
   _goToCalendar() {
     Navigator.pushNamed(context, 'calendar');
+    Navigator.pushNamed(context, '/calendar');
   }
 
   @override
@@ -68,7 +69,7 @@ class _SchedulingPageState extends State<SchedulingPage> {
             body: searchPage,
             page: Page.Search,
             actionIcons: actionIcons,
-            actionCallbacks: [() {}, _goToCalendar],
+            actionCallbacks: [_goToCalendar],
           );
   }
 }

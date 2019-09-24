@@ -10,6 +10,7 @@ import 'package:course_gnome_data/models.dart';
 import 'package:course_gnome/ui/shared/shared.dart';
 import 'package:course_gnome/ui/search/search.dart';
 import 'package:course_gnome/state/search/search.dart';
+import 'package:course_gnome/state/scheduling/scheduling.dart';
 import 'package:course_gnome/ui/shared/breakpoints.dart' as breakpoints;
 
 class SearchPage extends StatefulWidget {
@@ -245,16 +246,18 @@ class Results extends StatelessWidget {
           List<Widget> listChildren() {
             final List<Widget> list =
                 List.generate(searchState.searchResult.courses.length, (i) {
+              final color = scheduleColors[i % scheduleColors.length];
               return Hero(
                 transitionOnUserGestures: true,
                 tag: searchState.searchResult.courses[i].first.id,
                 child: Theme(
                   data: Theme.of(context).copyWith(
-                      textTheme: Theme.of(context).textTheme.apply(
-                          bodyColor:
-                              scheduleColors[i % scheduleColors.length])),
+                    textTheme:
+                        Theme.of(context).textTheme.apply(bodyColor: color),
+                  ),
                   child: CourseCard(
                     courses: searchState.searchResult.courses[i],
+                    color: color,
                   ),
                 ),
               );
@@ -280,9 +283,10 @@ class Results extends StatelessWidget {
 }
 
 class CourseCard extends StatelessWidget {
-  CourseCard({this.courses, this.extraInfo});
+  CourseCard({this.courses, this.extraInfo, this.color});
   final List<Offering> courses;
   final Widget extraInfo;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
@@ -343,7 +347,8 @@ class CourseCard extends StatelessWidget {
                         border: Border(top: BorderSide(color: lightGray)),
                       ),
                       child: OfferingRow(
-                        offering: courses[j],
+                        coloredOffering:
+                            ColoredOffering(offering: courses[j], color: color),
                         expanded: extraInfo != null,
                       ),
                     ),
@@ -360,15 +365,21 @@ class CourseCard extends StatelessWidget {
 }
 
 class OfferingRow extends StatelessWidget {
-  OfferingRow({this.offering, this.expanded});
-  final Offering offering;
+  OfferingRow({this.coloredOffering, this.expanded});
+  final ColoredOffering coloredOffering;
   final bool expanded;
+
+  Offering get offering => coloredOffering.offering;
+  Color get color => coloredOffering.color;
 
   @override
   Widget build(BuildContext context) {
     // final spaceAllowance = allowance(MediaQuery.of(context).size.width);
-    return MouseRegion(
-      // onEnter: (_) => print('Enter'),
+    final scheduleBloc = BlocProvider.of<ScheduleBloc>(context);
+    return GestureDetector(
+      onTap: () => scheduleBloc.dispatch(
+        OfferingToggled(coloredOffering: coloredOffering),
+      ),
       child: Padding(
         padding: const EdgeInsets.only(
             right: 5.0, left: 5.0, top: 10.0, bottom: 10.0),

@@ -43,8 +43,8 @@ class SchedulesHistory {
     _addToHistory(current.deleteSchedule(id));
   }
 
-  void toggleOffering(Offering offering, Color color) {
-    _addToHistory(current.toggleOffering(offering, color));
+  void toggleOffering(ColoredOffering coloredOffering) {
+    _addToHistory(current.toggleOffering(coloredOffering));
   }
 
   void _addToHistory(Schedules schedules) {
@@ -109,12 +109,12 @@ class Schedules extends Equatable {
     );
   }
 
-  Schedules toggleOffering(Offering offering, Color color) {
+  Schedules toggleOffering(ColoredOffering coloredOffering) {
     final List<Schedule> newSchedules = [];
     for (var i = 0; i < schedules.length; ++i) {
       final schedule = schedules[i];
       newSchedules.add(i == currentScheduleIndex
-          ? schedule.toggleOffering(offering, color)
+          ? schedule.toggleOffering(coloredOffering)
           : schedule.clone());
     }
     return Schedules(
@@ -168,12 +168,12 @@ class Schedule extends Equatable {
     );
   }
 
-  Schedule toggleOffering(Offering offering, Color color) {
+  Schedule toggleOffering(ColoredOffering coloredOffering) {
     final newOfferings = offerings;
-    if (newOfferings.any((co) => co.offering == offering)) {
-      newOfferings.removeWhere((co) => co.offering == offering);
+    if (newOfferings.any((co) => co.offering == coloredOffering.offering)) {
+      newOfferings.removeWhere((co) => co.offering == coloredOffering.offering);
     } else {
-      newOfferings.add(ColoredOffering(offering: offering, color: color));
+      newOfferings.add(coloredOffering);
     }
     return Schedule(
       offerings: newOfferings,

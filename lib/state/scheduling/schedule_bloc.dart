@@ -24,82 +24,82 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
   Stream<ScheduleState> mapEventToState(
     ScheduleEvent event,
   ) async* {
-    if (event is ScheduleEvent) {
-      if (event is SwitchSeason) {
-        scheduleRepository.season = event.season;
-        dispatch(FetchSchedules());
-      }
-      if (event is SwitchSchool) {
-        scheduleRepository.switchSchool(event.school);
-        dispatch(FetchSchedules());
-      }
-      if (event is FetchSchedules) {
-        yield SchedulesLoading();
-        try {
-          final Schedules schedules =
-              await scheduleRepository.getAllSchedules();
-          if (schedules == null) {
-            scheduleRepository.schedulesHistory =
-                SchedulesHistory.init(id: 'foo');
-            // final String id = await scheduleRepository.addSchedule(
-            //   scheduleName: Schedule.defaultScheduleName,
-            // );
-            // scheduleRepository.schedulesHistory = SchedulesHistory.init(id: id);
-          } else {
-            scheduleRepository.schedulesHistory = SchedulesHistory([schedules]);
-          }
-          yield SchedulesLoaded(scheduleRepository.schedulesHistory.current);
-        } catch (e) {
-          yield e is ScheduleLoadError
-              ? e
-              : ScheduleLoadError('Failed to load schedules');
+    if (event is OfferingToggled) {
+      yield SchedulesLoaded(
+          scheduleRepository.toggleOffering(event.coloredOffering));
+    }
+    if (event is SwitchSeason) {
+      scheduleRepository.season = event.season;
+      dispatch(FetchSchedules());
+    }
+    if (event is SwitchSchool) {
+      scheduleRepository.switchSchool(event.school);
+      dispatch(FetchSchedules());
+    }
+    if (event is FetchSchedules) {
+      yield SchedulesLoading();
+      try {
+        final Schedules schedules = await scheduleRepository.getAllSchedules();
+        if (schedules == null) {
+          scheduleRepository.schedulesHistory =
+              SchedulesHistory.init(id: 'foo');
+          // final String id = await scheduleRepository.addSchedule(
+          //   scheduleName: Schedule.defaultScheduleName,
+          // );
+          // scheduleRepository.schedulesHistory = SchedulesHistory.init(id: id);
+        } else {
+          scheduleRepository.schedulesHistory = SchedulesHistory([schedules]);
         }
+        yield SchedulesLoaded(scheduleRepository.schedulesHistory.current);
+      } catch (e) {
+        yield e is ScheduleLoadError
+            ? e
+            : ScheduleLoadError('Failed to load schedules');
       }
-      if (event is OpenDialog && currentState is SchedulesLoaded) {
-        yield DialogOpen((currentState as SchedulesLoaded).schedules);
-      }
-      if (event is CloseDialog && currentState is DialogState) {
-        yield SchedulesLoaded((currentState as DialogState).schedules);
-      }
+    }
+    if (event is OpenDialog && currentState is SchedulesLoaded) {
+      yield DialogOpen((currentState as SchedulesLoaded).schedules);
+    }
+    if (event is CloseDialog && currentState is DialogState) {
+      yield SchedulesLoaded((currentState as DialogState).schedules);
+    }
 
-      if (event is ScheduleAdded && currentState is DialogState) {
-        yield DialogLoading((currentState as DialogState).schedules);
-        try {
-          final String id = await scheduleRepository.addSchedule(
-            scheduleName: event.scheduleName,
-          );
-          scheduleRepository.schedulesHistory
-              .addSchedule(event.scheduleName, id);
-          yield SchedulesLoaded(scheduleRepository.schedulesHistory.current);
-        } catch (e) {
-          yield DialogError((currentState as DialogState).schedules);
-        }
+    if (event is ScheduleAdded && currentState is DialogState) {
+      yield DialogLoading((currentState as DialogState).schedules);
+      try {
+        final String id = await scheduleRepository.addSchedule(
+          scheduleName: event.scheduleName,
+        );
+        scheduleRepository.schedulesHistory.addSchedule(event.scheduleName, id);
+        yield SchedulesLoaded(scheduleRepository.schedulesHistory.current);
+      } catch (e) {
+        yield DialogError((currentState as DialogState).schedules);
       }
+    }
 
-      if (event is ScheduleDeleted && currentState is DialogState) {
-        yield DialogLoading((currentState as DialogState).schedules);
-        try {
-          await scheduleRepository.deleteSchedule(
-            scheduleId: event.scheduleId,
-          );
-          scheduleRepository.schedulesHistory.deleteSchedule(event.scheduleId);
-          yield SchedulesLoaded(scheduleRepository.schedulesHistory.current);
-        } catch (e) {
-          yield DialogError((currentState as DialogState).schedules);
-        }
+    if (event is ScheduleDeleted && currentState is DialogState) {
+      yield DialogLoading((currentState as DialogState).schedules);
+      try {
+        await scheduleRepository.deleteSchedule(
+          scheduleId: event.scheduleId,
+        );
+        scheduleRepository.schedulesHistory.deleteSchedule(event.scheduleId);
+        yield SchedulesLoaded(scheduleRepository.schedulesHistory.current);
+      } catch (e) {
+        yield DialogError((currentState as DialogState).schedules);
       }
+    }
 
-      if (event is ScheduleNameEdited && currentState is DialogState) {
-        yield DialogLoading((currentState as DialogState).schedules);
-        try {
-          await scheduleRepository.updateSchedule(
-            name: event.name,
-          );
-          scheduleRepository.schedulesHistory.editScheduleName(event.name);
-          yield SchedulesLoaded(scheduleRepository.schedulesHistory.current);
-        } catch (e) {
-          yield DialogError((currentState as DialogState).schedules);
-        }
+    if (event is ScheduleNameEdited && currentState is DialogState) {
+      yield DialogLoading((currentState as DialogState).schedules);
+      try {
+        await scheduleRepository.updateSchedule(
+          name: event.name,
+        );
+        scheduleRepository.schedulesHistory.editScheduleName(event.name);
+        yield SchedulesLoaded(scheduleRepository.schedulesHistory.current);
+      } catch (e) {
+        yield DialogError((currentState as DialogState).schedules);
       }
     }
   }
@@ -145,10 +145,13 @@ class ScheduleNameEdited extends ScheduleEvent {
 }
 
 class OfferingToggled extends ScheduleEvent {
-  OfferingToggled({this.offering, this.color, this.scheduleId});
-  final Offering offering;
-  final Color color;
-  final String scheduleId;
+  OfferingToggled({this.coloredOffering});
+  final ColoredOffering coloredOffering;
+}
+
+class OfferingHovered extends ScheduleEvent {
+  OfferingHovered({this.coloredOffering});
+  ColoredOffering coloredOffering;
 }
 
 // State

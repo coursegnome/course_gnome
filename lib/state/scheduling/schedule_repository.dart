@@ -15,6 +15,11 @@ class ScheduleRepository {
   Season season = Season.fall2019;
   SchedulesHistory schedulesHistory;
 
+  Schedules toggleOffering(ColoredOffering coloredOffering) {
+    schedulesHistory.toggleOffering(coloredOffering);
+    return schedulesHistory.current;
+  }
+
   Future<Schedules> getAllSchedules() async {
     return getStoredSchedules();
     // final List<Schedule> schedules = [];

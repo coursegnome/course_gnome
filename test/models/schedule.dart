@@ -34,8 +34,11 @@ void main() {
     // Toggle
     final Offering offering =
         Offering(id: '12212', section: '10', status: Status.Waitlist);
-    final Color color = Color(0xffffffff);
-    schedulesHistory.toggleOffering(offering, color);
+    final ColoredOffering coloredOffering = ColoredOffering(
+      color: Color(0xffffffff),
+      offering: offering,
+    );
+    schedulesHistory.toggleOffering(coloredOffering);
     expect(schedulesHistory.currentHistoryIndex, 2);
     expect(schedulesHistory.current.schedules.length, 2);
     expect(schedulesHistory.current.schedules[1].offerings.first.offering.id,

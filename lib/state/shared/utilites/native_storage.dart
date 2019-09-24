@@ -1,25 +1,39 @@
-@JS()
-library storage;
+// This must be commented out to run on mobile
+// @JS()
+// library storage;
+// import 'package:js/js.dart';
 
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-import 'package:js/js.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:course_gnome/state/auth/auth.dart';
 import 'package:course_gnome/state/scheduling/scheduling.dart';
 
-external Storage get localStorage;
+// For web
+// external Storage get localStorage;
+// @JS()
+// class Storage {
+//   int length;
+//   external dynamic getItem(String key);
+//   external void setItem(String key, dynamic item);
+//   external void removeItem(String key);
+//   external void clear();
+// }
 
-@JS()
+// For mobile
 class Storage {
-  int length;
-  external dynamic getItem(String key);
-  external void setItem(String key, dynamic item);
-  external void removeItem(String key);
-  external void clear();
+  Map<String, dynamic> items;
+  int get length => items.length;
+  dynamic getItem(String key) => items[key];
+  void setItem(String key, dynamic item) => items[key] = item;
+  void removeItem(String key) => items.remove(key);
+  void clear() => items.clear();
 }
+
+final Storage localStorage = Storage();
+//
 
 const String schedulesKey = 'schedules';
 
